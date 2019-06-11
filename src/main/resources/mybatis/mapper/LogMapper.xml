@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.LogMapper">
+
+    <insert id="saveLog">
+      insert into shengxian_business_operation_record(phone,name,module,method,rsponse_data,execution_time,commite,business_id)
+      values(#{phone},#{name},#{module},#{method},#{rsponse_data},#{execution_time},#{commite},#{business_id})
+    </insert>
+
+    <!--查询操作日志信息-->
+    <select id="findLogList" resultType="LogEntity">
+        select id,phone,name,module,method,rsponse_data,execution_time,commite
+        from shengxian_business_operation_record
+        where business_id=#{business_id}
+        <if test="phone != null and phone != ''">
+            and phone = #{phone}
+        </if>
+        <if test="name != null and name != ''">
+            and (name like CONCAT( '%',#{name},'%') or method like CONCAT( '%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and  DATE_FORMAT(execution_time,'%Y-%m-%d') &lt;=#{endTime} and DATE_FORMAT(execution_time,'%Y-%m-%d') &gt;=#{startTime}
+        </if>
+        order by execution_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--查询商家操作日志的总数-->
+    <select id="findLogListCount" resultType="Integer">
+        select count(id) from shengxian_business_operation_record
+        where business_id=#{business_id}
+        <if test="phone != null and phone != ''">
+            and phone like CONCAT( '%',#{phone},'%')
+        </if>
+        <if test="name != null and name != ''">
+            and name like CONCAT( '%',#{name},'%')
+        </if>
+        and  DATE_FORMAT(execution_time,'%Y-%m-%d') &lt;=#{endTime} and DATE_FORMAT(execution_time,'%Y-%m-%d') &gt;=#{startTime}
+    </select>
+
+
+
+    <!--通过商家token查询商家信息-->
+    <select id="selectBusinessInfoByToken" resultType="HashMap">
+        select id,phone,"商家"as name from shengxian_business where token=#{token}
+    </select>
+
+    <!--通过员工token查询员工姓名和该员工所属的商家-->
+    <select id="selectStaffInfoByToken" resultType="HashMap">
+        select b.id,s.phone,s.name from shengxian_staff s ,shengxian_business b where s.business_id=b.id and s.token=#{token}
+    </select>
+
+</mapper>

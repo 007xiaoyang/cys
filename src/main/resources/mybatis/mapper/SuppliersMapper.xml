@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.SuppliersMapper">
+
+    <!--根据服务商id查询添加供应商类别的最后一条序号-->
+    <select id="findCodeBySid" resultType="String">
+        select code  from shengxian_suppliers_category where business_id = #{bid} order by id desc limit 1
+    </select>
+
+    <!--根据类别id查询序号-->
+    <select id="findCodeByid" resultType="String">
+        select code from shengxian_suppliers_category where id = #{id}
+    </select>
+
+    <!--添加供应商类别信息-->
+    <insert id="addSupplierCategory">
+        insert into shengxian_suppliers_category(business_id,name,code)
+        values(#{bid},#{name},#{code})
+    </insert>
+
+    <!--通过商家ID查询供应商类别总数-->
+    <select id="findSupplierCategoryCount" resultType="Integer">
+        select count(id)  from shengxian_suppliers_category where business_id = #{bid}
+    </select>
+
+    <!--通过商家ID查询商家下的供应商类别信息集合-->
+    <select id="findSuppliersCategoryInfoListBySid" resultType="HashMap">
+        select id,name,code from shengxian_suppliers_category where business_id = #{bid}
+    </select>
+
+    <!--修改供应商类别信息-->
+    <update id="updateSuppliersCategory">
+        update shengxian_suppliers_category set name = #{name} where id = #{id}
+    </update>
+
+    <!--条件查询类别下的供应商总数-->
+    <select id="findSuppliersInfoListCount" resultType="Integer">
+        select count(s.id)
+        from shengxian_suppliers s ,shengxian_suppliers_category sc
+        where s.is_del = 0 and s.category_id=sc.id and s.business_id = #{business_id}
+        <if test="category_id != null ">
+            and s.category_id=#{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( s.name LIKE CONCAT('%',#{name},'%') or s.number  LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--条件查询类别下的供应商集合-->
+    <select id="findSuppliersInfoList" resultType="HashMap">
+        select s.id,s.number,s.name,s.address,s.illustrated,s.remarks,s.create_time,sc.name as categoryName,s.phone
+        from shengxian_suppliers s ,shengxian_suppliers_category sc
+        where s.is_del=0 and s.category_id = sc.id and s.business_id = #{business_id}
+        <if test="category_id != null ">
+            and s.category_id = #{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( s.name LIKE CONCAT('%',#{name},'%') or s.number  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by id limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--查询类别下的供应商集合-->
+    <select id="findSuppliersList" resultType="HashMap">
+        select id,name
+        from shengxian_suppliers where category_id = #{categoryId} and is_del=0
+    </select>
+
+    <!--删除供应商类别-->
+    <delete id="deleSuppliersCategory">
+        delete from shengxian_suppliers_category where id=#{id}
+    </delete>
+
+    <!--添加供应商信息-->
+    <insert id="addSuppliersInfo">
+        insert into shengxian_suppliers(category_id,number,phone,name,address,illustrated,remarks,create_time,business_id)
+        values(#{category_id},#{number},#{phone},#{name},#{address},#{illustrated},#{remarks},#{create_time},#{business_id})
+    </insert>
+
+
+    <!--通过类别id查询最后一条供应商编号-->
+    <select id="findNumberByCategoryId" resultType="String">
+        select number from shengxian_suppliers
+        where category_id = #{categoryId} and is_del = 0 order by number desc limit 1
+    </select>
+
+    <!--通过id查询供应商信息-->
+    <select id="findSuppliersInfoById" resultType="HashMap">
+        select id,category_id,number,phone,name,address,illustrated,remarks
+        from shengxian_suppliers where id = #{id} and is_del=0
+    </select>
+
+    <!--根据类别id和编号查询是否存在-->
+    <select id="findIdByCidAndNumber" resultType="Integer">
+        select id from shengxian_suppliers
+        where category_id = #{categoryId} and number = #{number} and is_del = 0
+    </select>
+
+    <!--修改供应商信息-->
+    <update id="updateSuppliersInfo">
+        update shengxian_suppliers
+        set category_id = #{category_id},number = #{number},phone = #{phone},name = #{name},address = #{address},
+        illustrated = #{illustrated},remarks = #{remarks}
+        where is_del = 0 and  id = #{id}
+    </update>
+
+    <!--删除供应商前判断是否有未付款或欠款的订单-->
+    <select id="selectPurchaseOrder" resultType="Integer">
+        select id from shengxian_purchase
+        where is_del = 0 and status = 1 and state in (0,1) and suppliers_id = #{id}
+    </select>
+
+    <!--删除供应商-->
+    <update id="deleSuppliers">
+        update shengxian_suppliers set is_del = 1 where id = #{id}
+    </update>
+
+
+    <!--供应商导出-->
+    <select id="excelDownload" resultType="HashMap">
+        select s.id,s.number ,s.name ,s.create_time ,sc.name as categoryName
+        from shengxian_suppliers s ,shengxian_suppliers_category sc
+        where s.is_del=0 and s.category_id = sc.id and s.business_id = #{business_id}
+        <if test="category_id != null ">
+            and s.category_id = #{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( s.name LIKE CONCAT('%',#{name},'%') or s.number  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by id
+    </select>
+
+</mapper>

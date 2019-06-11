@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.MenuMapper">
+
+    <!--查询第一级菜单列表-->
+    <select id="selectOneMenuList" resultType="com.shengxian.entity.Menu">
+        select id,menu from shengxian_menu
+        where level = 1
+    </select>
+
+
+    <!--首页菜单权限-->
+    <select id="oneMenu" resultType="Integer">
+        select substring_index(substring_index(r.one_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.one_menu_id) - length(replace(r.one_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--销售菜单权限-->
+    <select id="twoMenu" resultType="Integer">
+        select substring_index(substring_index(r.two_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.two_menu_id) - length(replace(r.two_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--采购菜单权限-->
+    <select id="threeMenu" resultType="Integer">
+        select substring_index(substring_index(r.Three_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.Three_menu_id) - length(replace(r.Three_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--库存菜单权限-->
+    <select id="fourMenu" resultType="Integer">
+        select substring_index(substring_index(r.four_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.four_menu_id) - length(replace(r.four_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--配送菜单权限-->
+    <select id="fiveMenu" resultType="Integer">
+        select substring_index(substring_index(r.five_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.five_menu_id) - length(replace(r.five_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--财务菜单权限-->
+    <select id="sixMenu" resultType="Integer">
+        select substring_index(substring_index(r.six_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.six_menu_id) - length(replace(r.six_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--资料菜单权限-->
+    <select id="sevenMenu" resultType="Integer">
+        select substring_index(substring_index(r.seven_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.seven_menu_id) - length(replace(r.seven_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--员工菜单权限-->
+    <select id="eightMenu" resultType="Integer">
+        select substring_index(substring_index(r.eight_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.eight_menu_id) - length(replace(r.eight_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+    <!--设置菜单权限-->
+    <select id="nineMenu" resultType="Integer">
+        select substring_index(substring_index(r.nine_menu_id,',',b.help_topic_id+1),',',-1)id
+        from shengxian_menu_role r
+        join mysql.help_topic b on b.help_topic_id &lt; (length(r.nine_menu_id) - length(replace(r.nine_menu_id,',',''))+1)
+        where staff_id = #{staff_id}
+    </select>
+
+
+
+    <!--通过员工ID查询三级菜单权限-->
+    <select id="selectThreeMenuIdBySid" resultType="String">
+        select Three_menu_id from shengxian_menu_role where staff_id = #{staff_id}
+    </select>
+
+
+    <!--通过id查询一级菜单列表-->
+    <select id="selectOneMenuListById" resultType="HashMap">
+         select id,menu from shengxian_menu where level = 1 and id = #{id} order by sort asc
+    </select>
+
+    <!--菜单-->
+    <select id="selectOneMenu" resultType="HashMap">
+        select id,menu from shengxian_menu where level = #{level}
+        <if test="sort != null">
+            and sort = #{sort}
+        </if>
+    </select>
+
+    <!--通过一级菜单id查询第二级菜单列表-->
+    <select id="selectTwoMenuList" resultType="com.shengxian.entity.Menu">
+        select id,menu from shengxian_menu where level = 2 and sort = #{id} order by sort asc
+    </select>
+
+    <!--通过一级菜单id查询第二级菜单列表-->
+    <select id="menu" resultType="HashMap">
+        select id,menu from shengxian_menu where id = #{id}
+    </select>
+
+    <!--通过二级菜单id查询三级菜单列表-->
+    <select id="selectThreeMenuList" resultType="HashMap">
+        select id ,menu from shengxian_menu where level = 3 and sort = #{id} order by sort asc
+    </select>
+
+    <!--修改首页菜单权限-->
+    <update id="updateOneMenu">
+        update shengxian_menu_role set one_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改销售菜单权限-->
+    <update id="updateTwoMenu">
+        update shengxian_menu_role set two_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改采购菜单权限-->
+    <update id="updateThreeMenu">
+        update shengxian_menu_role set Three_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改库存菜单权限-->
+    <update id="updateFourMenu">
+        update shengxian_menu_role set four_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改配送菜单权限-->
+    <update id="updateFiveMenu">
+        update shengxian_menu_role set five_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改财务菜单权限-->
+    <update id="updateSixMenu">
+        update shengxian_menu_role set six_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改资料菜单权限-->
+    <update id="updateSevenMenu">
+        update shengxian_menu_role set seven_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改员工菜单权限-->
+    <update id="updateEightMenu">
+        update shengxian_menu_role set eight_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--修改设置菜单权限-->
+    <update id="updateNineMenu">
+        update shengxian_menu_role set nine_menu_id = #{menu} where staff_id = #{staff_id}
+    </update>
+
+    <!--添加模板-->
+    <insert id="addTemplate">
+        insert into shengxian_template
+        (business_id,title,no,originator,name,phone,address,beizhu,serial,goods_name,number,unit_price,money,one,two,three,four,type)
+        values(#{business_id},#{title},#{no},#{originator},#{name},#{phone},#{address},#{beizhu},#{serial},#{goods_name},#{number},#{unit_price},#{money},#{one},#{two},#{three},#{four},#{type})
+    </insert>
+
+    <!--修改模板-->
+    <update id="updateTemplate">
+        update shengxian_template set img = #{img} ,title = #{title},no = #{no} ,originator = #{originator},
+         name = #{name} ,phone = #{phone},address = #{address} ,beizhu = #{beizhu} ,serial = #{serial}
+         ,goods_name = #{goods_name},number = #{number},unit_price = #{unit_price},money = #{money},
+        one = #{one},two = #{two},three = #{three},four = #{four} where id = #{id}
+    </update>
+
+    <!--恢复模板-->
+    <update id="updateRecoveryTemplate">
+        update shengxian_template set img = #{img}, title = #{title},no = #{no} ,originator = #{originator}, name = #{name} ,
+        phone = #{phone},address = #{address} ,beizhu = #{beizhu} ,serial = #{serial},goods_name = #{goods_name},
+        number = #{number},unit_price = #{unit_price},money = #{money},
+        one = #{one},two = #{two},three = #{three},four = #{four} where id = #{id}
+    </update>
+
+    <!--修改模板二维码显示状态-->
+    <update id="updateTemplateState">
+        update shengxian_template set state = #{state} where id = #{id}
+    </update>
+
+    <!--删除log-->
+    <update id="deleteTemplateLog">
+        update shengxian_template set img = null where id = #{id}
+    </update>
+
+    <!--根据级别和上级id查询对应的菜单id-->
+    <select id="findMenuLevelAndSort" resultType="Integer">
+        select id from shengxian_menu where level = #{level}
+        <if test="sort != null">
+            and sort = #{sort}
+        </if>
+    </select>
+
+    <!--添加一级菜单权限-->
+    <insert id="addOneMenu">
+        insert into shengxian_menu_one(staff_id ,menu_id)
+        values( #{staff_id} ,#{menu_id})
+    </insert>
+
+    <!--添加二级菜单权限-->
+    <insert id="addTwoMenu">
+        insert into shengxian_menu_two(staff_id ,menu_id ,sort)
+        values( #{staff_id} ,#{menu_id} ,#{sort})
+    </insert>
+
+    <!--添加三级菜单权限-->
+    <insert id="addThreeMenu">
+       insert into shengxian_menu_three(staff_id ,menu_id ,sort)
+        values( #{staff_id} ,#{menu_id} ,#{sort})
+    </insert>
+
+    <resultMap id="menuMap" type="com.shengxian.entity.Menu">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="menu" jdbcType="VARCHAR" property="menu"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="m_id" jdbcType="VARCHAR" property="m_id"/>
+    </resultMap>
+    
+    <!--通过员工id查询一级菜单-->
+    <select id="findOneMenu" resultMap="menuMap">
+        select m.id ,m.menu ,mo.state , mo.id as m_id
+        from shengxian_menu_one mo
+        inner join shengxian_menu m on m.id = mo.menu_id
+        where   mo.staff_id = #{staff_id}
+        <if test="state != null">
+            and mo.state = #{state}
+        </if>
+        order by mo.menu_id asc
+    </select>
+
+    <!--通过员工id和一级菜单id查询二级菜单-->
+    <select id="findTwoMenu" resultMap="menuMap">
+        select m.id ,m.menu ,mt.state , mt.id as m_id
+        from shengxian_menu_two mt
+        inner join shengxian_menu m on m.id =mt.menu_id
+        where  mt.staff_id = #{staff_id} and mt.sort = #{sort} and m.id not in (77)
+        <if test="state != null">
+            and mt.state = #{state}
+        </if>
+        order by mt.menu_id asc
+    </select>
+
+    <!--通过员工id和二级菜单id查询三级菜单-->
+    <select id="findThreeMenu" resultMap="menuMap">
+        select m.id ,m.menu ,mt.state , mt.id as m_id
+        from shengxian_menu_three mt
+        inner join shengxian_menu m on m.id =mt.menu_id
+        where  mt.staff_id = #{staff_id} and mt.sort = #{sort}
+        <if test="state != null">
+            and mt.state = #{state}
+        </if>
+        order by mt.menu_id asc
+    </select>
+
+    <!--修改员工一级菜单-->
+    <update id="updateStaffOneMenu">
+        update shengxian_menu_one set state = #{state} where id = #{id}
+    </update>
+
+    <!--修改员工二级菜单-->
+    <update id="updateStaffTwoMenu">
+          update shengxian_menu_two set state = #{state} where id = #{id}
+    </update>
+
+    <!--修改员工三级菜单-->
+    <update id="updateStaffThreeMenu">
+          update shengxian_menu_three set state = #{state} where id = #{id}
+    </update>
+
+    <!--查询app菜单表-->
+    <select id="selectAppMenu" resultType="com.shengxian.entity.Menu">
+        select menu from shengxian_menu_app order by id asc
+    </select>
+
+    <!--添加员工APP功能菜单列表-->
+    <insert id="addStaffAppMenu">
+        insert into shengxian_menu_staff(staff_id ,menu )values( #{staff_id} ,#{menu})
+    </insert>
+
+    <!--店铺查询三级菜单-->
+    <select id="businessSelectThreeMenu" resultMap="menuMap">
+          select id , menu  from shengxian_menu
+          where  sort = #{sort}
+    </select>
+
+    <!--员工查询三级菜单-->
+    <select id="staffSelectThreeMenu" resultMap="menuMap">
+            select m.id ,m.menu   from shengxian_menu_three mt
+            inner join shengxian_menu m on m.id = mt.menu_id
+            where mt.sort = #{sort} and mt.state = 1 and mt.staff_id = (select id from shengxian_staff where token = #{token}  and is_del = 0)
+    </select>
+
+    <!--员工APP菜单-->
+    <select id="selecStaffAppMenu" resultType="com.shengxian.entity.Menu">
+        select id , menu ,state from shengxian_menu_staff where staff_id = #{staff_id}
+    </select>
+
+    <!--修改员工APP菜单-->
+    <update id="updateStaffAppMenu">
+        update shengxian_menu_staff set state = #{state} where id = #{id}
+    </update>
+
+    <!--添加飞蛾打印机-->
+    <insert id="addPrinter">
+        insert into shengxian_business_printer(business_id ,sn1 ,key1 ,remark1 ,carnum1 ,msg1 ,num ,ors)
+        values(#{business_id} , #{sn1} ,#{key1} ,#{remark1} ,#{carnum1} ,#{msg1} ,#{num} ,#{ors})
+    </insert>
+
+    <resultMap id="printerMap" type="com.shengxian.entity.Printer">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sn1" jdbcType="VARCHAR" property="sn1"/>
+        <result column="key1" jdbcType="VARCHAR" property="key1"/>
+        <result column="remark1" jdbcType="VARCHAR" property="remark1"/>
+        <result column="carnum1" jdbcType="VARCHAR" property="carnum1"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="num" jdbcType="INTEGER" property="num"/>
+        <result column="ors" jdbcType="INTEGER" property="ors"/>
+    </resultMap>
+
+    <!--查询店铺打印机-->
+    <select id="queryPrinter" resultMap="printerMap">
+        select id ,sn1 ,remark1 ,carnum1  ,state ,num ,ors
+        from shengxian_business_printer
+        where business_id = #{business_id}
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </select>
+
+    <!--修改打印机-->
+    <update id="printerEdit">
+        update shengxian_business_printer set remark1 = #{remark1} ,carnum1 = #{carnum1}  ,num = #{num} ,ors  = #{ors}
+        where business_id = #{business_id} and sn1 = #{sn}
+    </update>
+
+    <!--删除打印机-->
+    <delete id="deletePrinter">
+        delete from shengxian_business_printer where business_id = #{business_id} and sn1 = #{sn}
+    </delete>
+
+    <!--启用打印机-->
+    <update id="enablePrinter">
+        update shengxian_business_printer set state = #{state}  where id = #{id};
+    </update>
+
+    <!--通过id查询打印机信息-->
+    <select id="selectPrinterById" resultMap="printerMap">
+        select id ,sn1 ,key1,remark1 ,carnum1  ,state ,num ,ORS
+        from shengxian_business_printer where id = #{id}
+    </select>
+
+    <!--修改店铺使用哪个单据模块-->
+    <update id="updateBusinessPrinterModular">
+        update shengxian_business set type = #{type} where id = #{id};
+    </update>
+
+    <!--查询店铺使用哪个单据模块-->
+    <select id="queryBusinessPrinterModular" resultType="Integer">
+        select type from shengxian_business where id = #{id};
+    </select>
+
+    <!--查询店铺添加打印机id列表-->
+    <select id="queryPrinterId" resultType="Integer">
+        select id
+        from shengxian_business_printer
+        where business_id = #{business_id}
+        <if test="state != null ">
+            and state = #{state}
+        </if>
+    </select>
+
+    <resultMap id="salesMap" type="com.shengxian.entity.Order">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="order_number" jdbcType="VARCHAR" property="order_number"/>
+        <result column="no" jdbcType="VARCHAR" property="no"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
+        <result column="beizhu" jdbcType="VARCHAR" property="beizhu"/>
+        <result column="user_name" jdbcType="VARCHAR" property="name"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="difference_price" jdbcType="DOUBLE" property="difference_price"/>
+        <result column="freight" jdbcType="DOUBLE" property="freight"/>
+        <result column="reduce" jdbcType="DOUBLE" property="reduce"/>
+    </resultMap>
+
+    <!--通过订单id查询飞蛾打印机需要打印的信息-->
+    <select id="queryOrder" resultMap="salesMap">
+        select o.id , o.order_number ,o.no, o.price ,o.beizhu ,bd.user_name ,bd.address ,o.freight ,o.difference_price ,
+        ifnull( (select phone from user where id = bd.user_id and is_del = 0 ) ,bd.telephone  )phone
+         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del = 0 and bd.is_del = 0 and o.id = #{id}
+    </select>
+
+
+
+    <!--通过订单id查询订单详情-->
+    <resultMap id="orderDateilMap" type="com.shengxian.entity.MothPrinterClass">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="order_number" jdbcType="DOUBLE" property="num"/>
+        <result column="order_price" jdbcType="DOUBLE" property="price"/>
+        <result column="money" jdbcType="DOUBLE" property="money"/>
+        <result column="name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+    </resultMap>
+
+    <select id="queryOrderDateil" resultMap="orderDateilMap">
+        select od.id , od.order_number , od.order_price  , od.type , g.name , od.order_number * od.order_price as money
+        from shengxian_order_details od
+        inner join shengxian_goods g on  g.id = od.goods_id
+        where g.is_del = 0 and od.order_id = #{order_id}
+    </select>
+
+
+
+
+
+    <!--通过采购订单id查询飞蛾打印机需要打印的信息-->
+    <resultMap id="puchasesMap" type="com.shengxian.entity.PurchaseOrder">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="order_number" jdbcType="VARCHAR" property="order_number"/>
+        <result column="no" jdbcType="VARCHAR" property="no"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
+        <result column="beizhu" jdbcType="VARCHAR" property="beizhu"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="difference_price" jdbcType="DOUBLE" property="difference_price"/>
+        <result column="freight" jdbcType="DOUBLE" property="freight"/>
+    </resultMap>
+
+    <select id="queryPurchaseOrder" resultMap="puchasesMap">
+        select  p.id , p.order_number ,p.no , p.price ,p.beizhu ,s.name ,s.address ,s.phone ,p.freight ,p.difference_price
+        from shengxian_purchase p
+        inner join shengxian_suppliers s on s.id = p.suppliers_id and s.is_del = 0
+        where p.id = #{id} and p.is_del = 0
+    </select>
+
+    <!--通过采购订单id查询采购订单详情-->
+    <resultMap id="puchasesOrderDateilMap" type="com.shengxian.entity.MothPrinterClass">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="purchase_number" jdbcType="DOUBLE" property="num"/>
+        <result column="purchase_price" jdbcType="DOUBLE" property="price"/>
+        <result column="money" jdbcType="DOUBLE" property="money"/>
+        <result column="name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+    </resultMap>
+
+    <select id="queryPurchaseOrderDateil" resultMap="puchasesOrderDateilMap">
+        select pd.id ,pd.purchase_number , pd.purchase_price  , pd.type , g.name , pd.purchase_number * pd.purchase_price as money
+        from shengxian_purchase_detail pd
+        inner join shengxian_goods g on  g.id = pd.purchase_id
+        where g.is_del = 0 and pd.purchase_id = #{purchase_id}
+    </select>
+
+
+    <!--通过临时订单id查询飞蛾打印机需要打印的信息-->
+    <select id="queryTemporaryOrder" resultMap="salesMap">
+        select o.id , o.order_number ,o.no, o.price ,o.beizhu ,bd.user_name ,bd.address ,o.freight ,o.difference_price ,
+        ifnull( (select phone from user where id = bd.user_id and is_del = 0 ) ,bd.telephone  )phone
+         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        from shengxian_order_temporary o
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del = 0 and bd.is_del = 0 and o.id = #{id}
+    </select>
+
+    <!--通过临时订单id查询订单详情-->
+    <select id="queryTemporaryOrderDateil" resultMap="orderDateilMap">
+        select od.id , od.order_number , od.order_price  , od.type , g.name , od.order_number * od.order_price as money
+        from shengxian_order_temporary_details od
+        inner join shengxian_goods g on  g.id = od.goods_id
+        where g.is_del = 0 and od.order_id = #{order_id}
+    </select>
+
+</mapper>

@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.DistributeMapper">
+
+
+    <!--所有未到货的产品汇总总数-->
+    <select id="allNotArrivalGoodsSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select od.id from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select id,name ,is_del from shengxian_goods) g on g.id = od.goods_id and g.is_del = 0
+        inner join (select goods_id,warehouse_id,fictitious from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        where o.is_del=0 and o.mold=0 and o.status in(2,3)  and o.business_id = #{business_id} and o.print_frequ = 1
+        <if test="wid != null">
+          and  gi.warehouse_id = #{wid}
+        </if>
+        group by g.id )a
+    </select>
+
+    <!--所有未到货的产品汇总-->
+    <select id="allNotArrivalGoodsSummary" resultType="HashMap">
+        select od.id,g.number,  g.`name`,sum(od.order_number)order_number,gi.fictitious,g.units,
+        sum((od.order_number * od.order_price))price,od.order_price,
+        (select name from shengxian_warehouse where id=gi.warehouse_id)wname
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select id,name,units ,number , is_del  from shengxian_goods) g on g.id = od.goods_id and g.is_del = 0
+        inner join (select goods_id,warehouse_id,fictitious from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        where o.is_del = 0 and o.mold = 0 and o.status in(2,3)  and o.business_id=#{business_id} and o.print_frequ = 1
+        <if test="wid != null">
+          and  gi.warehouse_id = #{wid}
+        </if>
+        group by g.id order by o.create_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--所有未到货的产品汇总总金额-->
+    <select id="allNotArrivalGoodsSummaryTatolMoney" resultType="Double">
+        select ifnull(sum(a.price),0)money from
+        (select sum((od.order_number * od.order_price))price
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select id,name ,is_del from shengxian_goods) g on g.id = od.goods_id and g.is_del = 0
+        inner join (select goods_id,warehouse_id,fictitious from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        where o.is_del = 0 and o.mold = 0 and o.status in(2,3)  and o.business_id=#{business_id} and o.print_frequ = 1
+        <if test="wid != null">
+           and  gi.warehouse_id=#{wid}
+        </if>
+        group by g.id )a
+    </select>
+
+
+    <!--所有未到货的产品明细总数-->
+    <select id="allNotArrivalGoodsDetailCount" resultType="Integer">
+        select count(od.id)
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select id,name ,is_del from shengxian_goods) g on g.id=od.goods_id and g.is_del = 0
+        inner join (select goods_id,warehouse_id,fictitious from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        where o.is_del = 0 and o.mold = 0 and o.status in(2,3) and o.business_id = #{business_id} and o.print_frequ = 1
+        <if test="wid != null">
+           and gi.warehouse_id = #{wid}
+        </if>
+    </select>
+
+    <!--所有未到货的产品明细-->
+    <select id="allNotArrivalGoodsDetail" resultType="HashMap">
+        select od.id,(select user_name from shengxian_binding where id=o.binding_id)user_name,g.units,g.number,
+        g.`name`, od.order_number,(od.order_number*od.order_price)price,gi.fictitious,od.order_price,
+        (select number from shengxian_binding where id=o.binding_id)num,
+        (select name from shengxian_warehouse where id=gi.warehouse_id)wname
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select id,name ,units ,number,is_del from shengxian_goods) g on g.id=od.goods_id and g.is_del = 0
+        inner join (select goods_id,warehouse_id,fictitious from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        where o.is_del = 0 and o.mold = 0 and o.status in(2,3) and o.business_id = #{business_id} and o.print_frequ = 1
+        <if test="wid != null">
+            and gi.warehouse_id = #{wid}
+        </if>
+        order by o.create_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--所有未到货的产品明细总数总金额-->
+    <select id="allNotArrivalGoodsDetailTatolMoney" resultType="Double">
+        select ifnull(sum((od.order_number * od.order_price)),0)price
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select id,name ,is_del from shengxian_goods) g on g.id=od.goods_id and g.is_del = 0
+        inner join (select goods_id,warehouse_id,fictitious from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        where o.is_del = 0 and o.mold = 0 and o.status in(2,3) and o.business_id = #{business_id} and o.print_frequ = 1
+        <if test="wid != null">
+            and gi.warehouse_id = #{wid}
+        </if>
+    </select>
+
+
+
+
+    <!--未分配给员工派送的订单-->
+    <select id="notDistributeOrder" resultType="HashMap">
+        select o.id,o.order_number,bd.user_name,o.price,o.part,o.create_time
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and o.state not in (3)  and o.mold = 0 and o.business_id = #{business_id} and o.print_frequ = 1
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        order by o.create_time desc
+    </select>
+
+    <!--添加员工配送-->
+    <insert id="addDispatc" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_dispatch( business_id ,staff_id , create_time)
+        values( #{business_id} , #{staff_id} , #{create_time})
+    </insert>
+
+    <!--通过订单id查询员工配送详情是否有分配过了，如果有则删除-->
+    <select id="selectDispatcDetailByOrder_id" resultType="HashMap">
+        select dd.id,d.status from shengxian_dispatch_detail dd
+        inner join shengxian_dispatch d on d.id= dd.dispatch_id
+        where dd.order_id=#{order_id} and dd.is_del=0
+    </select>
+
+    <!--删除配送详情记录-->
+    <update id="deleteDispatcDetail">
+        update shengxian_dispatch_detail set is_del =1 where id=#{id}
+    </update>
+
+    <!--通过订单id修改订单属于谁配送的-->
+    <update id="updateDistribyteOrderStaff">
+         update shengxian_order set staff_id=#{staff_id}  where id=#{id}
+    </update>
+
+    <!--添加员工配送详情-->
+    <insert id="addDispatcDetail">
+        insert into shengxian_dispatch_detail( dispatch_id ,order_id)
+        values( #{dispatch_id} , #{order_id})
+    </insert>
+
+    <!--查询是否是到货的订单了-->
+    <select id="findOrderStatus" resultType="Integer">
+        select status from shengxian_order where id=#{id}
+    </select>
+
+    <!--分配订单给员工派送-->
+    <update id="updateDistributeOrderToStaff">
+        update shengxian_order set staff_id=#{staff_id} ,status=3 where id=#{id}
+    </update>
+
+    <!--添加指定员工派送的车次提成-->
+    <insert id="addOncePercentage">
+        insert into shengxian_staff_once_percentage(staff_id,create_time ,order_id)values(#{staff_id},#{create_time},#{order_id})
+    </insert>
+
+    <!--已经分配给员工配送订单总数-->
+    <select id="alreadyDistributeOrderCount" resultType="Integer">
+        select count(a.id) from
+        (select d.id
+        from shengxian_dispatch d
+        inner join (select dispatch_id,order_id,is_del from  shengxian_dispatch_detail) dd on dd.dispatch_id = d.id and dd.is_del=0
+        inner join (select id,price ,status,is_del,mold from  shengxian_order) o on o.id = dd.order_id
+        inner join (select id ,name,is_del from shengxian_staff) s on s.id = d.staff_id and s.is_del = 0
+        where  o.is_del = 0 and o.mold = 0 and d.status = 0 and  d.business_id = #{business_id} and o.status in (3,4)
+        <if test="staff_id != null">
+            and d.staff_id = #{staff_id}
+        </if>
+        group by d.id order by d.create_time desc )a
+    </select>
+
+    <!--已经分配给员工配送订单-->
+    <select id="alreadyDistributeOrder" resultType="HashMap">
+        select d.id,d.create_time ,sum(o.price)price ,s.name
+        from shengxian_dispatch d
+        inner join (select dispatch_id,order_id,is_del from  shengxian_dispatch_detail) dd on dd.dispatch_id = d.id and dd.is_del = 0
+        inner join (select id,price ,status,is_del,mold from  shengxian_order) o on o.id = dd.order_id
+        inner join (select id ,name,is_del from shengxian_staff) s on s.id = d.staff_id and s.is_del = 0
+        where  o.is_del = 0 and o.mold=0 and d.status = 0 and d.business_id = #{business_id} and o.status in (3,4)
+        <if test="staff_id != null">
+            and d.staff_id = #{staff_id}
+        </if>
+        group by d.id order by d.create_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--已经分配给员工配送订单总金额-->
+    <select id="alreadyDistributeOrderTatolMoney" resultType="Double">
+        select ifnull(sum(o.price),0)price
+        from shengxian_dispatch d
+        inner join (select dispatch_id,order_id,is_del from  shengxian_dispatch_detail) dd on dd.dispatch_id = d.id and dd.is_del = 0
+        inner join (select id,price ,status,is_del,mold from  shengxian_order) o on o.id = dd.order_id
+        inner join (select id ,name,is_del from shengxian_staff) s on s.id = d.staff_id and s.is_del = 0
+        where  o.is_del = 0 and o.mold = 0 and d.status = 0 and d.business_id = #{business_id} and o.status in (3,4)
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+    </select>
+
+    <!--通过配送id查询配送订单详情-->
+    <select id="findDistributeOrderDetail" resultType="HashMap">
+        select dd.id,dd.order_id,o.order_number ,o.price,o.create_time,o.status,
+        o.state,o.audit_time,o.receivable_time,b.user_name as name,o.payee
+        ,s.name as sname , o.money
+        from shengxian_dispatch_detail dd
+        inner join shengxian_order o on o.id = dd.order_id
+        inner join shengxian_dispatch d on d.id = dd.dispatch_id
+        inner join (select id,user_name,is_del from shengxian_binding) b on b.id = o.binding_id and b.is_del = 0
+        inner join shengxian_staff s on s.id = d.staff_id
+        where o.is_del = 0 and dd.dispatch_id = #{id} and o.status not in (5,6)
+        <if test="is_del != null">
+            and dd.is_del = #{is_del}
+        </if>
+        <if test="status != null">
+            and d.status = #{status}
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+    </select>
+
+    <!--通过配送id查询配送订单详情不同状态的总金额-->
+    <select id="findDistributeOrderDetailTotalMoney" resultType="HashMap">
+        select ifnull(sum(o.price),0)price ,ifnull(sum(o.money),0)money
+        from shengxian_dispatch_detail dd
+        inner join shengxian_order o on o.id = dd.order_id
+        inner join shengxian_dispatch d on d.id = dd.dispatch_id
+        inner join (select id,user_name,is_del from shengxian_binding) b on b.id = o.binding_id and b.is_del =0
+        where o.is_del=0 and dd.dispatch_id = #{id} and o.status not in (5,6) and o.state = #{state}
+        <if test="is_del != null">
+            and dd.is_del = #{is_del}
+        </if>
+        <if test="status != null">
+            and d.status = #{status}
+        </if>
+    </select>
+
+
+    <!--员工配送完成的订单汇总总数-->
+    <select id="saleDistributeCompletOrderSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select d.id   from shengxian_dispatch d
+        inner join (select dispatch_id,order_id,is_del from  shengxian_dispatch_detail) dd on dd.dispatch_id = d.id
+        inner join (select id,price ,status,is_del,state,binding_id,payee,mold from  shengxian_order) o on o.id = dd.order_id
+        inner join (select id, user_name from  shengxian_binding )b on b.id=o.binding_id
+        where  o.is_del = 0 and o.mold = 0  and o.status = 4   and d.business_id = #{business_id}
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+        <if test="is != null">
+            and dd.is_del = #{is}
+        </if>
+        <if test="status != null">
+            and d.status = #{status}
+        </if>
+        <if test="startTime != null and startTime !='' and endTime != null and endTime != ''">
+            and DATE_FORMAT(d.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(d.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by d.id order by d.create_time desc)a
+    </select>
+
+    <!--员工配送完成的订单汇总-->
+    <select id="saleDistributeCompletOrderSummary" resultType="HashMap">
+        select d.id,d.create_time ,sum(o.price)price,o.payee ,sum(o.money)money,
+        (select name from shengxian_staff where id=d.staff_id)name
+        from shengxian_dispatch d
+        inner join (select dispatch_id,order_id,is_del from  shengxian_dispatch_detail) dd on dd.dispatch_id=d.id
+        inner join (select id,price,money ,status,is_del,state,binding_id,payee,mold from  shengxian_order) o on o.id=dd.order_id
+        where  o.is_del=0 and o.mold=0  and o.status=4  and d.business_id=#{business_id}
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+        <if test="is != null">
+            and dd.is_del=#{is}
+        </if>
+        <if test="status != null">
+            and d.status=#{status}
+        </if>
+        <if test="startTime != null and startTime !='' and endTime != null and endTime != ''">
+            and DATE_FORMAT(d.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(d.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by d.id order by d.create_time desc  limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--员工配送完成的订单汇总总金额合计-->
+    <select id="saleDistributeCompletOrderSummaryTatolMoney" resultType="HashMap">
+        select ifnull(sum(a.price),0)price,ifnull(sum(a.money),0)money from
+        (select sum(o.price)price ,sum(o.money) money  from shengxian_dispatch d
+        inner join (select dispatch_id,order_id,is_del from  shengxian_dispatch_detail) dd on dd.dispatch_id = d.id
+        inner join (select id,price,money ,status,is_del,state,binding_id,payee,mold from  shengxian_order) o on o.id = dd.order_id
+        where  o.is_del=0 and o.mold=0  and o.status=4  and d.business_id = #{business_id}
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+        <if test="is != null">
+            and dd.is_del=#{is}
+        </if>
+        <if test="status != null">
+            and d.status=#{status}
+        </if>
+        <if test="startTime != null and startTime !='' and endTime != null and endTime != ''">
+            and DATE_FORMAT(d.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(d.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by d.id order by d.create_time desc)a
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--员工配送完成的订单明细总数-->
+    <select id="saleDistributeCompletOrderDetailCount" resultType="Integer">
+        select count(a.id) from
+        (select dd.id
+        from shengxian_dispatch_detail dd
+        inner join shengxian_dispatch d on d.id=dd.dispatch_id and d.status=1
+        inner join shengxian_order o on o.id=dd.order_id
+        inner join (select id, user_name from  shengxian_binding )b on b.id=o.binding_id
+        where o.is_del=0 and o.mold=0 and o.status=4 and o.business_id=#{business_id}
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (b.user_name like CONCAT('%',#{name},'%') or b.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime !='' and endTime != null and endTime != ''">
+            and DATE_FORMAT(d.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(d.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by d.create_time desc)a
+    </select>
+
+    <!--员工配送完成的订单明细-->
+    <select id="saleDistributeCompletOrderDetail" resultType="HashMap">
+       select dd.id,o.order_number,o.price,o.money,o.payee,o.receivable_time,dd.order_id,
+        (select name from shengxian_staff where id=d.staff_id)name,b.user_name
+        from shengxian_dispatch_detail dd
+        inner join shengxian_dispatch d on d.id=dd.dispatch_id and d.status=1
+        inner join shengxian_order o on o.id=dd.order_id
+        inner join (select id, user_name from  shengxian_binding )b on b.id=o.binding_id
+        where o.is_del=0 and o.mold=0 and o.status=4 and o.business_id=#{business_id}
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (b.user_name like CONCAT('%',#{name},'%') or b.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime !='' and endTime != null and endTime != ''">
+            and DATE_FORMAT(d.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(d.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by o.receivable_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--员工配送完成的订单明细总金额合计-->
+    <select id="saleDistributeCompletOrderDetailTatolMoney" resultType="HashMap">
+        select sum(a.price)price,sum(a.money) from
+        (select ifnull(sum(o.price),0)price,ifnull(sum(o.money),0)money
+        from shengxian_dispatch_detail dd
+        inner join shengxian_dispatch d on d.id=dd.dispatch_id and d.status=1
+        inner join shengxian_order o on o.id=dd.order_id
+        inner join (select id, user_name from  shengxian_binding )b on b.id=o.binding_id
+        where o.is_del=0 and o.mold=0 and o.status=4 and o.business_id=#{business_id}
+        <if test="staff_id != null">
+            and d.staff_id =#{staff_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (b.user_name like CONCAT('%',#{name},'%') or b.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime !='' and endTime != null and endTime != ''">
+            and DATE_FORMAT(d.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(d.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by d.create_time desc)a
+    </select>
+
+
+
+
+
+
+    <!--员工总明细总数-->
+    <select id="staffTatolDetailCount" resultType="Integer">
+        select  count(s.id)
+        from shengxian_staff s
+        inner join shengxian_staff_category sc on sc.id=s.category_id
+        where s.is_del=0 and s.business_id=#{business_id}
+        <if test="staff_id != null">
+           and  s.id = #{staff_id}
+        </if>
+    </select>
+
+
+    <!--员工总明细-->
+    <select id="staffTatolDetail" resultType="HashMap">
+        select  s.id ,s.name,
+        sc.name as cname, s.create_time
+        from shengxian_staff s
+        inner join shengxian_staff_category sc on sc.id=s.category_id
+        where s.is_del=0 and s.business_id=#{business_id}
+        <if test="staff_id != null">
+           and s.id = #{staff_id}
+        </if>
+        order by s.id asc limit #{startIndex},#{pageSize}
+    </select>
+
+
+
+    <!--统计员工每月销售订单总数-->
+    <select id="staffMonthOrderCount" resultType="Integer">
+        select count(c.id)  from (
+        select  staff.id from (
+
+        (select DATE_FORMAT(adddate(s.create_time, numlist.id),'%Y-%m') as time ,s.id  from
+        (SELECT n1.i + n10.i*10 + n100.i*100  AS id FROM num n1 cross join
+        num as n10 cross join num as n100 ) as numlist , shengxian_staff s
+        where adddate( s.create_time , numlist.id) &lt;= CURDATE() and s.id = #{staff_id} ) ) staff
+
+        left join ( select sum(a.count)count , a.price ,a.`month`
+        from (
+        (select  DATE_FORMAT(o.audit_time,'%Y-%m') as month,sum(o.price)price ,count(o.id)count
+        from shengxian_order o
+        where o.is_del=0 and o.status = 4 and o.staff_id = #{staff_id}
+        group by month order by month desc)
+
+        UNION ALL
+
+        (select  DATE_FORMAT(p.audit_time,'%Y-%m') as month,sum(p.price)price ,count(p.id)count
+        from shengxian_purchase p
+        where p.is_del=0 and p.status = 1 and p.staff_id = #{staff_id}
+        group by month order by month desc)
+        )a GROUP BY a.`month` ) b  on b.month = staff.time
+
+        group by staff.time order by staff.time desc
+        )c
+    </select>
+
+    <!--统计员工每月销售订单-->
+    <select id="staffMonthOrder" resultType="HashMap">
+        select staff.time as month , ifnull(b.price , 0)price , ifnull(b.count , 0)count ,staff.`name`  from (
+
+        (select DATE_FORMAT(adddate(s.create_time, numlist.id),'%Y-%m') as time ,s.`name` from
+        (SELECT n1.i + n10.i*10 + n100.i*100  AS id FROM num n1 cross join
+        num as n10 cross join num as n100 ) as numlist , shengxian_staff s
+        where adddate( s.create_time , numlist.id) &lt;= CURDATE() and s.id = #{staff_id}  ) ) staff
+
+        left join ( select sum(a.count)count , a.price ,a.`month`
+        from (
+        (select  DATE_FORMAT(o.audit_time,'%Y-%m') as month,sum(o.price)price ,count(o.id)count
+        from shengxian_order o
+        where o.is_del=0 and o.status = 4 and o.staff_id = #{staff_id}
+        group by month order by month desc)
+
+        UNION ALL
+
+        (select  DATE_FORMAT(p.audit_time,'%Y-%m') as month,sum(p.price)price ,count(p.id)count
+        from shengxian_purchase p
+        where p.is_del=0 and p.status = 1 and p.staff_id = #{staff_id}
+        group by month order by month desc)
+        )a GROUP BY a.`month` ) b  on b.month = staff.time
+
+        group by staff.time order by staff.time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <!--统计员工每月提成-->
+    <select id="staffMonthStatis" resultType="String">
+        select sum(a.statis)statis from (
+        (select  DATE_FORMAT(os.create_time,'%Y-%m') as month, sum(os.statis)statis
+        from shengxian_order o
+        inner join shengxian_staff_order_statis os on os.order_id = o.id
+        where o.is_del=0 and o.status=4 and os.staff_id = #{staff_id}
+        group by month order by month desc )
+        UNION ALL
+        (select DATE_FORMAT(ts.create_time,'%Y-%m') as month,sum(ts.statis)statis
+        from shengxian_staff_timing_statis ts where ts.staff_id = #{staff_id}
+        group by month order by month desc ))a
+        where a.month=#{time}
+        group by a.month order by a.month desc
+    </select>
+
+    <!--根据月查询员工结算金额-->
+    <select id="totalTaffWage" resultType="Double">
+       select money from shengxian_staff_wage_settlement where staff_id = #{staff_id} and time = #{time}
+    </select>
+
+    <!--查询员工每月是否结算了-->
+    <select id="staffWageSettlement" resultType="Integer">
+        select id from shengxian_staff_wage_settlement where staff_id = #{staff_id} and time = #{time}
+    </select>
+
+    <!--员工工资结算-->
+    <insert id="addStaffWageSettlement">
+        insert into shengxian_staff_wage_settlement(staff_id ,money,time )values(#{staff_id},#{money} ,#{time})
+    </insert>
+
+    <!--员工销售提成订单明细总数-->
+    <select id="staffDayDetailCount" resultType="Integer">
+        select count(1) from (
+        select o.audit_time ,bd.user_name ,sf.type
+        from shengxian_order o
+        inner join shengxian_staff_frequency sf on o.id=sf.order_id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del= 0  and sf.staff_id=#{staff_id} and sf.type in (3,5,6,7)
+        union ALL
+        select o.audit_time ,bd.user_name , op.type
+        from  shengxian_order o
+        inner join shengxian_staff_once_percentage op on FIND_IN_SET(o.id,op.order_id)
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and op.staff_id=#{staff_id}
+        UNION ALL
+        select o.audit_time ,bd.user_name , os.type
+        from  shengxian_order o
+        inner join shengxian_staff_order_statis os on os.order_id= o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and os.staff_id=#{staff_id}
+         )a  where DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+        <if test="name != null and name != ''">
+            and a.user_name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and a.type = #{type}
+        </if>
+    </select>
+
+    <!--员工提成订单明细-->
+    <select id="staffDayDetail" resultType="HashMap">
+        select a.id, a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold,a.statis from (
+        select o.id,  o.order_number, bd.user_name ,
+        o.price,ifnull(o.money,0)money,sf.type ,o.audit_time,o.mold,sf.statis
+        from shengxian_order o
+        inner join shengxian_staff_frequency sf on o.id=sf.order_id and sf.type in (3,5,6,7,8,9,10)
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del= 0  and sf.staff_id = #{staff_id}
+        union ALL
+        select o.id,  o.order_number,bd.user_name ,
+        o.price,ifnull(o.money,0)money ,op.type ,o.audit_time,o.mold , 1 as statis
+        from  shengxian_order o
+        inner join shengxian_staff_once_percentage op on FIND_IN_SET(o.id,op.order_id)
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and op.staff_id = #{staff_id}
+        UNION ALL
+        select o.id, o.order_number,bd.user_name ,
+        o.price,ifnull(o.money,0)money ,os.type ,o.audit_time,o.mold , os.statis
+        from  shengxian_order o
+        inner join shengxian_staff_order_statis os on os.order_id= o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and os.staff_id = #{staff_id}
+        )a  where DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+        <if test="name != null and name != ''">
+            and a.user_name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and a.type = #{type}
+        </if>
+        order by a.audit_time desc   limit #{startIndex} ,#{pageSize}
+
+    </select>
+
+    
+    <!--员工的采购提成订单明细总数-->
+    <select id="purchaseDetailCount" resultType="Integer">
+        select count(1)
+        from (
+        select p.audit_time
+        from shengxian_purchase p
+        inner join shengxian_staff_frequency sf on p.id=sf.order_id
+        where p.is_del= 0  and sf.staff_id = #{staff_id} and sf.type in(8,9,10)
+        )a  where DATE_FORMAT(a.audit_time,'%Y-%m') =#{time}
+    </select>
+
+
+
+    <!--员工的采购提成订单明细-->
+    <select id="purchaseDetail" resultType="HashMap">
+        select a.id,a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold ,a.statis
+        from (
+        select p.id, p.order_number,(select name from shengxian_suppliers where id=p.suppliers_id) user_name ,
+        p.price,ifnull(p.money,0)money,sf.type ,p.audit_time,p.mold ,sf.statis
+        from shengxian_purchase p
+        inner join shengxian_staff_frequency sf on p.id=sf.order_id  and sf.type in (8,9,10)
+        where p.is_del= 0  and sf.staff_id = #{staff_id}
+
+        )a  where DATE_FORMAT(a.audit_time,'%Y-%m') =#{time}
+        order by a.audit_time desc
+    </select>
+
+
+    <!--根据类型查询员工的各种提成比例-->
+    <select id="findStaffPercentage" resultType="HashMap">
+        select proportion,SUBSTRING_INDEX(proportion,'/',1)a,SUBSTRING_INDEX(proportion,'/',-1)b
+        from shengxian_staff_percentage where  staff_id = #{staff_id} and type = #{type}
+    </select>
+
+    <!--销售已结算的未付款欠款订单-->
+    <select id="saleSettlementUnpaidArrearsOrder" resultType="Integer">
+        select id from shengxian_order where is_del=0 and status=4  and state in (0,2) and is_settlement=1
+    </select>
+
+    <!--采购已结算的未付款欠款订单-->
+    <select id="purchaseSettlementUnpaidArrearsOrder" resultType="Integer">
+        select id from shengxian_purchase where is_del=0 and status=1  and state in (0,1) and is_settlement=1
+    </select>
+
+    <!--销售订单详情总数-->
+    <select id="saleOrderCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and o.staff_id = #{staff_id} and   DATE_FORMAT(o.audit_time,'%Y-%m')  = #{time}
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT('%' ,#{name} ,'%')
+        </if>
+    </select>
+
+    <!--销售订单详情-->
+    <select id="saleOrder" resultType="HashMap">
+        select o.id,o.no, o.order_number,o.audit_time ,o.making,o.deliver,o.staff_id ,0 as type ,
+        bd.user_name as name  ,o.money ,o.price
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where o.is_del=0 and o.staff_id = #{staff_id} and   DATE_FORMAT(o.audit_time,'%Y-%m')  = #{time}
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT('%' ,#{name} ,'%')
+        </if>
+        order by o.audit_time desc   limit #{startIndex} ,#{pageSize}
+    </select>
+
+
+    <!--采购订单详情总数-->
+    <select id="purchaseOrderCount" resultType="Integer">
+        select count(p.id)
+        from shengxian_purchase p
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        where p.is_del=0 and p.staff_id = #{staff_id} and   DATE_FORMAT(p.audit_time,'%Y-%m')  = #{time}
+        <if test="name != null and name != ''">
+            and s.name like CONCAT('%' ,#{name} ,'%')
+        </if>
+    </select>
+
+    <!--采购订单详情-->
+    <select id="purchaseOrder" resultType="HashMap">
+        select p.id,p.no,p.order_number,p.audit_time,p.making,p.auditor as deliver,p.staff_id ,1 as type,
+        s.name ,p.money  ,p.price
+        from shengxian_purchase p
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        where p.is_del=0 and p.staff_id = #{staff_id} and   DATE_FORMAT(p.audit_time,'%Y-%m')  = #{time}
+        <if test="name != null and name != ''">
+            and s.name like CONCAT('%' ,#{name} ,'%')
+        </if>
+        order by p.audit_time desc   limit #{startIndex} ,#{pageSize}
+    </select>
+
+</mapper>    

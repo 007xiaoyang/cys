@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.StaffMapper">
+
+
+    <!--通过商家id获取商家所有的员工-->
+    <select id="staffList" resultType="Integer">
+        select id from shengxian_staff where is_del=0 and business_id = #{buseinss_id}
+    </select>
+
+
+    <!--根据type统计对应的员工提成总数-->
+    <select id="staffFrequency" resultType="Double">
+        select sum(statis)statis from shengxian_staff_frequency where staff_id = #{staff_id} and type = #{type}
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_SUB(CURDATE(),INTERVAL 1 day)
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=   DATE_SUB(CURDATE(),INTERVAL 1 MONTH)
+    </select>
+
+    <!--统计员工一个月之内是否有开单次数的提成记录总数-->
+    <select id="staffOpenFrequency" resultType="Integer">
+        select count(id) from shengxian_staff_frequency where staff_id = #{staff_id} and type = 5
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_SUB(CURDATE(),INTERVAL 1 day)
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=   DATE_SUB(CURDATE(),INTERVAL 1 MONTH)
+    </select>
+
+    <!--查询员工一个月之内是否有车次的提成记录总数-->
+    <select id="staffOnceFrequency" resultType="Integer">
+        select count(id) from shengxian_staff_once_percentage where staff_id = #{staff_id}
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_SUB(CURDATE(),INTERVAL 1 day)
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=   DATE_SUB(CURDATE(),INTERVAL 1 MONTH)
+    </select>
+
+    <!--查询员工一个月之内是否有到货提成记录总数-->
+    <select id="staffArriveFrequency" resultType="Integer">
+        select count(id) from shengxian_staff_frequency where staff_id = #{staff_id} and type=6
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_SUB(CURDATE(),INTERVAL 1 day)
+        and  DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=   DATE_SUB(CURDATE(),INTERVAL 1 MONTH)
+    </select>
+
+    <!--添加员工定时每月月底统计（开单，车次，到货）提成-->
+    <insert id="addStaffTimingStatis">
+        insert into shengxian_staff_timing_statis(staff_id ,statis ,type,create_time)
+        values(#{staff_id},#{statis},#{type},DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 day),'%Y-%m'))
+    </insert>
+
+
+
+    <!--根据服务商id查询员工类别的总数-->
+    <select id="findStaffCategoryCountByBid" resultType="Integer">
+        select count(id) from shengxian_staff_category where business_id = #{business_id}
+    </select>
+
+    <!--根据服务商id查询员工类别最后一条序号-->
+    <select id="findStaffCategroyCodeByBid" resultType="String">
+        select code from shengxian_staff_category
+        where business_id = #{business_id} order by id desc limit 1
+    </select>
+
+    <!--添加员工类别-->
+    <insert id="addStaffCategory">
+        insert into shengxian_staff_category(business_id,name,code)
+        values(#{business_id},#{name},#{code})
+    </insert>
+
+    <!--查询服务商下的所有员工类别集合-->
+    <select id="findStaffCategoryInfoListByBid" resultType="HashMap">
+        select id,name from shengxian_staff_category where business_id = #{business_id}
+    </select>
+
+    <!--查询服务商下的所有员工类别集合-->
+    <select id="findStaffCategoryInfoById" resultType="HashMap">
+        select id, name from shengxian_staff_category where id = #{id}
+    </select>
+
+    <!--修改员工类别信息-->
+    <update id="updateStaffCategoryByid">
+        update shengxian_staff_category set name = #{name} where id = #{id}
+    </update>
+
+    <!--条件查询类别下所有员工信息总数-->
+    <select id="findStaffInfoListCount" resultType="Integer">
+        select count(s.id)
+        from shengxian_staff s
+        inner join shengxian_staff_category sc on sc.id = s.category_id
+        where s.is_del = 0 and s.business_id = #{business_id}
+        <if test="categoryId != null">
+            and category_id=#{categoryId}
+        </if>
+        <if test="name != null and name != '' ">
+            and ( s.name  LIKE CONCAT('%',#{name},'%')  or s.number LIKE CONCAT('%',#{name},'%')
+            or s.phone LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--条件查询类别下所有员工信息集合-->
+    <select id="findStaffInfoListById" resultType="HashMap">
+        select s.id,s.phone,s.name,sc.name as categoryName,s.number,s.create_time
+        from shengxian_staff s
+        inner join shengxian_staff_category sc on sc.id = s.category_id
+        where s.is_del = 0 and s.business_id = #{business_id}
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        <if test="name != null and name != '' ">
+            and ( s.name  LIKE CONCAT('%',#{name},'%')  or s.number LIKE CONCAT('%',#{name},'%')
+            or s.phone LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by id limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--查询类别下所有员工信息集合-->
+    <select id="findStaffInfoListByCategoryId" resultType="HashMap">
+        select id,name from shengxian_staff
+        where category_id = #{categoryId} and is_del = 0
+    </select>
+
+    <!--删除员工类别-->
+    <delete id="deleStaffCategory">
+        delete from shengxian_staff_category where id = #{id}
+    </delete>
+
+    <!--通过员工类别id查询最后一条员工编号-->
+    <select id="findNumberByCategoryId" resultType="String">
+        select number from shengxian_staff
+        where category_id = #{categoryId} order by number desc limit 1
+    </select>
+
+    <!--根据类别id查询序号-->
+    <select id="findCodeById" resultType="String">
+        select code from shengxian_staff_category where id = #{id}
+    </select>
+
+    <!--判断手机号是否注册过员工-->
+    <select id="findIdByPhone" resultType="Integer">
+        select id from shengxian_staff where phone = #{phone} and is_del = 0
+    </select>
+
+    <!--判断手机号码已经注册过店铺了-->
+    <select id="findShopByPhone" resultType="Integer">
+        select id from shengxian_business where phone = #{phone} and is_del = 0
+    </select>
+
+    <!---通过用户类别ID和用户编号或名称查询商家绑定用户的信息-->
+    <select id="findBindingInfoByUser" resultType="HashMap">
+        select id,user_name from shengxian_binding
+        where is_del = 0 and category_id = #{categoryId}
+        <if test="number != null">
+            and number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="name != null">
+            and user_name LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <!--通过产品类别ID和产品编号或产品名称-->
+    <select id="findGoodsInfoByCid" resultType="HashMAP">
+        select id,name from shengxian_goods
+        where is_del = 0 and  category_id = #{categoryId}
+        <if test="number != null ">
+           and number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="name != null">
+            and name LIKE CONCAT('%',#{name},'%')
+        </if>
+
+    </select>
+
+    <!--搜索店铺绑定用户-->
+    <select id="findBusinessUser" resultType="HashMap">
+        select id,user_name as name from shengxian_binding
+        where is_del = 0 and  business_id = #{business_id}
+        and (user_name LIKE CONCAT('%',#{name},'%') or number LIKE CONCAT('%',#{name},'%'))
+    </select>
+
+    <!--添加员工信息-->
+    <insert id="addStaff" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_staff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phone != null">phone,</if>
+            <if test="password != null">password,</if>
+            <if test="category_id != null">category_id,</if>
+            <if test="number != null">number,</if>
+            <if test="name != null">name,</if>
+            <if test="token != null">token,</if>
+            <if test="business_id != null">business_id,</if>
+            <if test="shield != null">shield,</if>
+            <if test="shield_inventory != null">shield_inventory,</if>
+            <if test="create_time != null">create_time,</if>
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="phone != null">#{phone,jdbcType=VARCHAR},</if>
+            <if test="password != null">#{password,jdbcType=VARCHAR},</if>
+            <if test="category_id != null">#{category_id,jdbcType=BIGINT},</if>
+            <if test="number != null">#{number,jdbcType=VARCHAR},</if>
+            <if test="name != null">#{name,jdbcType=VARCHAR},</if>
+            <if test="token != null">#{token,jdbcType=VARCHAR},</if>
+            <if test="business_id != null">#{business_id,jdbcType=BIGINT},</if>
+            <if test="shield != null"> #{shield},</if>
+            <if test="shield_inventory != null"> #{shield_inventory},</if>
+            <if test="create_time != null">#{create_time,jdbcType=DATE},</if>
+        </trim>
+    </insert>
+
+    <!--添加员工产品提成-->
+    <insert id="addStaffGoodsPercentage">
+        insert into shengxian_goods_percentage(goods_id,proportion,staff_id)
+        values( #{gid} , #{proportion} , #{sid})
+    </insert>
+
+    <!--添加员工用户提成-->
+    <insert id="addStaffUserPercentage">
+        replace into shengxian_user_percentage( binding_id, proportion ,staff_id)
+        values( #{bid} , #{proportion} , #{sid})
+    </insert>
+
+    <!--添加员工仓库提成-->
+    <insert id="addStaffWarehousePercentage">
+        insert into shengxian_warehouse_percentage( warehouse_id  ,proportion ,staff_id)
+        values(#{wid}, #{proportion} , #{sid})
+    </insert>
+
+    <!--员工提成-->
+    <insert id="addStaffPercentage">
+        insert into shengxian_staff_percentage( proportion ,staff_id ,type)
+        values( #{proportion} , #{sid} , #{type})
+    </insert>
+
+
+    <!--根据员工id查询员工信息-->
+    <select id="findStaffInfoById" resultType="HashMap">
+        select s.id,s.phone ,s.name ,s.category_id ,s.number,sc.name as cateroyName,shield ,shield_inventory
+        from shengxian_staff s,shengxian_staff_category sc
+        where sc.id=s.category_id and s.id = #{id} and s.is_del = 0
+    </select>
+
+    <!--（销售）根据员工id查询产品提成 -->
+    <select id="findStaffGoodsPercentage" resultType="HashMap">
+        select gp.id,g.id as goods_id,gp.proportion,g.name
+        from shengxian_goods_percentage gp, shengxian_goods g
+        where gp.goods_id = g.id and gp.staff_id = #{sid}
+    </select>
+
+    <!--销售）根据员工id查询用户提成-->
+    <select id="findStaffUserPercentage" resultType="HashMap">
+        select up.id,bg.id as binging_id,IFNULL(u.phone,bg.telephone)phone,bg.user_name,up.proportion
+        from shengxian_binding bg
+        inner join shengxian_user_percentage up on up.binding_id = bg.id
+        left join user u on u.id = bg.user_id
+        where up.staff_id = #{sid}
+    </select>
+
+    <!--（销售）根据员工id查询仓库提成-->
+    <select id="findStaffWarehousePercentage" resultType="HashMap">
+        select wp.id, wp.proportion,wp.warehouse_id, w.name
+        from shengxian_warehouse_percentage wp ,shengxian_warehouse w
+        where wp.warehouse_id = w.id and wp.staff_id = #{sid}
+    </select>
+
+    <!--（销售）根据员工id查询销售提成-->
+    <select id="findStaffSalePercentage" resultType="HashMap">
+        select id ,proportion,type
+        from shengxian_staff_percentage where staff_id = #{sid}
+    </select>
+
+    <!--修改员工信息-->
+    <update id="updateStaff">
+        update shengxian_staff
+        <trim prefix="set" suffixOverrides=",">
+            <if test="phone != null "> phone =#{phone},</if>
+            <if test="category_id != null "> category_id =#{category_id},</if>
+            <if test="number != null "> number =#{number},</if>
+            <if test="name != null "> name =#{name},</if>
+            <if test="shield != null">shield =#{shield},</if>
+            <if test="shield_inventory != null">shield_inventory =#{shield_inventory},</if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <!--根据类别id和编号查询是否存在-->
+    <select id="findNumberByCategoryIdAndNumber" resultType="String">
+        select number from shengxian_staff
+        where category_id = #{categoryId} and number = #{number}
+    </select>
+
+    <!--修改员工的产品提成-->
+    <update id="updateStaffGoodsPercent">
+        replace into shengxian_goods_percentage(goods_id ,proportion,staff_id)
+        values( #{goods_id}, #{proportion}, #{staff_id})
+    </update>
+
+    <!--修改员工的用户提成-->
+    <update id="updateStaffUserPercent">
+        replace into shengxian_user_percentage(binding_id , proportion ,staff_id)
+        values( #{binding_id}, #{proportion} , #{staff_id})
+    </update>
+
+    <!--修改员工的仓库提成-->
+    <update id ="updateStaffWarehousePercent">
+        replace into shengxian_warehouse_percentage(warehouse_id,proportion,staff_id)
+        values( #{warehouse_id}, #{proportion},#{staff_id} )
+    </update>
+
+    <!--修改员工的提成其它销售-->
+    <update id="updateStaffOtherPercent">
+        update shengxian_staff_percentage set proportion=#{proportion} where id = #{id}
+    </update>
+
+    <!--删除员工-->
+    <update id="deleSatff">
+        update shengxian_staff set is_del=1 where id = #{id}
+    </update>
+
+    <!--查询员工密码-->
+    <select id="findStaffPassword" resultType="String">
+        select password from shengxian_staff where is_del = 0 and  id = #{id}
+    </select>
+
+    <!--修改员工密码-->
+    <update id="updateStaffPwd">
+        update shengxian_staff set password = #{password}
+        where id = #{id}
+    </update>
+
+    <!--删除员工的产品提成信息-->
+    <delete id="deleteStaffGoodsPercent">
+        delete from shengxian_goods_percentage where id = #{id}
+    </delete>
+
+    <!--删除员工的用户提成信息-->
+    <delete id="deleteStaffUserPercent">
+        delete from shengxian_user_percentage where id = #{id}
+    </delete>
+
+    <!--删除员工的仓库提成信息-->
+    <delete id="deleteStaffWarehousePercent">
+        delete from shengxian_warehouse_percentage where id = #{id}
+    </delete>
+
+    <!--删除员工的其它销售提成信息-->
+    <delete id="deleteStaffOtherPercent">
+        delete from shengxian_staff_percentage where id = #{id}
+    </delete>
+
+    <!--导出类别下所有员工信息总数-->
+    <select id="excelDownloadStaffInfoList" resultType="HashMap">
+        select s.id,s.phone,s.name,sc.name as categoryName,s.number,s.create_time
+        from shengxian_staff s
+        inner join shengxian_staff_category sc on sc.id = s.category_id
+        where s.is_del=0 and s.business_id = #{business_id}
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        <if test="phone != null and phone != '' ">
+            and phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="number != null and number != '' ">
+            and number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="name != null and name != '' ">
+            and name  LIKE CONCAT('%',#{name},'%')
+        </if>
+        order by id asc
+    </select>
+
+</mapper>

@@ -1,0 +1,1450 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.FinanceMapper">
+
+    <!--商城订单总数-->
+    <select id="mallMoneyCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--商城订单-->
+    <select id="mallMoney" resultType="HashMap">
+        select o.id,o.no,o.order_number,o.price,ifnull(o.money,0)money,b.user_name,o.audit_time ,o.receivable_time,o.freight,
+        o.payee,o.difference_price,o.state,o.type,o.money2 ,o.create_time  from shengxian_order o
+        inner join shengxian_binding b on b.id=o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <!--商城已付款订单应收和实收总金额-->
+    <select id="tatolMallMoney" resultType="HashMap">
+        select ifnull(sum(o.price)-(sum(o.money)-sum(o.money2)),0)receivable, ifnull(sum(o.money2),0)pay
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4 and (o.state in (#{state}) ) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="is== null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="is != null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--线下产品总数-->
+    <select id="underLineMoneyCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 0 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--线下产品-->
+    <select id="underLineMoney" resultType="HashMap">
+        select o.id,o.no,o.order_number,o.price,o.money,b.user_name ,o.audit_time,o.receivable_time,o.freight,o.payee,o.difference_price,
+        o.type,o.state,o.money2 ,o.create_time from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold =0 and o.part=0 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+           and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--线下已付款订单应收和实收总金额-->
+    <select id="tatolUnderLineMoney" resultType="HashMap">
+        select ifnull(sum(o.price)- (sum(o.money) - sum(o.money2)),0)receivable, ifnull(sum(o.money2),0)pay
+        from shengxian_order o
+        inner join shengxian_binding b on b.id=o.binding_id
+        where o.is_del = 0  and o.status = 4  and (o.state in (#{state}) ) and o.mold = 0 and o.part = 0 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="is== null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="is != null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--退货产品总数-->
+    <select id="returnMoneyCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 1 and o.part = 0 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--退货产品-->
+    <select id="returnMoney" resultType="HashMap">
+        select o.id,o.no,o.order_number,o.price,o.money,b.user_name,o.audit_time ,o.receivable_time,o.freight,o.payee,o.difference_price,
+        o.type,o.state ,o.money2,o.create_time   from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 1 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--退货付款订单总金额-->
+    <select id="tatolreturnMoney" resultType="HashMap">
+        select ifnull(sum(o.price) -(sum(o.money)-sum(o.money2)),0)receivable, ifnull(sum(o.money),0)pay
+        from shengxian_order o
+        inner join shengxian_binding b on b.id=o.binding_id
+        where o.is_del = 0  and o.status = 4  and (o.state in (#{state}) ) and o.mold = 1 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="is== null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="is != null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--查询商家最后结算时间-->
+    <select id="lastSettlementTime" resultType="String">
+        select DATE_FORMAT(create_time,'%Y-%m-%d')
+        from shengxian_financial_settlement
+        where business_id = #{business_id} and type = #{type} order by id desc limit 1
+    </select>
+
+    <!--最后一次未结算的账单-->
+    <select id="lastNotSettlementBills" resultType="Double">
+         select arrears+unpaid as bills
+         from shengxian_financial_settlement
+        where business_id = #{business_id} and type = #{type} order by id desc limit 1
+    </select>
+
+
+    <!--总销售订单总数-->
+    <select id="tatolSaleMoneyCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4 and o.state not in(1)   and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--总销售订单-->
+    <select id="tatolSaleMoney" resultType="HashMap">
+        select o.id,o.no, o.order_number,o.price,o.money,b.user_name ,o.freight,o.difference_price
+        ,o.type ,o.state,o.mold , o.part,o.payee,o.audit_time ,o.receivable_time ,o.money2,o.create_time
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4 and o.state not in(1) and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--总销售产品金额总金额-->
+    <select id="tatolSalePrice" resultType="HashMap">
+        select ifnull(sum(o.price) -(sum(o.money)-sum(o.money2)),0)receivable, ifnull(sum(o.money2),0)pay
+        from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state in (#{state})  and o.mold =0 and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="is== null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="is != null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--总销售产品金额总金额 (当天销售的订单)-->
+    <select id="notTatolSalePrice" resultType="HashMap">
+        select ifnull(sum(o.price),0)receivable, ifnull(sum(o.money),0)pay  from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state not in (#{state})  and o.mold = #{mold} and o.business_id = #{business_id}
+        <if test="part != null">
+            and o.part = #{part}
+        </if>
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--当天所有订单的应收/实收/未付款/欠款订单的总金额-->
+    <select id="dayAllSaleOrderTatolMoney" resultType="HashMap">
+        select (a.tatol + e.upper_arrears)tatol ,b.unpaid,c.arrears,(f.pay+g.money2  )pay ,
+         (t.pay+y.money2 )refunds,h.expenditure,j.incomes ,q.risk
+         from
+        (select ifnull(sum(o.price)  - (sum(o.money)- sum(o.money2)) ,0)tatol from shengxian_order o
+        where o.is_del = 0 and o.status = 4   and o.mold =0  and o.is_settlement = 0
+        and o.business_id= #{business_id} )a,
+
+        (select ifnull(sum(o.price),0)unpaid from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=0 and o.mold =0 and o.is_settlement = 0
+        and o.business_id= #{business_id} )b,
+
+        (select ifnull(sum(o.price)-sum(o.money2),0)arrears from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=2 and o.mold =0 and o.is_settlement = 0
+        and o.business_id= #{business_id} )c,
+
+        (select ifnull(sum(o.price)-sum(o.money2) -sum(o.price),0)upper_arrears from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=2 and o.mold =0  and o.is_settlement = 0
+        and o.business_id= #{business_id} and o.audit_time &lt; CURDATE() )e,
+
+        (select ifnull( sum(o.money2),0)pay  from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=3 and o.mold =0 and o.is_settlement=0
+        and o.business_id= #{business_id} )f,
+
+        (select ifnull(sum(o.money2),0)money2 from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=2 and o.mold =0 and o.is_settlement=0
+        and o.business_id= #{business_id} <if test="time != null and time != ''">and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt; #{time}</if> )g,
+
+        (select ifnull( sum(o.money2),0)pay  from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=3 and o.mold =1 and o.is_settlement=0
+        and o.business_id= #{business_id} )t,
+
+        (select ifnull(sum(o.money2),0)money2 from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=2 and o.mold =1 and o.is_settlement=0
+        and o.business_id= #{business_id} <if test="time != null and time != ''">and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt; #{time}</if> )y,
+
+        (select ifnull(SUM(be.price),0)expenditure from shengxian_business_expense be
+		where be.business_id=#{business_id} and be.type=0 and be.is_settlement=0 )h,
+
+		(select ifnull(SUM(be.price),0)incomes from shengxian_business_expense be
+		where be.business_id=#{business_id} and be.type=1 and be.is_settlement=0	)j,
+
+		(select ifnull((sum(o.price) - sum(o.money)),0)risk   from shengxian_order o
+        where o.is_del = 0 and o.status = 4  and o.state=3 and o.mold =0 and o.is_settlement=0
+        and o.business_id= #{business_id} )q
+    </select>
+
+    <!--查询商家销售未结算的完成的订单-->
+    <select id="findNotSettlementOrder" resultType="Integer">
+        select id from shengxian_order
+        where is_del = 0 and status = 4 and state in (0,2,3) and is_settlement = 0 and business_id = #{business_id}
+    </select>
+
+    <!--通过订单id修改未结算的订单-->
+    <update id="updateNotSettlementOrder">
+        update shengxian_order set is_settlement = #{is_settlement}  where id = #{id}
+    </update>
+
+
+    <!--采购产品金额总数-->
+    <select id="purchaseMoneyCount" resultType="Integer">
+        select count(p.id)
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id=p.suppliers_id
+        where p.is_del = 0  and p.`status`= 1  and p.mold = 0 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--采购产品金额-->
+    <select id="purchaseMoney" resultType="HashMap">
+        select p.id,p.no, p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee,p.money,p.money2,
+        p.receivable_time,p.audit_time,p.state,p.create_time
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status` = 1  and p.mold = 0 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by p.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--采购产品金额-->
+    <select id="tatolPurchaseMoney" resultType="HashMap">
+        select ifnull(sum(p.price) - (sum(p.money) -sum(p.money2)),0)price ,ifnull(sum(p.money2),0)pay
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status`= 1  and p.state in (#{state})  and p.mold = 0 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="is == null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test=" is != null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+    <!--采购产品金额-->
+    <select id="notTatolPurchaseMoney" resultType="HashMap">
+        select ifnull(sum(p.price),0)price ,ifnull(sum(p.money),0)pay
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status` = 1   and p.mold = #{mold} and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+
+    </select>
+
+
+    <!--费用支出总数-->
+    <select id="expenseMoneyCount" resultType="Integer">
+        select count(e.id)
+        from shengxian_business_expense e
+        left join shengxian_staff s on s.id  = e.staff_id
+        where e.business_id = #{business_id}
+        <if test="name != null and name !=''">
+            and  e.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="staff_id != null">
+            and e.staff_id = #{staff_id}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(e.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(e.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--费用支出-->
+    <select id="expenseMoney" resultType="HashMap">
+        select e.id,e.name,e.price,e.create_time,e.type,e.is_settlement,
+        IF(e.staff_id=0,'商家',(select name from shengxian_staff where id = e.staff_id) )staff_id,e.create_time
+        from shengxian_business_expense e
+        left join shengxian_staff s on s.id = e.staff_id
+        where e.business_id = #{business_id}
+        <if test="name != null and name !=''">
+            and e.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="staff_id != null">
+            and e.staff_id = #{staff_id}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(e.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(e.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by e.create_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--费用支出-->
+    <select id="expenseMoneyTotalCount" resultType="Double">
+        select sum(e.price)price
+        from shengxian_business_expense e
+        left join shengxian_staff s on s.id = e.staff_id
+        where e.business_id = #{business_id} and e.type = #{status}
+        <if test="name != null and name !=''">
+            and e.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="staff_id != null">
+            and e.staff_id = #{staff_id}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(e.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(e.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+    <!--采购退货产品总数-->
+    <select id="purchaseReturnMoneyCount" resultType="Integer">
+        select count(p.id)
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status` = 1  and p.mold = 1 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--采购退货产品-->
+    <select id="purchaseReturnMoney" resultType="HashMap">
+        select p.id,p.no, p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee, p.receivable_time,p.state,p.money2,
+        p.money,p.audit_time,p.create_time
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0 and p.`status` = 1  and p.mold = 1 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by p.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--条件搜索采购退货产品总金额-->
+    <select id="tatolPurchaseReturnMoney" resultType="HashMap">
+        select ifnull(sum(p.price)  - (sum(p.money) -sum(p.money2)),0)price ,ifnull(sum(p.money2),0)pay
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id=p.suppliers_id
+        where p.is_del = 0  and p.`status` = 1  and (p.state in (#{state}) ) and p.mold = 1 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="is == null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test=" is != null and startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--总采购订单总数-->
+    <select id="tatolPurchaseOrderCount" resultType="Integer">
+        select count(p.id)
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status`= 1  and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+    </select>
+
+    <!--总采购订单-->
+    <select id="tatolPurchaseOrder" resultType="HashMap">
+        select p.id,p.no,p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee, p.receivable_time,p.mold, p.state,
+        p.money,p.audit_time ,p.money2 ,p.create_time  from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status`= 1 and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and (DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+            or DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime})
+        </if>
+        order by p.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <!--当天总采购订单总金额-->
+    <select id="dayPurchaseOrderTatolMoney" resultType="HashMap">
+        select (a.tatol+e.upper_arrears)tatol , b.unpaid ,c.arrears ,(f.pay +g.money2 )pay
+        , (t.pay + y.money2 )refunds,q.risk
+        from
+        (select ifnull(sum(p.price) - (sum(p.money) - sum(p.money2) ),0)tatol from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1   and p.mold = 0 and p.is_settlement = 0
+        and p.business_id = #{business_id} )a,
+
+        (select ifnull(sum(p.price),0)unpaid from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state=0 and p.mold =0 and p.is_settlement = 0
+        and p.business_id = #{business_id} )b,
+
+        (select ifnull(sum(p.price) - sum(p.money2),0)arrears from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state = 1 and p.mold =0 and p.is_settlement = 0
+        and p.business_id = #{business_id}  )c,
+
+        (select ifnull(sum(p.price) - sum(p.money2) -sum(p.price),0)upper_arrears from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state = 1 and p.mold = 0 and p.is_settlement = 0
+        and p.business_id = #{business_id} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt; CURDATE() )e,
+
+        (select ifnull(sum(p.money2),0)pay from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state=2 and p.mold  =0 and p.is_settlement = 0
+        and p.business_id = #{business_id} )f,
+
+        (select ifnull(sum(p.money2),0)money2 from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state = 1 and p.mold = 0 and p.is_settlement = 0
+        and p.business_id = #{business_id} <if test="time != null and time != ''">and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt; #{time}</if>  )g,
+
+        (select ifnull(sum(p.money2),0)pay from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state = 2 and p.mold = 1 and p.is_settlement = 0
+        and p.business_id = #{business_id} )t,
+
+        (select ifnull(sum(p.money2),0)money2 from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state = 1 and p.mold = 1 and p.is_settlement = 0
+        and p.business_id = #{business_id} <if test="time != null and time != ''">and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt; #{time}</if>  )y,
+
+        (select ifnull((sum(p.price) - sum(p.money)),0)risk   from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1  and p.state = 2 and p.mold = 0 and p.is_settlement = 0
+        and p.business_id = #{business_id} )q
+    </select>
+
+    <!--通过商家id查询采购未结算的完成订单-->
+    <select id="purchaseNotSettlement" resultType="Integer">
+        select id from shengxian_purchase
+        where business_id = #{business_id} and status = 1 and state in(0,1,2) and is_settlement = 0 and is_del = 0
+    </select>
+
+    <!--修改采购未结算的完成的订单-->
+    <update id="updatePurchaseNotSettlement">
+        update shengxian_purchase set is_settlement = #{is_settlement}
+        where id = #{id}
+    </update>
+
+    <!--通过商家id查询未结算费用支出-->
+    <select id="notSettlementExpense" resultType="Integer">
+        select id from shengxian_business_expense
+        where business_id = #{business_id}  and is_settlement = 0
+    </select>
+
+    <!--修改未结算的费用支出-->
+    <update id="updateNotSettlementExpense">
+        update shengxian_business_expense set is_settlement = 1
+        where id = #{id}
+    </update>
+
+
+    <!--添加财务结算记录-->
+    <insert id="addSettlement">
+        insert into shengxian_financial_settlement(business_id,staff_id,tatol,money,arrears,unpaid,
+        incomes,expenditure ,return_tatol,create_time,type,risk ,wx ,alipay ,cash ,bankcard ,other ,old_time )
+        values(#{business_id},#{staff_id},#{tatol},#{money},#{arrears},#{unpaid},
+        #{incomes},#{expenditure} ,#{return_tatol} ,#{create_time},#{type},#{risk} , #{wx} ,#{alipay} , #{cash} ,#{bankcard} ,#{other} ,#{oldTime})
+    </insert>
+
+
+    <!--财务结算记录总数-->
+    <select id="settlementInfoCount" resultType="Integer">
+        select count(fs.id)
+        from shengxian_financial_settlement fs where fs.business_id = #{business_id}
+        <if test="type != null">
+            and fs.type = #{type}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(fs.create_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(fs.create_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--财务结算记录-->
+    <select id="settlementInfo" resultType="HashMap">
+        select fs.id,fs.tatol,fs.arrears,fs.money,fs.expenditure,fs.incomes,fs.unpaid,fs.type,fs.return_tatol,fs.risk,
+        fs.create_time, if(fs.staff_id=0,'商家',(select s.name from shengxian_staff s where s.id = fs.staff_id))staff_name
+        from shengxian_financial_settlement fs
+        where fs.business_id = #{business_id}
+        <if test="type != null">
+            and fs.type = #{type}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(fs.create_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(fs.create_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by fs.create_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--财务结算总金额-->
+    <select id="settlemenTotalMoney" resultType="Double">
+        select ifnull(sum(money),0)sale_money
+        from shengxian_financial_settlement fs
+        where fs.business_id = #{business_id} and fs.type = #{type}
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(fs.create_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(fs.create_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--通过结算id查询结算信息-->
+    <select id="settlementByid" resultType="HashMap">
+        select fs.id,fs.tatol,fs.arrears,fs.money,fs.expenditure,fs.incomes,fs.unpaid,fs.type,fs.return_tatol,fs.risk,
+        fs.create_time, if(fs.staff_id=0,'商家',(select s.name from shengxian_staff s where s.id = fs.staff_id))staff_name
+         ,fs.wx , fs.alipay , fs.cash , fs.bankcard ,fs.other , fs.old_time
+        from shengxian_financial_settlement fs
+        where fs.id = #{id}
+    </select>
+
+    <!--用户销售汇总总数-->
+    <select id="userSaleProfitSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select bd.id
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id=o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del=0  and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  bd.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc ) a
+    </select>
+
+    <!--用户销售汇总-->
+    <select id="userSaleProfitSummary" resultType="HashMap">
+        select o.id,bd.user_name ,DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
+        sum(od.profit)profit,
+        sum(od.order_number * od.cost_price)cost_price,
+        sum(od.order_number * od.order_price)sale_price,
+        sum(od.order_number)order_number
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del=0  and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  bd.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--用户销售汇总总金额-->
+    <select id="userSaleProfitSummaryTatolMoney" resultType="HashMap">
+        select ifnull(sum(a.sale_price),0)sale_price,ifnull(sum(a.cost_price) , 0)cost_price,ifnull(sum(a.profit) ,0)profit
+        from
+        (select  sum(od.profit)profit,
+        sum(od.order_number * od.cost_price)cost_price,
+        sum(od.order_number * od.order_price)sale_price
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del=0  and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  bd.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d'))a
+    </select>
+
+
+    <!--用户销售明细总数-->
+    <select id="userSaleProfitDetailsCount" resultType="Integer">
+        select count(od.id)
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--用户销售明细-->
+    <select id="userSaleProfitDetails" resultType="HashMap">
+        select od.id ,bd.user_name , g.`name`, od.profit , DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
+        ( od.cost_price * od.order_number)cost_price,
+        (od.order_number * od.order_price)sale_price,
+        od.order_number
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by od.id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--用户销售明细总金额-->
+    <select id="userSaleProfitDetailsTatolMoney" resultType="HashMap">
+        select ifnull( sum(od.profit) ,0)profit,
+        ifnull(sum( od.cost_price * od.order_number),0)cost_price,
+        ifnull(sum(( od.order_number * od.order_price)), 0)sale_price
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+    <!--产品销售汇总总数-->
+    <select id="goodsSaleProfitSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select o.id
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test=" is != null">
+            and gi.warehouse_id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by g.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc )a
+    </select>
+
+    <!--产品销售汇总-->
+    <select id="goodsSaleProfitSummary" resultType="HashMap">
+        select od.id,DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
+        g.`name`,sum(od.profit)profit,
+        sum( od.cost_price * od.order_number)cost_price,
+        sum(od.order_number * od.order_price)sale_price,
+        (select name from shengxian_warehouse where id=gi.warehouse_id)wname ,
+        sum(od.order_number)order_number
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null ">
+            and gi.warehouse_id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by g.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--产品销售汇总总金额-->
+    <select id="goodsSaleProfitSummaryTatolMoney" resultType="HashMap">
+        select ifnull(sum(a.sale_price),0)sale_price,ifnull(sum(a.profit),0)profit,ifnull(sum(a.cost_price),0)cost_price  from
+        (select sum(od.profit)profit,
+        sum( od.cost_price * od.order_number)cost_price,
+        sum(od.order_number * od.order_price)sale_price
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null ">
+            and gi.warehouse_id=#{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by g.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') )a
+    </select>
+
+
+    <!--产品销售明细总数-->
+    <select id="goodsSaleProfitDetailsCount" resultType="Integer">
+        select count(od.id)
+        from shengxian_order o
+        inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        inner join  (select id , name from shengxian_warehouse  ) w on w.id = gi.warehouse_id
+        left join (select id ,name ,number,cost_price ,is_del from shengxian_goods ) g on g.id = od.goods_id
+        where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
+        <if test="is != null ">
+            and gi.warehouse_id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--产品销售明细-->
+    <select id="goodsSaleProfitDetails" resultType="HashMap">
+        select od.id,DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,  g.`name`,od.profit ,bd.user_name,
+        ( od.cost_price * od.order_number)cost_price,
+        (od.order_number * od.order_price)sale_price , w.name as wname ,
+        od.order_number
+        from shengxian_order o
+        inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        inner join  (select id , name from shengxian_warehouse  ) w on w.id = gi.warehouse_id
+        left join (select id ,name ,number,cost_price ,is_del from shengxian_goods ) g on g.id = od.goods_id
+        where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
+        <if test="is != null ">
+            and gi.warehouse_id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by od.id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--产品销售明细总金额-->
+    <select id="goodsSaleProfitDetailsTatolMoney" resultType="HashMap">
+        select ifnull(sum(od.profit) ,0)profit,
+        ifnull(sum(od.cost_price * od.order_number),0)cost_price,
+        ifnull(sum(od.order_number * od.order_price),0)sale_price
+        from shengxian_order o
+        inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        inner join  (select id , name from shengxian_warehouse  ) w on w.id = gi.warehouse_id
+        left join (select id ,name ,number,cost_price ,is_del from shengxian_goods ) g on g.id = od.goods_id
+        where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
+        <if test="is != null ">
+            and gi.warehouse_id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+
+    <!--添加欠条-->
+    <insert id="addIous" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_lous(business_id,obligor_name,obligor_ID,endTime,obligor_name2,creditor_name,creditor_ID,money,appoint_time)
+        values(#{business_id},#{obligor_name},#{obligor_ID},#{endTime},#{obligor_name2},#{creditor_name},#{creditor_ID},#{money},#{appoint_time})
+    </insert>
+
+    <!--欠条id查询欠条内容-->
+    <select id="findIous" resultType="HashMap">
+        select id, obligor_name,obligor_ID,endTime,obligor_name2,creditor_name,creditor_ID,money,appoint_time
+        from shengxian_lous where id = #{id}
+    </select>
+
+    <!--销售风险订单总数-->
+    <select id="riskOrderCount" resultType="Integer">
+        select  count(o.id)
+        from shengxian_order o
+        where o.is_del = 0 and o.status = 4 and o.state = 3 and (o.price &lt; o.money or o.price  &gt;o.money)
+        and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (o.order_number LIKE CONCAT('%',#{name},'%') or o.payee LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--销售风险订单-->
+    <select id="riskOrder" resultType="HashMap">
+        select  o.id,o.order_number,o.price,o.money,o.receivable_time ,o.payee,o.mold ,o.is_settlement ,o.type
+        ,(select user_name from shengxian_binding where id=o.binding_id)name
+        from shengxian_order o
+        where o.is_del = 0 and o.status = 4 and o.state = 3 and (o.price &lt; o.money or o.price  &gt;o.money)
+        and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (o.order_number LIKE CONCAT('%',#{name},'%') or o.payee LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by o.receivable_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--销售风险总金额-->
+    <select id="riskOrderTatolMoney" resultType="HashMap">
+        select  ifnull(sum(o.price),0)price, ifnull(sum(o.money),0)money
+        from shengxian_order o
+        where o.is_del = 0 and o.status = 4 and o.state = 3 and (o.price &lt; o.money or o.price  &gt;o.money)
+        and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (o.order_number LIKE CONCAT('%',#{name},'%') or o.payee LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+    <!--采购风险订单总数-->
+    <select id="purchaseRiskOrderCount" resultType="Integer">
+        select  count(p.id)
+        from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1 and p.state = 2 and (p.price &lt; p.money or p.price  &gt;p.money)
+        and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (p.order_number LIKE CONCAT('%',#{name},'%') or p.payee LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--采购风险订单-->
+    <select id="purchaseRiskOrder" resultType="HashMap">
+        select  p.id,p.order_number,p.price,p.money,p.receivable_time ,p.payee,p.mold ,p.is_settlement ,p.type
+        ,(select name from shengxian_suppliers where id = p.suppliers_id)name
+        from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1 and p.state = 2 and (p.price &lt; p.money or p.price  &gt;p.money)
+        and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (p.order_number LIKE CONCAT('%',#{name},'%') or p.payee LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by p.receivable_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--采购风险总金额-->
+    <select id="purchaseRiskOrderTatolMoney" resultType="HashMap">
+        select ifnull(sum(p.price) ,0)price, ifnull(sum(p.money),0)money
+        from shengxian_purchase p
+        where p.is_del = 0 and p.status = 1 and p.state = 2 and (p.price &lt; p.money or p.price  &gt;p.money)
+        and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (p.order_number LIKE CONCAT('%',#{name},'%') or p.payee LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--通过订单id查询订单第一次收款分类记录-->
+    <select id="selectOrderOneMoneyType" resultType="HashMap">
+        select id , money from shengxian_order_money_type where order_id = #{id} order by id asc limit 1;
+    </select>
+
+    <!--通过订单id查询订单第二次收款分类记录-->
+    <select id="selectOrderTwoMoneyType" resultType="HashMap">
+        select id ,  money from shengxian_order_money_type where order_id = #{id} order by id asc limit  1 ,1;
+    </select>
+
+
+
+    <!--通过分类记录id修改订单收款分类金额-->
+    <update id="updateOrderMoneyType">
+         update shengxian_order_money_type set money = #{money} ,receivable_time = #{time} where id = #{id};
+    </update>
+
+    <!--修改销售风险订单的实收款金额-->
+    <update id="updateRiskOrderMoney">
+        update shengxian_order set money = #{money},money2 = #{money}
+        where id = #{id}
+    </update>
+
+
+
+    <!--通过订单id查询订单第一次收款分类记录-->
+    <select id="selectPurchaseOneMoneyType" resultType="HashMap">
+        select id , money from shengxian_purchase_money_type where order_id = #{id} order by id asc limit 1;
+    </select>
+
+    <!--通过订单id查询订单第二次收款分类记录-->
+    <select id="selectPurchaseTwoMoneyType" resultType="HashMap">
+        select id ,  money from shengxian_purchase_money_type where order_id = #{id} order by id asc limit  1 ,1;
+    </select>
+
+    <!--通过分类记录id修改订单收款分类金额-->
+    <update id="updateOPurchaseMoneyType">
+        update shengxian_purchase_money_type set money =  #{money} ,receivable_time = #{time}  where id = #{id};
+    </update>
+
+    <!--修改采购风险订单的实收款金额-->
+    <update id="updatePurchaseRiskOrderMoney">
+        update shengxian_purchase set money = #{money} ,money2 = #{money}
+        where id = #{id}
+    </update>
+
+
+    <!--销售收款分类-->
+    <select id="saleReceivablesType" resultType="HashMap">
+        select
+        (select ifnull(sum(mt.money),0) from shengxian_order o
+        inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+        WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` =4 and mt.business_id = #{bid}
+        <if test="mold != null">  and o.mold = #{mold} </if>
+        and o.state in (2,3) and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )paid,
+
+        (select ifnull(sum(mt.money),0) from shengxian_order o
+        inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+        WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` =4 and mt.business_id = #{bid}
+        <if test="mold != null">  and o.mold = #{mold} </if>
+        and o.state in (2,3) and mt.type = 1  and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )wx,
+
+        (select ifnull(sum(mt.money),0) from shengxian_order o
+        inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+        WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` =4 and mt.business_id = #{bid}
+        <if test="mold != null">  and o.mold = #{mold} </if>
+        and o.state in (2,3) and mt.type = 2  and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )alipay,
+
+        (select ifnull(sum(mt.money),0) from shengxian_order o
+        inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+        WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` =4 and mt.business_id = #{bid}
+        <if test="mold != null">  and o.mold = #{mold} </if>
+        and o.state in (2,3) and mt.type = 3  and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )cash,
+
+        (select ifnull(sum(mt.money),0) from shengxian_order o
+        inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+        WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` =4 and mt.business_id = #{bid}
+        <if test="mold != null">  and o.mold = #{mold} </if>
+        and o.state in (2,3) and mt.type = 4  and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )bankcard,
+
+        (select ifnull(sum(mt.money),0) from shengxian_order o
+        inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+        WHERE o.business_id = #{bid} and o.is_del = 0 and o.`status` =4 and mt.business_id = #{bid}
+        <if test="mold != null">  and o.mold = #{mold} </if>
+        and o.state in (2,3) and mt.type = 5  and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )other
+    </select>
+
+    <!--采购收款分类-->
+    <select id="purchaseReceivablesType" resultType="HashMap">
+        select
+
+        (select ifnull(sum(mt.money),0) from shengxian_purchase p
+        inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+        WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid}
+        <if test="mold != null">  and mold = #{mold} </if>
+        and state in (1,2) and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')   &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} ) paid,
+
+        (select ifnull(sum(mt.money),0) from shengxian_purchase p
+        inner join shengxian_purchase_money_type mt on p.id in (mt.order_id)
+        WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid}
+        <if test="mold != null">  and mold = #{mold} </if>
+        and state in (1,2) and mt.type = 1 and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')   &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )wx,
+
+        (select ifnull(sum(mt.money),0) from shengxian_purchase p
+        inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+        WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid}
+        <if test="mold != null">  and mold = #{mold} </if>
+        and state in (1,2) and mt.type = 2 and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')   &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )alipay,
+
+        (select ifnull(sum(mt.money),0) from shengxian_purchase p
+        inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+        WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid}
+        <if test="mold != null">  and mold = #{mold} </if>
+        and state in (1,2) and mt.type = 3 and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')   &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )cash,
+
+        (select ifnull(sum(mt.money),0) from shengxian_purchase p
+        inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+        WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid}
+        <if test="mold != null">  and mold = #{mold} </if>
+        and state in (1,2) and mt.type = 4 and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')   &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )bankcard,
+
+        (select ifnull(sum(mt.money),0) from shengxian_purchase p
+        inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+        WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid}
+        <if test="mold != null">  and mold = #{mold} </if>
+        and state in (1,2) and mt.type = 5 and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')   &lt;=#{endTime} and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt;=#{startTime} )other
+
+    </select>
+
+
+
+    <!--销售欠款订单收的款-->
+    <select id="aefundsOrderCollectMoney" resultType="Double">
+        select ifnull(sum(o.money2),0)money2 from shengxian_order o
+        inner join shengxian_binding b on b.id = o.binding_id
+        where o.is_del = 0  and o.status = 4  and o.state = 2  and o.mold = #{mold} and o.business_id = #{business_id}
+        <if test="part != null">
+            and o.part = #{part}
+        </if>
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--采购欠款订单收的款-->
+    <select id="aefundsPurchaseCollectMoney" resultType="Double">
+        select ifnull(sum(p.money2),0)money2
+        from shengxian_purchase p
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        where p.is_del = 0  and p.`status`=1 and p.state=1  and p.mold = #{mold} and p.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
+            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number !=''">
+            and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--最后结算时间-->
+    <select id="finalSettlementTime" resultType="HashMap">
+        select create_time  from shengxian_financial_settlement
+        where type = #{type} and business_id = #{bid} order by id desc limit 1
+    </select>
+
+
+    <!--每天产品库存情况总数-->
+    <select id="dayGoodsInventorySituationCount" resultType="Integer">
+        select count(gis.id)
+        from shengxian_goods_inventory_statis gis
+        inner join shengxian_goods g on g.id = gis.goods_id
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        where gis.business_id = #{business_id} and g.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and ( g.name like CONCAT('%',#{name},'%') or g.number like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(gis.create_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(gis.create_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--每天产品库存情况-->
+    <select id="dayGoodsInventorySituation" resultType="HashMap">
+        select gis.id ,gis.total , gis.sale , gis.purchase ,g.name ,g.number , gc.name as categoryName , DATE_FORMAT(gis.create_time ,'%Y-%m-%d')create_time
+        from shengxian_goods_inventory_statis gis
+        inner join shengxian_goods g on g.id = gis.goods_id
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        where gis.business_id = #{business_id} and g.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and ( g.name like CONCAT('%',#{name},'%') or g.number like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(gis.create_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(gis.create_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by gis.create_time desc limit #{startIndex} , #{pageSize}
+    </select>
+
+
+    <!--每天产品库存情况总数量-->
+    <select id="dayGoodsInventorySituationTotalNum" resultType="HashMap">
+        select ifnull(sum(gis.total) ,0)total , ifnull(sum(gis.sale) ,0)sale ,ifnull(sum(gis.purchase) ,0)purchase
+        from shengxian_goods_inventory_statis gis
+        inner join shengxian_goods g on g.id = gis.goods_id
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        where gis.business_id = #{business_id} and g.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and ( g.name like CONCAT('%',#{name},'%') or g.number like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(gis.create_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(gis.create_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+
+    </select>
+
+
+    <!--产品风控总数-->
+    <select id="goodsWindControlCount" resultType="Integer">
+        select count(g.id)
+        from shengxian_goods g
+        inner join shengxian_order_details od on od.goods_id = g.id
+        inner join shengxian_order o on o.id = od.order_id  and o.is_del = 0
+        left join shengxian_binding bd on bd.id = o.binding_id
+        where g.business_id = #{business_id} and o.business_id = #{business_id} and od.order_price &lt; od.cost_price and o.status = 4 and o.mold = 0
+        <if test="name != null and name != ''">
+            and ( g.name like CONCAT('%',#{name},'%') or g.number like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+    <!--产品风控-->
+    <select id="goodsWindControl" resultType="HashMap">
+        select od.goods_id , g.`name` , g.units  ,od.cost_price ,od.order_price ,o.order_number ,o.no ,od.order_number as num ,o.part ,o.audit_time ,bd.user_name ,od.type
+        from shengxian_goods g
+        inner join shengxian_order_details od on od.goods_id = g.id
+        inner join shengxian_order o on o.id = od.order_id and o.is_del = 0
+        left join shengxian_binding bd on bd.id = o.binding_id
+        where g.business_id = #{business_id} and o.business_id = #{business_id} and od.order_price &lt; od.cost_price and o.status = 4 and o.mold = 0
+        <if test="name != null and name != ''">
+            and ( g.name like CONCAT('%',#{name},'%') or g.number like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time ,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time ,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by o.audit_time desc limit #{startIndex} , #{pageSize}
+    </select>
+
+    <!--用户销售明细导出-->
+    <select id="userSaleDetailDownload" resultType="HashMap">
+        select od.id ,bd.user_name , g.`name`,od.order_number,od.order_price ,
+        (od.order_number * od.order_price)price , o.audit_time
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by o.audit_time desc
+    </select>
+
+    <!--用户销售明细导出总金额-->
+    <select id="userSaleDetailDownloadTatolMoney" resultType="Double">
+        select  ifnull(sum(( od.order_number * od.order_price)), 0)tatol
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="is != null">
+            and bd.id = #{is}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <select id="fiveMoneyType" resultType="com.shengxian.entity.Settlement">
+        <if test="type == 1 ">
+            select
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 0
+            and o.state in (2,3) and mt.type = 1
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>    )wx,
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 0
+            and o.state in (2,3) and mt.type = 2
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>     )alipay,
+
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 0
+            and o.state in (2,3) and mt.type = 3
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>     )cash,
+
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 0
+            and o.state in (2,3) and mt.type = 4
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>     )bankcard,
+
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 0
+            and o.state in (2,3) and mt.type = 5
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>    )other
+        </if>
+
+        <if test=" type == 2 ">
+            select
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 0
+            and state in (1,2) and mt.type = 1
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>  )wx,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 0
+            and state in (1,2) and mt.type = 2
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>  )alipay,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 0
+            and state in (1,2) and mt.type = 3
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>   )cash,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 0
+            and state in (1,2) and mt.type = 4
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>   )bankcard,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 0
+            and state in (1,2) and mt.type = 5
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>   )other
+
+        </if>
+    </select>
+
+
+</mapper>    

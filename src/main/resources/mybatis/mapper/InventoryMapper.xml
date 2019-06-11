@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.InventoryMapper">
+
+    <!--添加仓库信息-->
+    <insert id="addInventory">
+        insert into shengxian_warehouse(business_id , name)
+        values( #{business_id} , #{name})
+    </insert>
+
+    <!--查询商家仓库信息-->
+    <select id="findInventoryList" resultType="HashMap">
+        select id ,name from shengxian_warehouse where business_id = #{busiessId}
+    </select>
+
+    <!--根据仓库ID查询仓库信息-->
+    <select id="findInventoryByWid" resultType="HashMap">
+        select id,name from shengxian_warehouse where id = #{warehouseId}
+    </select>
+
+    <!--修改仓库信息-->
+    <update id="updateInventory">
+        update shengxian_warehouse set name = #{name} where id = #{warehouseId}
+    </update>
+
+    <!--删除仓库-->
+    <delete id="delectInventory">
+        delete from shengxian_warehouse where id = #{id}
+    </delete>
+
+    <!--通过仓库ID查询库存表下是否存在产品-->
+    <select id="findGoodsByWid" resultType="HashMap">
+        select goods_id
+        from shengxian_goods_inventory gi
+        inner join shengxian_goods g on g.id = gi.goods_id and g.is_del = 0
+        where warehouse_id = #{warehouse_id}
+    </select>
+
+    <!--盘点-->
+    <update id="check">
+        update shengxian_business_check set status = #{status}
+        where business_id = #{business_id}
+    </update>
+
+    <!--查询商家是否盘点中-->
+    <select id="checkGoodsInventory" resultType="Integer">
+        select status from shengxian_business_check where business_id = #{business_id}
+    </select>
+
+    <!-- 查询盘点前的产品信息总数-->
+    <select id="findBusinessGoodsInventoryCount" resultType="Integer">
+        select count(1)
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id}
+        <if test="status != null">
+            and gi.status = #{status}
+        </if>
+        <if test="goods_id != null">
+            and g.id = #{goods_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and ( gc.id = #{category_id} or gc.level = #{category_id} )
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+    </select>
+
+    <!--查询盘点前的产品信息-->
+    <select id="findBusinessGoodsInventory" resultType="HashMap">
+        select g.id,gc.`name`as cname,g.number,g.name,w.id as wid,w.name as wname, g.cost_price,g.units,gi.id as inventory_id,gi.actual,
+        gi.fictitious,gi.update_inventory,(g.cost_price*gi.actual) as price1 ,g.state ,(g.cost_price * gi.update_inventory) as price
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id}
+        <if test="status != null">
+            and gi.status = #{status}
+        </if>
+        <if test="goods_id != null">
+            and g.id = #{goods_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and ( gc.id = #{category_id} or gc.level = #{category_id} )
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+        order by g.state asc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--查询过期的未盘点的产品-->
+    <select id="notOverdueInventory" resultType="Integer">
+        select id from shengxian_goods where is_del = 0 and  id = #{id} and DATE_ADD(time,INTERVAL 8 day) &lt; CURDATE()
+    </select>
+
+    <!--修改产品盘点状态-->
+    <update id="updateGoodsState">
+        update shengxian_goods
+        <trim prefix="set" suffixOverrides=",">
+            <if test="state != null "> state = #{state},</if>
+            <if test="time != time "> time = #{time},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <!--查询盘点过后的产品信息总数-->
+    <select id="findSettlementInventoryCount" resultType="Integer">
+        select count(g.id)
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id} and gi.status in (1,2)
+        <if test="goods_id != null">
+            and g.id = #{goods_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and ( gc.id = #{category_id} or gc.level = #{category_id} )
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+    </select>
+
+    <!--查询盘点过后的产品信息-->
+    <select id="findSettlementInventory" resultType="HashMap">
+        select g.id,gc.`name`as cname,g.number,g.name,w.name as wname, g.cost_price,g.units,gi.id as inventory_id,
+        gi.actual,gi.fictitious,gi.update_inventory,(g.cost_price*gi.update_inventory) as price
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id} and gi.status in (1,2)
+        <if test="goods_id != null">
+            and g.id = #{goods_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and ( gc.id = #{category_id} or gc.level = #{category_id} )
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+        order by g.number asc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--统计结算产品的总金额-->
+    <select id="findSettlementInventoryTotalSum" resultType="double">
+        select IFNULL( sum(gi.update_inventory * g.cost_price),0)
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id} and gi.status in (1,2)
+        <if test="goods_id != null">
+            and g.id = #{goods_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and ( gc.id = #{category_id} or gc.level = #{category_id} )
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+    </select>
+
+    <!--查询存在结算的产品-->
+    <select id="selectExistenceSettlementGoods" resultType="Integer">
+        select  gi.id from shengxian_goods g
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        where g.is_del=0  and gi.status in (1,2) and g.business_id = #{business_id}
+    </select>
+
+    <!--通过库存id查询产品是否已经修改盘点数量了-->
+    <select id="selectIsUpdateCheckNum" resultType="Double">
+        select update_inventory  from shengxian_goods_inventory where id = #{id}
+    </select>
+
+    <!--修改盘点库存-->
+    <update id="updateCheckGoodsInventory">
+        update shengxian_goods_inventory set update_inventory=#{update_inventory},status=#{status},opid=#{opid} where id=#{id}
+    </update>
+
+    <!--添加结算记录-->
+    <insert id="addSettlement" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_goods_settlement(business_id,create_time ,opid)values(#{business_id},#{create_time} ,#{opid})
+    </insert>
+
+    <!--查询盘点的库存-->
+    <select id="selectInventory" resultType="HashMap">
+        select goods_id,actual, update_inventory as num ,opid from shengxian_goods_inventory where id=#{id}
+    </select>
+
+    <!--添加结算产品详情-->
+    <insert id="addSettlementGoodsDetail">
+        insert into shengxian_goods_settlement_detail(settlement_id,goods_id,actual,num,create_time,opid)
+        values(#{settlement_id},#{goods_id},#{actual},#{num},#{create_time},#{opid})
+    </insert>
+
+    <!--结算-->
+    <update id="updateRetreatCheckGoodsInventory">
+        update shengxian_goods_inventory set status=#{status},actual=#{actual},fictitious =#{actual} ,
+        update_inventory=#{update_inventory}, opid=#{opid}  where id=#{id}
+    </update>
+
+    <!--结算记录信息总数-->
+    <select id="goodsSettlementCount" resultType="Integer">
+        select count(id) from shengxian_goods_settlement
+        where business_id=#{business_id}
+        <if test="startTime != null and startTime != '' and endTime!= null and endTime !=''">
+            and  create_time &lt;=#{endTime} and create_time &gt;=#{startTime}
+        </if>
+    </select>
+
+    <!--结算记录信息-->
+    <select id="goodsSettlement" resultType="HashMap">
+        select id ,create_time,if(opid=0,'商家',(select name from shengxian_staff where opid=id))name
+        from shengxian_goods_settlement
+        where business_id=#{business_id}
+        <if test="startTime != null and startTime != '' and endTime!= null and endTime !=''">
+            and  create_time &lt;=#{endTime} and create_time &gt;=#{startTime}
+        </if>
+        order by create_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--结算产品详情总数-->
+    <select id="settlementGoodsRecordCount" resultType="Integer">
+        select count(gs.id)
+        from shengxian_goods g
+        inner join shengxian_goods_settlement_detail gs on gs.goods_id = g.id
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id=g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where gs.settlement_id = #{settlement_id} and gs.is_del = 0
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and (gc.id LIKE CONCAT('%',#{category_id},'%') or gc.level LIKE CONCAT('%',#{category_id},'%'))
+        </if>
+        <if test="opid != null ">
+            and gs.opid = #{opid}
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+    </select>
+
+    <!--结算产品详情-->
+    <select id="settlementGoodsRecord" resultType="HashMap">
+        select gs.id,gc.`name`as cname,g.number,g.name,w.name as wname, g.cost_price,g.units,gs.actual,gs.num,gs.create_time,
+        (g.cost_price * gs.num)price ,if(gs.opid=0 ,'商家',(select name from shengxian_staff where gs.opid=id))sname
+        from shengxian_goods g
+		inner join shengxian_goods_settlement_detail gs on gs.goods_id = g.id
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where gs.settlement_id = #{settlement_id} and gs.is_del = 0
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and (gc.id LIKE CONCAT('%',#{category_id},'%') or gc.level LIKE CONCAT('%',#{category_id},'%'))
+        </if>
+        <if test="opid != null ">
+            and gs.opid = #{opid}
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+        order by gs.create_time asc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--结算后的产品记录总金额-->
+    <select id="settlementGoodsRecordTotalSum" resultType="double">
+        select IFNULL(sum(gs.num * g.cost_price),0)price
+        from shengxian_goods g
+        inner join shengxian_goods_settlement_detail gs on gs.goods_id = g.id
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where gs.settlement_id = #{settlement_id} and gs.is_del = 0
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and (gc.id LIKE CONCAT('%',#{category_id},'%') or gc.level LIKE CONCAT('%',#{category_id},'%'))
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+        <if test="opid != null ">
+            and gs.opid = #{opid}
+        </if>
+    </select>
+
+    <!-- （每个仓库的所有产品详情信息）总数-->
+    <select id="businessGoodsInventoryInfoCount" resultType="Integer">
+        select count(1)
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id}
+        <if test="wid != null ">
+            and w.id = #{wid}
+        </if>
+    </select>
+
+    <!--（每个仓库的所有产品详情信息）-->
+    <select id="businessGoodsInventoryInfo" resultType="HashMap">
+        select g.id,gc.`name`as cname,g.number,g.name,w.id as wid,w.name as wname, g.cost_price,g.units,gi.id as inventory_id,gi.actual,
+        gi.fictitious,gi.update_inventory,(g.cost_price*gi.actual) as price1 ,g.state ,(g.cost_price * gi.update_inventory) as price
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and  g.business_id = #{business_id}
+        <if test="wid != null ">
+            and w.id = #{wid}
+        </if>
+        order by g.state asc ,g.id asc limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <!--每个仓库所有产品的总金额-->
+    <select id="businessGoodsInventoryTotalMoney" resultType="Double">
+        select IFNULL(SUM(g.cost_price * gi.actual),0)price
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where  g.is_del = 0
+        <if test="business_id != null">
+            and g.business_id = #{business_id}
+        </if>
+        <if test="wid != null ">
+            and w.id = #{wid}
+        </if>
+    </select>
+
+
+
+    <!--条件搜索商家的供应商-->
+    <select id="findBusinessSuppliers" resultType="HashMap">
+        select id name from shengxian_suppliers
+        where business_id = #{business_id} and name LIKE CONCAT('%',#{name},'%') or number LIKE CONCAT('%',#{name},'%')
+    </select>
+
+    <!--添加供应商赠送产品-->
+    <insert id="addGiveGoods" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_give_goods( goods_id , suppliers_id ,num ,operate_id ,beizhu ,give_time ,status)
+        values( #{goods_id} ,#{suppliers_id} ,#{num} ,#{operate_id} ,#{beizhu} ,#{give_time} ,#{status})
+    </insert>
+
+    <!---->
+    <select id="findGoodsName" resultType="String">
+        select name from shengxian_goods where id = #{id}
+    </select>
+
+    <!--添加报损产品-->
+    <insert id="addLossGoods" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_loss_goods (goods_id ,binding_id ,num ,loss_time ,operate_id ,beizhu ,status)
+        values ( #{goods_id} ,#{binding_id} ,#{num} ,#{loss_time} ,#{operate_id} ,#{beizhu} ,#{status});
+    </insert>
+
+    <!--查询赠送产品单总数-->
+    <select id="findGiveGoodsCount" resultType="Integer">
+        select count(g.id)
+        from shengxian_goods g
+        inner join shengxian_give_goods gg on gg.goods_id = g.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_suppliers s on s.id = gg.suppliers_id
+        where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(gg.give_time)
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+            AND  DATE_FORMAT(gg.give_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(gg.give_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="warehouse_id != null">
+            and gi.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--查询赠送产品单-->
+    <select id="findGiveGoods" resultType="HashMap">
+        select gg.id,gg.give_time,g.id as goods_id,g.`name`,(select name from shengxian_warehouse where id=gi.warehouse_id)wname,gg.num,g.units,
+        g.cost_price ,s.`name`as suppliers_name ,gg.status,gg.beizhu,
+        IFNULL((select ss.name from shengxian_staff ss where ss.id=gg.operate_id  ),"商家")operate_name
+        from shengxian_goods g
+        inner join shengxian_give_goods gg on gg.goods_id = g.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_suppliers s on s.id = gg.suppliers_id
+        where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(gg.give_time)
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+            AND   DATE_FORMAT(gg.give_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(gg.give_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="warehouse_id != null">
+            and gi.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by gg.give_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--查询报损产品单总数-->
+    <select id="findLossGoodsCount" resultType="Integer">
+        select count(g.id)
+        from shengxian_goods g
+        inner join shengxian_loss_goods lg on lg.goods_id = g.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_binding b on b.id = lg.binding_id
+        where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(lg.loss_time)
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+            AND  DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="warehouse_id != null">
+            and gi.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or b.user_name LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--查询报损产品单-->
+    <select id="findLossGoods" resultType="HashMap">
+        select lg.loss_time,g.id,g.`name`,(select name from shengxian_warehouse where id = gi.warehouse_id)wname,lg.num,g.units,
+        g.cost_price ,b.user_name as bind_name,lg.status,lg.beizhu,
+        IFNULL((select ss.name from shengxian_staff ss where ss.id=lg.operate_id  ),"商家")operate_name
+        from shengxian_goods g
+        inner join shengxian_loss_goods lg on lg.goods_id = g.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_binding b on b.id = lg.binding_id
+        where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(lg.loss_time)
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+            AND  DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="warehouse_id != null">
+            and gi.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or b.user_name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by lg.loss_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--导出仓库产品详情-->
+    <select id="excelDownload" resultType="HashMap">
+        select g.id,gc.`name`as categoryName,g.number,g.name,w.name as wname,
+         g.cost_price ,g.units,gi.actual ,gi.fictitious ,g.cost_price * gi.actual as price
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where g.is_del = 0 and g.business_id = #{business_id} and w.business_id = #{business_id}
+        <if test="id != null">
+            and   w.id = #{id}
+        </if>
+        order by g.state asc ,g.id asc
+    </select>
+
+    <!--仓库产品总金额-->
+    <select id="WGTatolMoney" resultType="Double">
+        select IFNULL(SUM(g.cost_price * gi.actual),0)price
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        where  g.is_del = 0
+        <if test="business_id != null">
+            and g.business_id = #{business_id}
+        </if>
+        <if test="status != null">
+            and gi.status = #{status}
+        </if>
+        <if test="goods_id != null">
+            and g.id = #{goods_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and g.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="category_id != null ">
+            and ( gc.id = #{category_id} or gc.level = #{category_id} )
+        </if>
+        <if test="warehouse_id != null ">
+            and w.id = #{warehouse_id}
+        </if>
+    </select>
+
+    <!--赠送产品导出-->
+    <select id="giveGoodslDownload" resultType="HashMap">
+        select gg.id,gg.give_time,g.id as goods_id,g.`name`,(select name from shengxian_warehouse where id=gi.warehouse_id)wname,gg.num,g.units,
+        g.cost_price ,s.`name`as suppliers_name ,gg.status,
+        IFNULL((select ss.name from shengxian_staff ss where ss.id=gg.operate_id  ),"商家")operate_name
+        from shengxian_goods g
+        inner join shengxian_give_goods gg on gg.goods_id = g.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_suppliers s on s.id = gg.suppliers_id
+        where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(gg.give_time)
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+            AND  DATE_FORMAT(gg.give_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(gg.give_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="warehouse_id != null">
+            and gi.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by gg.give_time desc
+    </select>
+
+    <!--报损产品导出-->
+    <select id="lossGoodslDownload" resultType="HashMap">
+        select lg.loss_time,g.id,g.`name`,(select name from shengxian_warehouse where id=gi.warehouse_id)wname,lg.num,g.units,
+        g.cost_price ,b.user_name as bind_name,lg.status,
+        IFNULL((select ss.name from shengxian_staff ss where ss.id=lg.operate_id  ),"商家")operate_name
+        from shengxian_goods g
+        inner join shengxian_loss_goods lg on lg.goods_id = g.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = g.id
+        inner join shengxian_binding b on b.id = lg.binding_id
+        where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(lg.loss_time)
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+            AND  DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="warehouse_id != null">
+            and gi.warehouse_id=#{warehouse_id}
+        </if>
+        <if test="name != null and name != ''">
+            and (g.name LIKE CONCAT('%',#{name},'%') or b.user_name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        order by lg.loss_time desc
+    </select>
+
+    <!--库存归零-->
+    <update id="inventoryZeroing">
+        update shengxian_goods_inventory set actual = 0 ,fictitious = 0
+        where goods_id in ( (select id from shengxian_goods where is_del = 0 and  business_id = #{business_id}))
+    </update>
+
+</mapper>    

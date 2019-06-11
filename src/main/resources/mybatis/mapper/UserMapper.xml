@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.UserMapper">
+
+
+    <!--根据商家id查询用户类别最后一条序号-->
+    <select id="findUserCategroyCodeByBid" resultType="String">
+        select code from shengxian_binding_category where business_id=#{bid} order by id desc limit 1
+    </select>
+
+    <!--添加用户类别-->
+    <insert id="addUserCategory">
+        insert into shengxian_binding_category(business_id,name,code)values(#{bid},#{name},#{code})
+    </insert>
+
+    <!--查询商家下的所有用户类别集合-->
+    <select id="findUserCategoryList" resultType="HashMap">
+        select id,name from shengxian_binding_category where business_id=#{bid}
+    </select>
+
+    <!--根据用户类别id查询类别信息-->
+    <select id="findUserCategoryById" resultType="HashMap">
+        select id,name from shengxian_binding_category where id=#{id}
+    </select>
+
+    <!--修改用户类别信息-->
+    <update id="updateUserCategory">
+        update shengxian_binding_category set name=#{name} where id=#{id}
+    </update>
+
+    <!--通过类别id查询类别下的客户信息集合-->
+    <select id="findUserListtByCategoryId" resultType="HashMap">
+        select id,user_name from shengxian_binding where category_Id=#{categoryId} and is_del=0
+    </select>
+
+    <!--删除用户类别-->
+    <delete id="deleUserCategory">
+        delete from shengxian_binding_category where id=#{id}
+    </delete>
+
+    <!--通过店铺id查询店铺第一个类别id-->
+    <select id="findOneCategoryId" resultType="Integer">
+        select id from shengxian_binding_category where business_id = #{business_id} order by id asc limit 1
+    </select>
+
+    <!--根据用户类别id查询最后一条用户编号-->
+    <select id="findNumberByCategoryId" resultType="String">
+        select number from shengxian_binding where category_id = #{categoryId} order by number desc limit 1
+    </select>
+
+    <!--根据用户类别id查询对应的类别序号-->
+    <select id="findCodeById" resultType="String">
+        select code from shengxian_binding_category
+         where id=#{id}
+    </select>
+
+    <!--添加用户信息-->
+    <insert id="addBinding" parameterType="com.shengxian.entity.BindUser" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_binding
+        (category_id,number,user_name,telephone,illustrated1,illustrated2,remark1,remark2,scheme_id,best_time,address,credit,limited,
+        market_integral,underline_integral,business_id,user_id,staff_id,binding_time,starting_price,source,cycle)
+        values(#{category_id},#{number},#{user_name},#{telephone},#{illustrated1},#{illustrated2},#{remark1},#{remark2},#{scheme_id},#{best_time},#{address},
+        #{credit},#{limited},#{market_integral},#{underline_integral},#{business_id},#{user_id},#{staff_id},#{binding_time},#{starting_price},#{source},#{cycle})
+    </insert>
+
+    <!--添加用户积分-->
+    <insert id="addBindingIntegra">
+        insert into shengxian_binding_integra(binding_id ,create_time)values(#{binding_id} ,#{create_time})
+    </insert>
+
+    <!--搜索产品-->
+    <select id="findGoods" resultType="HashMap">
+        select g.id, g.name,g.units
+        from shengxian_goods g
+        where g.business_id = #{business_id} and g.is_del = 0
+        <if test="name != null and name != ''">
+            and (g.number LIKE CONCAT('%',#{name},'%') or g.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--搜索员工-->
+    <select id="findStaff" resultType="HashMap">
+        select id, name from shengxian_staff where business_id=#{business_id} and is_del=0
+        <if test="name != null and name != ''">
+            and (number LIKE CONCAT('%',#{name},'%') or name LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--通过手机号查询用户是否存在-->
+    <select id="findUidByPhone" resultType="Integer">
+        select id from user where phone = #{phone} and is_del= 0
+    </select>
+
+    <!--根据类别id和编号查询是否存在-->
+    <select id="findUserByCategoryIdAndNumber" resultType="String">
+        select number from shengxian_binding where category_id=#{categoryId} and number=#{number} and is_del=0
+    </select>
+
+    <!--添加用户的产品积分-->
+    <insert id="addUserGoodsIntegras">
+        replace into shengxian_binding_goods_integra(binding_id,goods_id,proportion)values(#{binding_id},#{goods_id},#{proportion})
+    </insert>
+
+    <!--添加用户的收藏产品-->
+    <insert id="addGoodsCollection">
+        replace into shengxian_goods_collection(binding_id,goods_id,collection_time)values(#{binding_id},#{goods_id},#{collectionTime})
+    </insert>
+
+    <!--添加用户的屏蔽产品-->
+    <insert id="addGoodsShielding">
+        replace into shengxian_goods_shielding(binding_id,goods_id,shielding_time)values(#{binding_id},#{goods_id},#{shieldingTime})
+    </insert>
+
+    <!--条件查询类别下的客户信息总数-->
+    <select id="findCustomerInfoListCount" resultType="Integer">
+        select count(b.id)
+        from shengxian_binding b
+        left join user u on b.user_id=u.id
+        where b.is_del=0 and b.business_id=#{business_id}
+        <if test="category_id != null ">
+            and b.category_id=#{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--条件查询类别下的客户信息集合-->
+    <select id="findCustomerInfoList" resultType="HashMap">
+        select b.id,u.phone,b.number,b.user_name,b.source,
+        (select bs.scheme_name from shengxian_business_scheme bs where bs.scheme_id =b.scheme_id and business_id =#{business_id})scheme_name,
+        b.illustrated1,b.remark1,b.address,(select integar_num from shengxian_binding_integra where binding_id=b.id)integar_num,
+        (select create_time from shengxian_order where binding_id=b.id and is_del=0 order by create_time desc limit 1 )create_time
+        from shengxian_binding b
+        left join user u on b.user_id=u.id
+        where b.is_del=0 and b.business_id=#{business_id}
+        <if test="category_id != null ">
+            and b.category_id=#{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') )
+        </if>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--根据用户id查询用户信息-->
+    <select id="findUserInfoById" resultType="HashMap">
+         select b.id,u.phone,b.category_id,bc.name as categoryName,b.number,b.user_name,b.illustrated1,b.illustrated2,b.remark1,
+        b.remark2,b.best_time, b.source,b.telephone,b.cycle,b.starting_price,b.scheme_id,b.credit,b.limited,b.market_integral,
+        b.underline_integral,(select s.name from shengxian_staff s where b.staff_id =s.id )staff_name,b.address, b.staff_id,
+        (select bs.scheme_name from shengxian_business_scheme bs where bs.scheme_id =b.scheme_id and bs.business_id=b.business_id)scheme_name
+        from shengxian_binding b
+        inner join shengxian_binding_category bc on bc.id=b.category_id
+        left join user u on u.id=b.user_id
+        where b.id=#{id} and b.is_del=0
+    </select>
+
+    <!--通过绑定ID查询绑定用户的积分产品-->
+    <select id="selectUserIntegraGoods" resultType="HashMap">
+        select ugi.id,ugi.proportion,g.name from shengxian_binding_goods_integra ugi,shengxian_goods g
+        where ugi.goods_id=g.id and ugi.binding_id=#{bindingId}
+    </select>
+
+    <!--通过绑定ID查询绑定用户的收藏产品-->
+    <select id="selectUserCollectionGoods" resultType="HashMap">
+        select gc.id ,g.name from shengxian_goods_collection gc ,shengxian_goods g
+        where gc.goods_id=g.id and gc.binding_id=#{bindingId}
+    </select>
+
+    <!--通过绑定ID查询绑定用户的屏蔽产品-->
+    <select id="selectUserShieldingGoods" resultType="HashMap">
+        select gs.id,g.name from shengxian_goods_shielding gs ,shengxian_goods g
+        where gs.goods_id=g.id and gs.binding_id=#{bindingId}
+    </select>
+
+    <!--修改绑定用户信息-->
+    <update id="updateUser">
+        update shengxian_binding  set category_id = #{category_id} ,number = #{number}, user_name = #{user_name} ,telephone = #{telephone},illustrated1 = #{illustrated1}
+        ,illustrated2 = #{illustrated2} ,remark1 = #{remark1} ,remark2 = #{remark2} ,scheme_id = #{scheme_id},best_time = #{best_time},address = #{address}
+        ,credit = #{credit},limited = #{limited} ,market_integral = #{market_integral} ,underline_integral = #{underline_integral} , user_id = #{user_id}
+        , staff_id = #{staff_id}, update_time = #{update_time},starting_price = #{starting_price} ,source = #{source} , cycle =#{cycle}
+        where id = #{id}
+    </update>
+
+    <!--查询备留电话是否有重复的-->
+    <select id="selectTelephone" resultType="Integer">
+         select id  from shengxian_binding
+         where telephone = #{telephone} and is_del = 0 and business_id = #{business_id}
+    </select>
+
+    <!--通过用户类别ID查询用户编号-->
+    <select id="findUserNumberByBindingId" resultType="String">
+        select number from shengxian_binding where id=#{binding}
+    </select>
+
+    <!--修改用户产品积分信息-->
+    <update id="updateUserGoodsIntegras">
+        replace into shengxian_binding_goods_integra(binding_id , goods_id , proportion)
+        values(#{binding_id}, #{goods_id}, #{proportion})
+    </update>
+
+    <!--修改用户收藏产品信息-->
+    <update id="updateUserGoodsCollection">
+        replace into shengxian_goods_collection(binding_id,goods_id,collection_time)values(#{binding_id},#{goods_id},#{collection_time})
+    </update>
+
+    <!--修改用户屏蔽产品信息-->
+    <update id="updateUserGoodsShielding">
+        replace into shengxian_goods_shielding(binding_id,goods_id,shielding_time)values(#{binding_id},#{goods_id},#{shielding_time})
+    </update>
+
+    <!--根据员工的用户提成ID查询绑定用户ID-->
+    <select id="findBindidBySPId" resultType="Integer">
+        select staff_id from shengxian_user_percentage where id = #{spid}
+    </select>
+
+    <!--删除用户之前判断该用户是否有欠款和未付款的订单-->
+    <select id="selectBindingOrder" resultType="Integer">
+        select id from shengxian_order where is_del=0 and status=4 and state in(0,1,2) and  binding_id=#{id}
+     </select>
+
+    <!--删除用户-->
+    <update id="deleteUser">
+        update shengxian_binding set is_del =1 where id=#{id}
+    </update>
+
+    <!--删除用户产品积分-->
+    <delete id="deleteUserGoodsIntegra">
+        delete from shengxian_binding_goods_integra where id=#{integraId}
+    </delete>
+
+    <!--删除用户收藏产品-->
+    <delete id="deleteUserGoodsCollection">
+        delete from shengxian_goods_collection where id=#{collectionId}
+    </delete>
+
+    <!--删除用户屏蔽产品-->
+    <delete id="deleteUserGoodsShielding">
+        delete from shengxian_goods_shielding where id=#{shieldingId}
+    </delete>
+
+
+    <!--导出类别下的客户信息集合-->
+    <select id="excelDownloadCustomerInfoList" resultType="HashMap">
+        select b.id,u.phone,b.number,b.user_name,b.source,(select scheme_name from shengxian_business_scheme where id =b.scheme_id)scheme_name,
+        b.illustrated1,b.remark1,b.address,(select integar_num from shengxian_binding_integra where binding_id=b.id)integar_num,
+        (select create_time from shengxian_order where binding_id=b.id and is_del=0 order by create_time desc limit 1 )create_time
+        from shengxian_binding b
+        left join user u on b.user_id=u.id
+        where b.is_del=0 and b.business_id=#{business_id}
+        <if test="category_id != null ">
+            and b.category_id=#{category_id}
+        </if>
+        <if test="phone != null and phone != ''">
+            and b.phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and b.number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="name != null and name != ''">
+            and b.user_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        order by id desc
+    </select>
+
+    <!--注册客户APP账号-->
+    <insert id="addUserPhone">
+        insert into user(phone , password , token ,cate_time)
+        values( #{phone} ,#{password} , #{token}, #{time})
+    </insert>
+</mapper>

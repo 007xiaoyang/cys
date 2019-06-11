@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shengxian.mapper.TemporaryMapper">
+
+    <!--通过店铺id查询店铺产品二维码标识码icode-->
+    <select id="selectBusinessIcode" resultType="HashMap">
+        select DATEDIFF(duration,NOW())duration ,is_disable , icode
+        from shengxian_business where is_del = 0 and id = #{id};
+    </select>
+
+    <resultMap id="categoryMap" type="com.shengxian.entity.GoodsCategory">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+
+    <!--查询店铺类别-->
+    <select id="businessCategory" resultMap="categoryMap">
+        select id ,name  from shengxian_goods_category
+        where  business_id = #{business_id}
+        <if test="level == null">
+            and level != 0
+        </if>
+        <if test="level != null">
+            and level = #{level}
+        </if>
+        order by status desc
+    </select>
+
+    <!--判断是大类别还是小类别-->
+    <select id="largeClassOrSmalClass" resultType="Integer">
+        select `level` from shengxian_goods_category  where id=#{id}
+    </select>
+
+
+   <resultMap id="goodsMap" type="com.shengxian.entity.IntegrGoods">
+       <id column="id" jdbcType="BIGINT" property="id"/>
+       <result column="name" jdbcType="VARCHAR" property="name"/>
+       <result column="units" jdbcType="VARCHAR" property="units"/>
+       <result column="spec" jdbcType="VARCHAR" property="spec"/>
+       <result column="temporary_price" jdbcType="DOUBLE" property="temporary_price"/>
+       <result column="img" jdbcType="VARCHAR" property="img"/>
+   </resultMap>
+
+    <!--店铺类别下的产品总数-->
+    <select id="businessGoodsCount" resultType="Integer">
+        select  count(g.id)
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        where g.is_del = 0  and g.business_id = #{business_id}
+        <if test="category_id != null">
+            and g.category_id = #{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="level != null">
+            and gc.level =#{level}
+        </if>
+    </select>
+
+    <!--店铺类别下的产品-->
+    <select id="businessGoods" resultMap="goodsMap">
+        select  g.id,g.`name`,g.units,g.spec ,
+        g.temporary_price,
+        (select img from shengxian_goods_img where goods_id=g.id order by id asc limit 1 )img
+        from shengxian_goods g
+        inner join shengxian_goods_category gc on gc.id = g.category_id
+        where g.is_del = 0  and g.business_id = #{business_id}
+        <if test="category_id != null">
+            and g.category_id = #{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and g.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="level != null">
+            and gc.level =#{level}
+        </if>
+        order by g.priority desc ,g.id desc limit #{startIndex} ,#{pageSize}
+    </select>
+    
+    <!--通过识别码查询临时客户购物车id-->
+    <select id="selectTShoppongcart" resultType="Integer">
+        select id from shengxian_temporary_shoppingcart where tic = #{tic};
+    </select>
+
+    <!--添加临时客户购物车-->
+    <insert id="addTShoppongcart" keyProperty="id" useGeneratedKeys="true" >
+        insert into shengxian_temporary_shoppingcart (tic ,create_time)values(#{tic} ,#{create_time})
+    </insert>
+
+    <!--通过购物车id和产品id查询临时客户购物车详情里是否该产品-->
+    <select id="selectTShoppingcartDetailIsGoodsId" resultType="Integer">
+        select id  from shengxian_temporary_shoppingcart_detail where  tsc_id = #{tscId} and  goods_id = #{goods_id}
+    </select>
+
+    <!--修改临时客户购物车详情的产品数量-->
+    <update id="updateTShoppingcartDetailNum">
+        <if test="type == 1">
+            update shengxian_temporary_shoppingcart_detail set num = num + #{num} where id =#{id}
+        </if>
+        <if test="type == 2">
+            update shengxian_temporary_shoppingcart_detail set num = #{num} where id =#{id}
+        </if>
+    </update>
+
+    <!--添加临时客户购物车详情的产品数量-->
+    <insert id="addTShoppingcartDetailNum" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_temporary_shoppingcart_detail(tsc_id ,goods_id ,num ,create_time)
+        values(#{tsc_id} ,#{goods_id} ,#{num} ,#{create_time})
+    </insert>
+
+    <!--计算临时客户购物车所有产品的总金额-->
+    <select id="calculationTScAllGoodsTotalMoney" resultType="Double">
+        select sum(tsd.num * (select g.temporary_price from shengxian_goods g where g.id = tsd.goods_id and  g.is_del = 0  ) ) money
+        from shengxian_temporary_shoppingcart_detail tsd where tsd.tsc_id = #{tscId}
+    </select>
+
+    <!--修改临时客户购物车总金额-->
+    <update id="updateTShoppingcartTotalMoney">
+        update shengxian_temporary_shoppingcart set money = #{money} where id = #{id}
+    </update>
+
+    <!--减少临时客户购物车详情里的产品数量-->
+    <update id="reduceTShoppingcartDetailGoodsNum">
+         update shengxian_temporary_shoppingcart_detail set num = num - 1 where id = #{id}
+    </update>
+
+    <!--通过临时客户购物车详情ID查询原来的产品数量和购物车id-->
+    <select id="selectTShoppingcartDetailGoodsNum" resultType="HashMap">
+        select tsc_id ,num from shengxian_temporary_shoppingcart_detail where id = #{id}
+    </select>
+
+
+    <!--删除临时客户购物车详情id-->
+    <delete id="deleteTShoppingcartDetailId">
+        delete from shengxian_temporary_shoppingcart_detail where id = #{id}
+    </delete>
+
+    <!--通过购物车id查询临时客户购物车下是否还有产品-->
+    <select id="findTShoppingcartIsGoods" resultType="Integer">
+        select id from  shengxian_temporary_shoppingcart_detail where tsc_id = #{tscId}
+    </select>
+
+    <!--删除临时客户购物车-->
+    <delete id="deleteTShoppingcart">
+        delete from shengxian_temporary_shoppingcart where id = #{id}
+    </delete>
+
+    <!--通过店铺id查询店铺的起送价和店铺名称-->
+    <select id="findStartingPriceAndStoreName" resultType="com.shengxian.entity.ShoppingHashMap">
+        select store_name as storeName
+        from shengxian_business where is_del=0 and id = #{id}
+    </select>
+
+    <!--通过临时客户识别码查询购物车id-->
+    <select id="selectTShoppingcart" resultType="Integer">
+        select id from shengxian_temporary_shoppingcart where tic = #{tic}
+    </select>
+
+    <!--通过临时客户购物车id查询购物车下的产品总数-->
+    <select id="selectTShoppingcartGoodsDetailGoodsCount" resultType="Integer">
+        select ifnull( sum(num), 0) from shengxian_temporary_shoppingcart_detail where tsc_id = #{tscId}
+    </select>
+
+
+
+    <!-- 通过临时客户购物车id查询购物车下的产品信息-->
+    <select id="selectTShoppingcartGoodsDetail" resultType="HashMap">
+        select tsd.id, g.name ,g.units ,tsd.num ,g.id as goods_id ,g.temporary_price as price,
+        (select img from shengxian_goods_img where goods_id = g.id order by id asc limit 1)img
+        from shengxian_temporary_shoppingcart_detail tsd
+        inner join shengxian_goods g on g.id = tsd.goods_id
+        where g.is_del = 0 and tsd.tsc_id = #{tscId}  and g.business_id = #{business_id}
+    </select>
+
+    <!--结算-->
+    <select id="settlement" resultType="HashMap">
+        select scd.id ,g.`name`,g.units,scd.num,scd.goods_id, g.temporary_price as price,
+        (select gi.img from shengxian_goods_img gi where scd.goods_id = gi.goods_id order by gi.id asc limit 1) img
+        from shengxian_temporary_shoppingcart_detail scd
+        inner join (select id, units,`name`  ,is_del , business_id ,temporary_price from shengxian_goods ) g on g.id = scd.goods_id and g.is_del = 0
+        where scd.id = #{id}  and g.business_id = #{business_id}
+    </select>
+    
+    <!--通过店铺id查询店铺是否有扫码客户账号名称-->
+    <select id="selectScanBinding" resultType="Integer">
+        select id from shengxian_binding where is_del = 0 and user_name = "扫码客户"  and business_id = #{business_id};
+    </select>
+
+    <!--根据临时客户购物车id和产品id删除购物车详情-->
+    <delete id="deteleTShoppingCartDetail">
+        delete from shengxian_temporary_shoppingcart_detail where tsc_id = #{tscId} and  goods_id = #{goods_id}
+    </delete>
+
+</mapper>    
