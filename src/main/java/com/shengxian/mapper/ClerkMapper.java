@@ -560,6 +560,15 @@ public interface ClerkMapper {
      */
     List<HashMap> percentageClassification(@Param("id") Integer id , @Param("type") Integer type, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
 
+    /**
+     * 提成分类总金额
+     * @param id
+     * @param type
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Double percentageClassificationTotalMoney(@Param("id") Integer id , @Param("type") Integer type, @Param("startTime") String startTime,@Param("endTime") String endTime );
 
 
 

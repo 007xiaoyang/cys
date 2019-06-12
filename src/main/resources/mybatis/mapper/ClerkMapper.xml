@@ -700,7 +700,7 @@
             left join shengxian_binding bd on bd.id = o.binding_id
             where os.staff_id = #{id} and os.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and (DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
         </if>
         <if test="type == 4">
@@ -710,17 +710,27 @@
             left join shengxian_binding bd on bd.id = o.binding_id
             where op.staff_id = #{id} and op.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and (DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
         </if>
-        <if test="type > 2 and type != 4">
+        <if test="type > 2 and type != 4 and type lt 8">
             select count(f.id)
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
             where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and (DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+        </if>
+        <if test="type > 7  and type lt 11">
+            select count(f.id)
+            from shengxian_staff_frequency f
+            left join shengxian_purchase p on p.id = f.order_id
+            left join shengxian_suppliers s on s.id = p.suppliers_id
+            where f.staff_id = #{id} and f.type = #{type}
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
         </if>
 
@@ -736,31 +746,87 @@
             left join shengxian_binding bd on bd.id = o.binding_id
             where os.staff_id = #{id} and os.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and (DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
             order by os.create_time desc limit #{startIndex},#{pageSize}
         </if>
         <if test="type == 4">
-            select op.id  ,op.create_time , bd.user_name , o.order_number ,o.no
+            select op.id ,1 as statis ,op.create_time , bd.user_name , o.order_number ,o.no
             from shengxian_staff_once_percentage op
             left join shengxian_order o on o.id = op.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
             where op.staff_id = #{id} and op.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and (DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
             order by op.create_time desc limit #{startIndex},#{pageSize}
         </if>
-        <if test="type > 2 and type != 4">
+        <if test="type > 2 and type != 4 and type lt 8">
             select f.id , f.statis ,f.create_time , bd.user_name , o.order_number ,o.no
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
             where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and (DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
             order by f.create_time desc limit #{startIndex},#{pageSize}
+        </if>
+        <if test="type > 7  and type lt 11">
+            select f.id , f.statis ,f.create_time , s.name as user_name , p.order_number ,p.no
+            from shengxian_staff_frequency f
+            left join shengxian_purchase p on p.id = f.order_id
+            left join shengxian_suppliers s on s.id = p.suppliers_id
+            where f.staff_id = #{id} and f.type = #{type}
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            order by f.create_time desc limit #{startIndex},#{pageSize}
+        </if>
+    </select>
+
+
+    <!--提成分类总金额-->
+    <select id="percentageClassificationTotalMoney" resultType="Double">
+        <if test="type lt 3">
+            select ifnull(sum(os.statis) , 0)
+            from shengxian_staff_order_statis os
+            left join shengxian_order o on o.id = os.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where os.staff_id = #{id} and os.type = #{type}
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+        </if>
+        <if test="type == 4">
+            select  count(op.id)
+            from shengxian_staff_once_percentage op
+            left join shengxian_order o on o.id = op.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where op.staff_id = #{id} and op.type = #{type}
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+        </if>
+        <if test="type > 2 and type != 4 and type lt 8">
+            select ifnull(sum(f.statis) , 0)
+            from shengxian_staff_frequency f
+            left join shengxian_order o on o.id = f.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where f.staff_id = #{id} and f.type = #{type}
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+        </if>
+        <if test="type > 7  and type lt 11">
+            select ifnull(sum(f.statis) , 0)
+            from shengxian_staff_frequency f
+            left join shengxian_purchase p on p.id = f.order_id
+            left join shengxian_suppliers s on s.id = p.suppliers_id
+            where f.staff_id = #{id} and f.type = #{type}
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
         </if>
     </select>
 

@@ -927,7 +927,7 @@ public class ClerkServiceImpl implements ClerkService {
     @Override
     public Page percentageClassification(String token, Integer role, Integer pageNo, Integer type, String startTime, String endTime) {
 
-        Integer id = shopMapper.shopipByTokenAndRole(token ,role);
+        Integer id = shopMapper.selectIdByTokenAndRole(token ,role);
         int pageNum = 1 ;
         if(pageNo != null && pageNo != 0 ){
             pageNum = pageNo;
@@ -935,8 +935,9 @@ public class ClerkServiceImpl implements ClerkService {
         Integer totalCount = clerkMapper.percentageClassificationCount(id , type , startTime , endTime );
         Page page = new Page(pageNum,totalCount );
         List<HashMap> hashMaps = clerkMapper.percentageClassification(id , type , startTime , endTime ,page.getStartIndex() ,page.getPageSize());
-
+        Double statis = clerkMapper.percentageClassificationTotalMoney(id, type, startTime, endTime);
         page.setRecords(hashMaps);
+        page.setPrice(new BigDecimal(statis).setScale(2,BigDecimal.ROUND_UP));
         return page;
     }
 
