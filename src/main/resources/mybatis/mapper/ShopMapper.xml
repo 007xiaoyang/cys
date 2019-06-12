@@ -197,12 +197,12 @@
 
     <!--查询当前的类别id是否是二级类别-->
     <select id="selectTwoCategoryByCategoryId" resultType="Integer">
-        select level from shengxian_goods_category where id =#{categoryId}
+        select level from shengxian_goods_category where id = #{categoryId}
     </select>
 
     <!--查询二级产品类别-->
     <select id="selectCategoryListBylevel" resultType="HashMap">
-        select id,name ,level from shengxian_goods_category where level = #{level}
+        select id , name ,level from shengxian_goods_category where level = #{level}
     </select>
 
     <!--根据产品类别id查询该类别下是否有产品-->

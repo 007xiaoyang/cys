@@ -17,6 +17,7 @@ import io.swagger.models.auth.In;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.dom4j.DocumentException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,13 +47,13 @@ import java.util.List;
 @RequestMapping("/business")
 public class ShopController {
 
-    @Resource
+    @Autowired
     private ShopService shopService;
 
-    @Resource
+    @Autowired
     private LogService logService;
 
-    @Resource
+    @Autowired
     private ExcelService excelService;
 
     private Logger log = Logger.getLogger(ShopController.class);

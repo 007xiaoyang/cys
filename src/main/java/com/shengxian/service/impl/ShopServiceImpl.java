@@ -109,9 +109,9 @@ public class ShopServiceImpl implements ShopService {
             return count;
         }
 
+        //登录
         @Override
         public String login(Integer role, String phone, String password) throws  NullPointerException ,Exception{
-
 
             //密码加密
             String pwd = PasswordMD5.EncoderByMd5(password + Global.passwordKey);
@@ -235,6 +235,7 @@ public class ShopServiceImpl implements ShopService {
                     code = GroupNumber.getNumber(Integer.parseInt(code));
                 }
             }
+            //添加商品类别
             return shopMapper.addGoodsCategory(new GoodsCategory(id, name, level, code));
         }
 
@@ -266,12 +267,11 @@ public class ShopServiceImpl implements ShopService {
                 paegNum = pageNo;
             }
 
-            Integer cid = null;
-            Integer level = null;
+            Integer cid = null , level = null ;
 
             //判断是大类别id还是小类别id
             Integer le = shopMapper.largeClassOrSmalClass(categoryId);
-            if (le == null || le == 0){ //判断level如果等于0，就代表是大类下的产品
+            if (IntegerUtils.isEmpty(le)){ //判断level如果等于0，就代表是大类下的产品
                 level = categoryId;
             }else {
                 cid = categoryId;
@@ -337,6 +337,7 @@ public class ShopServiceImpl implements ShopService {
                     throw new NullPointerException("必须删除类别下面的产品信息，才能删除该类别");
                 }
             }
+            //删除产品类别
             return shopMapper.deleteGoodsCategory(categoryId);
         }
 
