@@ -915,7 +915,7 @@
     <select id="orderWXShareRecord" resultType="HashMap">
         select o.id , o.order_number ,o.no ,bd.user_name , o.price ,o.create_time  , o.audit_time
         , o.receivable_time , o.state , o.status ,o.money , o.money2 ,o.beizhu , o.difference_price ,o.freight
-        ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id)  ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id

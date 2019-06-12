@@ -314,9 +314,6 @@ public class StaffServiceImpl implements StaffService {
         //修改员工的其它销售提成
         OtherPercentage[] otherPercentages = staff.getOtherPercentages();
         for (OtherPercentage other:otherPercentages){
-            if (other.getType() == 11){
-                continue;
-            }
             staffMapper.updateStaffOtherPercent(other);
         }
         return count;
