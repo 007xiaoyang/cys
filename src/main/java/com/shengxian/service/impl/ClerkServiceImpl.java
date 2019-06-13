@@ -567,24 +567,20 @@ public class ClerkServiceImpl implements ClerkService {
 
         int staff_id = 0 ;
 
-
         //APP点打印只能调用飞蛾打印
         List<Printer> printers = null;
-        if (print == 1 ){
+        if (print != null && print == 1 ){
             Integer bid = shopMapper.shopipByTokenAndRole(token, role);
             printers = menuMapper.queryPrinter(bid , 0);
             if (printers.size() <=  0 ){
-                throw new NullPointerException("飞蛾打印机未启用或未添加,不能使用此模块打印");
+                throw new NullPointerException("飞蛾打印机未启用或未添加,不能使用此模块打印 ");
             }
         }
-
         //通过购物车ID查询购物车总金额
         ShoppingMall SM = clerkMapper.findShoppingMallTotalMoney(sm_id);
         if(SM == null ){
             throw new NullPointerException("购物车不存在");
         }
-
-
 
         if (SM.getType() == 1){  //SM.getType() 0店铺APP购物车，1员工APP购物车
             staff_id = SM.getOp_id();
@@ -656,9 +652,9 @@ public class ClerkServiceImpl implements ClerkService {
             }
         }
         //通过员工id查询是否有销售开单提成比例
-        HashMap staffPercentage = distributeMapper.findStaffPercentage( staff_id, 8);
-        if (staffPercentage != null ){
-            if (staffPercentage.get("a") != null && !staffPercentage.get("a").equals("") && staffPercentage.get("b") != null  && !staffPercentage.get("b").equals("")){
+        HashMap sp = distributeMapper.findStaffPercentage( staff_id, 8);
+        if (sp != null ){
+            if (sp.get("a") != null && sp.get("b") != null && !sp.get("a").equals("")   && !sp.get("b").equals("")){
                 //添加员工的开单次数 type=7是开单
                 orderMapper.addStaffFrequency(staff_id,order.getId(),7,price,new Date());
             }
@@ -696,19 +692,20 @@ public class ClerkServiceImpl implements ClerkService {
     //客户收藏的产品
     @Override
     public Page bindingCollectionBindingGoodsList(String token, Integer role, Integer pageNo, Integer bindingId, String name) throws Exception {
-        Integer business_id = shopMapper.shopipByTokenAndRole(token ,role );
         byte inv = 0 ; // 1屏蔽库存
-        if (role == 2 ){ //员工登录
+        int pageNum = 1;
+        if( IntegerUtils.isNotEmpty(pageNo)){
+            pageNum=pageNo;
+        }
+        Integer business_id = shopMapper.shopipByTokenAndRole(token ,role );
 
+        if (role == 2 ){ //员工登录
             //查询当前登录的是否是员工账号,是则判断进价是否屏蔽
             HashMap hash = purchaseMapper.selectShield(token);
             inv = Byte.parseByte(hash.get("inv").toString());
         }
 
-        int pageNum = 1;
-        if(pageNo != null && pageNo != 0){
-            pageNum=pageNo;
-        }
+
         //通过绑定用户id查询方案id
         Integer schemeId = shopMapper.selectBindingSchemeId(bindingId);
 
@@ -722,22 +719,24 @@ public class ClerkServiceImpl implements ClerkService {
     //店铺收藏供应商的产品
     @Override
     public Page bindingCollectionSuppliersGoodsList(String token ,Integer role , Integer pageNo, Integer suppliersId, String name) throws Exception {
+
+        int pageNum = 1;
+        if(IntegerUtils.isNotEmpty(pageNo)){
+            pageNum=pageNo;
+        }
         Integer business_id = shopMapper.shopipByTokenAndRole(token ,role );
-        byte shield = 0 ; // 1屏蔽进价
-        byte inv = 0 ; // 1屏蔽库存
+        byte shield = 0 , inv = 0; // 1屏蔽进价 \ 1屏蔽库存
 
         if (role == 2 ){ //员工登录
 
             //查询当前登录的是否是员工账号,是则判断进价是否屏蔽
             HashMap hash = purchaseMapper.selectShield(token);
-            shield = Byte.parseByte(hash.get("shield").toString());
             inv = Byte.parseByte(hash.get("inv").toString());
+            shield = Byte.parseByte(hash.get("shield").toString());
+
         }
 
-        int pageNum = 1;
-        if(pageNo != null && pageNo != 0){
-            pageNum=pageNo;
-        }
+
         Integer totalCount = clerkMapper.bindingCollectionSuppliersGoodsListCount(business_id,suppliersId ,name ,shield, inv  );
         Page page = new Page(pageNum,totalCount);
         List<HashMap> hashMaps = clerkMapper.bindingCollectionSuppliersGoodsList(business_id , suppliersId ,name ,  shield ,inv ,page.getStartIndex() ,page.getPageSize());
@@ -752,7 +751,7 @@ public class ClerkServiceImpl implements ClerkService {
 
         //APP点打印只能调用飞蛾打印
         List<Printer> printers = null;
-        if (print == 1 ){
+        if (print != null && print == 1 ){
             Integer bid = shopMapper.shopipByTokenAndRole(token, role);
             printers = menuMapper.queryPrinter(bid , 0);
             if (printers.size() <=  0 ){
@@ -771,26 +770,27 @@ public class ClerkServiceImpl implements ClerkService {
         if (SM.getType() == 1){  //SM.getType() 0店铺APP购物车，1员工APP购物车
             staff_id = SM.getOp_id();
         }
+        //通过员工登录token查询员工所在店铺ID和员工姓名
+        HashMap staff = clerkMapper.staffNameAndBusiness_id(token);
+        if (staff == null ){
+            throw new NullPointerException("登录失效");
+        }
         //生成订单号
         String orderNumber = OrderCodeFactory.getPurchaseOrder((long) SM.getOp_id(), 5);
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setOrder_number(orderNumber); //订单号
-        purchaseOrder.setNo(OrderCodeFactory.getStringRandom(3,3));
         purchaseOrder.setSuppliers_id(SM.getConsume_id()); //供应商ID
-        purchaseOrder.setBeizhu(beizhu); //备注
+        purchaseOrder.setOrder_number(orderNumber); //订单号
         purchaseOrder.setFreight(freight); // 运费
         purchaseOrder.setDifference_price(difference_price); //差价
+        purchaseOrder.setNo(OrderCodeFactory.getStringRandom(3,3));
+        purchaseOrder.setBeizhu(beizhu); //备注
         purchaseOrder.setPrice(price); //订单总金额
         purchaseOrder.setStatus(0);
         purchaseOrder.setCreate_time(new Date());
         purchaseOrder.setPrint_frequ(print); //0未打印
         purchaseOrder.setMold(mold); //销售单
         purchaseOrder.setStaff_id(staff_id);
-        //通过员工登录token查询员工所在店铺ID和员工姓名
-        HashMap staff = clerkMapper.staffNameAndBusiness_id(token);
-        if (staff == null ){
-            throw new NullPointerException("登录失效");
-        }
+
         purchaseOrder.setMaking(staff.get("name").toString()); //制单人
         purchaseOrder.setBusiness_id(Integer.valueOf(staff.get("business_id").toString())); //店铺ID
         //添加采购订单
@@ -821,6 +821,8 @@ public class ClerkServiceImpl implements ClerkService {
                 inventoryMapper.addGiveGoods(give);
             }
 
+            //采购入库开单，先增加产品的虚拟库存
+            shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()) );
             purchaseOrderDetail.setGoods_id(Integer.valueOf(mall.get("goods_id").toString())); //产品ID
             purchaseOrderDetail.setPurchase_number(Double.valueOf(mall.get("num").toString())); //采购数量
             purchaseOrderDetail.setPurchase_price(Double.valueOf(mall.get("price").toString())); //采购单价
@@ -868,11 +870,13 @@ public class ClerkServiceImpl implements ClerkService {
     //销售收款(默认进来数据不加载，通过扫一扫或搜索)
     @Override
     public Page saleReceivables(String token ,Integer role, Integer pageNo, String name  ,String number) throws Exception {
-        Integer business_id = shopMapper.shopipByTokenAndRole(token ,role);
+
         int pageNum = 1 ;
-        if(pageNo != null && pageNo != 0 ){
+        if( IntegerUtils.isNotEmpty(pageNo)){
             pageNum = pageNo;
         }
+        Integer business_id = shopMapper.shopipByTokenAndRole(token ,role);
+
         Integer totalCount = clerkMapper.saleReceivablesCount(new Paramt( business_id,name ,number));
         Page page = new Page(pageNum ,totalCount) ;
         List<HashMap> hashMaps = clerkMapper.saleReceivables(new Paramt( business_id ,name ,number ,page.getStartIndex() ,page.getPageSize()));
@@ -946,7 +950,7 @@ public class ClerkServiceImpl implements ClerkService {
     public Page payrollRecords(String token, Integer role, Integer pageNo, String startTime, String endTime) {
         Integer business_id = shopMapper.shopipByTokenAndRole(token ,role);
         int pageNum = 1 ;
-        if(pageNo != null && pageNo != 0 ){
+        if( IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
 
@@ -976,7 +980,7 @@ public class ClerkServiceImpl implements ClerkService {
     public Page shareUserOrder(String token, Integer role ,Integer pageNo, Integer type,Integer bindingID , String name, String startTime, String endTime) {
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
         int pageNum = 1 ;
-        if(pageNo != null && pageNo != 0 ){
+        if(IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
         Integer tatolCount = clerkMapper.shareUserOrderCount(new Paramt(bid , type , bindingID , name , startTime , endTime ));
