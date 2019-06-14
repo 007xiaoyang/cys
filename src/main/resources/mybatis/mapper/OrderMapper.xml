@@ -568,7 +568,8 @@
 
     <!--未到货的订单取消-->
     <update id="updateOrderConfirmOrCancelStatus">
-        update shengxian_order set status = #{status},audit_time = #{audit_time}, deliver = #{deliver} ,ck = 0 ,push_state = 0
+        update shengxian_order set status = #{status},audit_time = #{audit_time},
+        deliver = #{deliver} ,ck = 0 ,push_state = 0 ,print_frequ = 1
         where id = #{id}
     </update>
 

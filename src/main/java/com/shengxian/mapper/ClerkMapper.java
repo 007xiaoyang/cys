@@ -426,10 +426,10 @@ public interface ClerkMapper {
     /**
      * 通过购物车ID查询购物车详情
      * @param sm_id 购物车ID
-     * @param mold 0录入订单，1采购入库
+     * @param // 0录入订单，1采购入库
      * @return
      */
-    List<HashMap> ShoppingMallGoodsListBySMID(@Param("sm_id") Integer sm_id ,@Param("mold") Integer mold);
+    List<HashMap> ShoppingMallGoodsListBySMID(@Param("sm_id") Integer sm_id );
 
     /**
      * 通过token查询员工姓名店铺ID
@@ -616,7 +616,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    Integer addWXShareRecord(@Param("id") String id , @Param("shareId") String shareId  , @Param("price") Double price , @Param("startTime") String startTime,  @Param("endTime") String endTime);
+    Integer addWXShareRecord(@Param("id") String id ,@Param("bindingId") Integer bindingId , @Param("shareId") String shareId  , @Param("price") Double price , @Param("startTime") String startTime,  @Param("endTime") String endTime);
 
 
     /**

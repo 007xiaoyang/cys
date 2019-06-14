@@ -836,7 +836,7 @@ public class ClerkContorller {
             if (IntegerUtils.isEmpty(count)){
                 return message.code(Message.codeFailured).message("下单失败");
             }
-            return message.code(Message.codeSuccessed).data(1).message("下单成功");
+            return message.code(Message.codeSuccessed).data(count).message("下单成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
@@ -1088,6 +1088,9 @@ public class ClerkContorller {
     })
     public Message shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String startTime , String endTime ){
         Message message= Message.non();
+        if (IntegerUtils.isEmpty(bindingID)){
+            return message.code(Message.codeFailured).message("要指定客户才能分享～");
+        }
         try {
             String count = clerkService.shareWXRecord(token ,role ,type ,bindingID ,name ,startTime  ,endTime);
             return message.code(Message.codeSuccessed).data(count).message("分享成功");
