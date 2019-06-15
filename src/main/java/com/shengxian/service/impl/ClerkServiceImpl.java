@@ -1008,7 +1008,7 @@ public class ClerkServiceImpl implements ClerkService {
             sb.append(shareId + ",");
         }
         Double sharePrice = clerkMapper.userSaleDetailDownloadTatolMoney(new Paramt(bid, type, bindingID, name, startTime, endTime));
-
+        System.out.println(sb.toString());
         //添加到微信分享记录表里
         String uuid = GroupNumber.getUUID();
         Integer count = clerkMapper.addWXShareRecord(uuid, sb.toString() , sharePrice , startTime ,endTime );
