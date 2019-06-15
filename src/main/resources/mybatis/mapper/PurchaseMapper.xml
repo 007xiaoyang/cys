@@ -406,7 +406,8 @@
 
     <!--查询采购欠款订单总金额-->
     <select id="purchaseArrearsOrderTatolMoney" resultType="HashMap">
-        select a.price ,b.retreat_price , a.money2 ,b.retreat_money2  from
+        select a.price ,b.retreat_price , ifnull(a.money2 , 0)money2 ,ifnull(b.retreat_money2 , 0)retreat_money2
+        from
         (select ifnull(sum(p.price),0)price ,sum(p.money2)money2
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id

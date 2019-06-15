@@ -8,6 +8,7 @@ import com.shengxian.entity.clerkApp.ShoppingMall;
 import com.shengxian.entity.clerkApp.ShoppingMallDateil;
 import com.shengxian.mapper.*;
 import com.shengxian.service.ClerkService;
+import io.swagger.models.auth.In;
 import org.apache.http.cookie.SM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,8 +135,8 @@ public class ClerkServiceImpl implements ClerkService {
         //退货未到货的订单总金额
         Double retreat_price = clerkMapper.noArrivedOrderTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,1));
 
-        hashMap.put("price" ,new BigDecimal(price).setScale(2,BigDecimal.ROUND_CEILING));
         hashMap.put("retreat_price" ,new BigDecimal(retreat_price).setScale(2,BigDecimal.ROUND_CEILING));
+        hashMap.put("price" ,new BigDecimal(price).setScale(2,BigDecimal.ROUND_CEILING));
         page.setRecords(hashMaps);
         page.setHashMap(hashMap);
         return page;
@@ -165,14 +166,16 @@ public class ClerkServiceImpl implements ClerkService {
     public Page uncollectedOrderList(String token ,Integer role , Integer pageNo, String name) throws NullPointerException, Exception {
         HashMap hashMap = new HashMap();
 
+        int pageNum = 1 ;
+        if (IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum = pageNo;
+        }
+        //通过token查询商家ID和员工ID
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
         if (clerk == null ){
             throw new NullPointerException("登录失效");
         }
-        int pageNum = 1 ;
-        if (pageNo != null && pageNo != 0 ){
-            pageNum = pageNo;
-        }
+
         //未收款的订单总数
         Integer totalCount = clerkMapper.uncollectedOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name));
         Page page = new Page(pageNum,totalCount);
@@ -192,15 +195,16 @@ public class ClerkServiceImpl implements ClerkService {
     //欠款的订单
     @Override
     public Page arrearsOrderList(String token ,Integer role , Integer pageNo, String name) throws NullPointerException, Exception {
+        int pageNum = 1 ;
+        if (IntegerUtils.isNotEmpty(pageNo)){
+            pageNum = pageNo;
+        }
         HashMap hashMap = new HashMap();
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
         if (clerk == null ){
             throw new NullPointerException("登录失效");
         }
-        int pageNum = 1 ;
-        if (pageNo != null && pageNo != 0 ){
-            pageNum = pageNo;
-        }
+
         Integer totalCount = clerkMapper.arrearsOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name));
         Page page = new Page(pageNum,totalCount);
         List<HashMap> hashMaps = clerkMapper.arrearsOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,page.getStartIndex(),page.getPageSize()) );
@@ -226,7 +230,7 @@ public class ClerkServiceImpl implements ClerkService {
             throw new NullPointerException("登录失效");
         }
         int pageNum = 1 ;
-        if (pageNo != null && pageNo != 0 ){
+        if (IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
         Integer totalCount = clerkMapper.completeOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name,startTime ,endTime));
@@ -353,11 +357,11 @@ public class ClerkServiceImpl implements ClerkService {
         }
 
         int pageNum = 1;
-        if(pageNo != null && pageNo != 0){
+        if( IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
-        Integer cid = null;
-        Integer level = null;
+        Integer level = null ,cid = null;
+
         //判断是大类别id还是小类别id
         Integer le = clerkMapper.largeClassOrSmalClass(category_id);
         if (le == null || le == 0){ //判断le如果等于null，就代表是大类下的产品
@@ -379,6 +383,10 @@ public class ClerkServiceImpl implements ClerkService {
     //pp店铺类别下的产品（供应商）
     @Override
     public Page businessGoodsListSuppliers(String token, Integer role, Integer pageNo, Integer suppliersId,Integer categoryId, String name) throws Exception {
+        int pageNum = 1;
+        if(IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum=pageNo;
+        }
         //通过员工登录token员工所在的商家ID
         Integer business_id =  shopMapper.shopipByTokenAndRole(token , role);
 
@@ -392,24 +400,20 @@ public class ClerkServiceImpl implements ClerkService {
             shield = Byte.parseByte(hash.get("shield").toString());
             inv = Byte.parseByte(hash.get("inv").toString());
         }
-
-        int pageNum = 1;
-        if(pageNo != null && pageNo != 0){
-            pageNum=pageNo;
-        }
-        Integer cid = null;
-        Integer level = null;
+        Integer cid = null ,level = null;
         //判断是大类别id还是小类别id
         Integer le = clerkMapper.largeClassOrSmalClass(categoryId);
-        if (le == null || le == 0){ //判断le如果等于null，就代表是大类下的产品
-            level = categoryId;
-        }else {
+        if (le != null && le != 0 ){ //判断le如果等于null，就代表是大类下的产品
             cid = categoryId;
+
+        }else {
+            level = categoryId;
         }
 
-
+        //app店铺类别下的产品总数（供应商）
         Integer totalCount = clerkMapper.businessGoodsListSuppliersCount(new AppParameter(business_id , suppliersId ,cid ,level ,name ,shield , inv));
         Page page = new Page(pageNum, totalCount);
+        //app店铺类别下的产品（供应商）
         List<HashMap> hashMaps = clerkMapper.businessGoodsListSuppliers(new AppParameter(business_id , suppliersId ,cid ,level ,name ,shield , inv ,page.getStartIndex() ,page.getPageSize()));
         page.setRecords(hashMaps);
         return page;
@@ -616,7 +620,11 @@ public class ClerkServiceImpl implements ClerkService {
         double profit = 0;
         OrderDetail orderDetail = new OrderDetail();
         //通过购物车ID查询购物车详情
-        List<HashMap> mallDetail = clerkMapper.ShoppingMallGoodsListBySMID(sm_id ,0);
+        List<HashMap> mallDetail = clerkMapper.ShoppingMallGoodsListBySMID(sm_id );
+        if (mallDetail.size() <= 0 ){
+            throw new NullPointerException("没有商品不能下单哟～");
+        }
+
         double costPrice = 0;
         for (HashMap mall: mallDetail ) {
             //根据type来判断是销售的还是报损的
@@ -633,8 +641,16 @@ public class ClerkServiceImpl implements ClerkService {
                 //添加报损记录
                 inventoryMapper.addLossGoods(give);
             }
-            //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
-            shopMapper.reduceGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()));
+
+           if(mold != null && mold == 0 ){
+               //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
+               shopMapper.reduceGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()));
+
+           }else if(mold != null && mold == 1){
+               //销售退货先增加产品的虚拟库存，到货时根据订单id增加实际库存
+               shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()));
+
+           }
             orderDetail.setGoods_id(Integer.valueOf(mall.get("goods_id").toString())); //产品ID
             orderDetail.setOrder_number(Double.valueOf(mall.get("num").toString())); //购买数量
             orderDetail.setOrder_price(Double.valueOf(mall.get("price").toString())); //购买单价
@@ -800,7 +816,10 @@ public class ClerkServiceImpl implements ClerkService {
         double profit = 0;
         PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
         //通过购物车ID查询购物车详情
-        List<HashMap> mallDetail = clerkMapper.ShoppingMallGoodsListBySMID(sm_id ,1);
+        List<HashMap> mallDetail = clerkMapper.ShoppingMallGoodsListBySMID(sm_id );
+        if (mallDetail.size() <= 0 ){
+            throw new NullPointerException("没有商品不能下单哟～");
+        }
         for (HashMap mall: mallDetail ) {
             //根据type来判断是采购的还是赠送的
             if (Integer.valueOf(mall.get("type").toString()) == 0){
@@ -820,9 +839,16 @@ public class ClerkServiceImpl implements ClerkService {
                 give.setStatus(1);//0默认在赠送单里赠送，1在采购单里赠送
                 inventoryMapper.addGiveGoods(give);
             }
+            if(mold != null && mold == 0 ){
+                //采购入库开单，先增加产品的虚拟库存
+                shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()) );
 
-            //采购入库开单，先增加产品的虚拟库存
-            shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()) );
+            }else if(mold != null && mold == 1){
+                //采购退货开单，先减少产品的虚拟库存
+                shopMapper.reduceGoodsFictitiousInventory(Integer.valueOf(mall.get("goods_id").toString()) , Double.valueOf(mall.get("num").toString()) );
+
+            }
+
             purchaseOrderDetail.setGoods_id(Integer.valueOf(mall.get("goods_id").toString())); //产品ID
             purchaseOrderDetail.setPurchase_number(Double.valueOf(mall.get("num").toString())); //采购数量
             purchaseOrderDetail.setPurchase_price(Double.valueOf(mall.get("price").toString())); //采购单价
@@ -1011,7 +1037,7 @@ public class ClerkServiceImpl implements ClerkService {
         System.out.println(sb.toString());
         //添加到微信分享记录表里
         String uuid = GroupNumber.getUUID();
-        Integer count = clerkMapper.addWXShareRecord(uuid, sb.toString() , sharePrice , startTime ,endTime );
+        Integer count = clerkMapper.addWXShareRecord(uuid , bindingID , sb.toString() , sharePrice , startTime ,endTime );
         if (count == null || count == 0){
             throw new NullPointerException("分享失败");
         }

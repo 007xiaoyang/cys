@@ -84,7 +84,7 @@
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
         </if>
-        order by o.create_time asc limit #{startIndex} ,#{pageSize}
+        order by o.create_time desc limit #{startIndex} ,#{pageSize}
     </select>
 
     <!--未到货的订单-->
@@ -544,7 +544,7 @@
         select smd.goods_id,smd.num ,smd.price,smd.type
         from shengxian_shopping_mall_dateil smd
         inner join shengxian_goods g on g.id = smd.goods_id and g.is_del = 0
-        where smd.mold = #{mold} and  smd.sm_id = #{sm_id}
+        where  smd.sm_id = #{sm_id}
     </select>
 
     <!--通过token查询员工姓名店铺ID-->
@@ -624,6 +624,7 @@
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del = 0 and bd.is_del =0 and o.status =4   and o.business_id = #{business_id}
+        and o.state in (0,2)
         <if test="name != null and name != ''">
             and (o.no like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
         </if>
@@ -638,6 +639,7 @@
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del = 0 and bd.is_del =0 and o.status =4   and o.business_id = #{business_id}
+        and o.state in (0,2)
         <if test="name != null and name != ''">
             and (o.no like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
         </if>
@@ -877,7 +879,7 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        order by o.audit_time desc
+        order by o.audit_time desc limit #{startIndex} ,#{pageSize}
     </select>
 
     <!--客户账单统计-->
@@ -951,29 +953,30 @@
 
     <!--添加到微信分享记录表里-->
     <insert id="addWXShareRecord">
-        insert into shengxian_WXShareUserRecord (id , share_id ,price ,startTime ,endTime)
-        values ( #{id} ,#{shareId} ,#{price} ,#{startTime} ,#{endTime});
+        insert into shengxian_WXShareUserRecord (id ,binding_id , share_id ,price ,startTime ,endTime)
+        values ( #{id} , #{bindingId} , #{shareId} ,#{price} ,#{startTime} ,#{endTime});
     </insert>
     
     
     <!--客户账单的微信分享-->
     <select id="selectUserWXShareRecord" resultType="HashMap">
-        select price ,startTime ,endTime
-        from shengxian_WXShareUserRecord where id = #{id}
+        select wx.price ,wx.startTime ,wx.endTime , bd.user_name
+        from shengxian_WXShareUserRecord  wx
+        inner join shengxian_binding bd on bd.id = wx.binding_id
+        where wx.id = #{id}
     </select>
 
     <!--客户账单的微信分享商品明细-->
     <select id="selectWXShareGoodDetail" resultType="HashMap">
-        select od.id ,bd.user_name , g.`name`, od.profit , DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
+        select od.id , g.`name` , DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
         ( od.cost_price * od.order_number)cost_price,
         (od.order_number * od.order_price)sale_price,
         od.order_number ,od.order_price
         from shengxian_order_details od
         inner join shengxian_WXShareUserRecord wx on FIND_IN_SET(od.id ,wx.share_id)
 		inner join shengxian_order o on o.id = od.order_id
-        inner join shengxian_binding bd on bd.id = o.binding_id
         left join shengxian_goods g on g.id = od.goods_id
-        where wx.id = #{id}
+        where wx.id = #{id}  order by od.id desc
     </select>
 
 

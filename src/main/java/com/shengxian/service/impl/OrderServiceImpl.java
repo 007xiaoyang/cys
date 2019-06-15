@@ -1062,7 +1062,7 @@ public class OrderServiceImpl implements OrderService {
             //通过用户id查询用户积分id
             Integer integar_id = shopMapper.selectBindingIntegraId(binding_id);
             if (integar_id == null){
-                throw new NullPointerException("用户积分id不存在");
+                throw new NullPointerException("用户积分id不存在 ");
             }
 
             double value1 = 0;
@@ -1158,10 +1158,10 @@ public class OrderServiceImpl implements OrderService {
                 }
 
             }//判断订单是否有员工接单..
-        }else if (status == 6 ){
+        }else if ( status == 6 ){
 
-            //店铺取消订单了，判断此订单是否使用个人优惠券
-            if (order.get("coupon_id") != null && !order.get("coupon_id").toString().equals("0")){
+            // 店铺取消订单了，判断此订单是否使用个人优惠券
+            if (order.get("coupon_id") != null &&  !order.get("coupon_id").toString().equals("0")){
 
                 orderMapper.updateUserCouponState(Integer.valueOf(order.get("coupon_id").toString() ) , 0);
             }
@@ -1188,7 +1188,7 @@ public class OrderServiceImpl implements OrderService {
         //查询当天是否有结算过
         Settlement sett = orderMapper.financialSettlement(bid,0);
         if ( sett != null && DateUtil.compareDate1(DateUtil.getDay(), sett.getTime() ) == true ){
-            throw new NullPointerException("今天的账单已经结算了");
+            throw new NullPointerException("今天的账单已经结算了 ");
         }
 
 
