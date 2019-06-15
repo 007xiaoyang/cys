@@ -299,7 +299,8 @@
     <select id="staffSelectThreeMenu" resultMap="menuMap">
             select m.id ,m.menu   from shengxian_menu_three mt
             inner join shengxian_menu m on m.id = mt.menu_id
-            where mt.sort = #{sort} and mt.state = 1 and mt.staff_id = (select id from shengxian_staff where token = #{token}  and is_del = 0)
+            where mt.sort = #{sort} and mt.state = 1
+             and mt.staff_id = (select id from shengxian_staff where token = #{token}  and is_del = 0)
     </select>
 
     <!--员工APP菜单-->

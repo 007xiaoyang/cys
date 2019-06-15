@@ -1071,7 +1071,7 @@ public interface ShopMapper {
      * @param role
      * @return
      */
-    String businessPassword(@Param("token") String token ,Integer role );
+    String businessPassword(@Param("token") String token ,@Param("role") Integer role );
 
     /**
      * 轮播图

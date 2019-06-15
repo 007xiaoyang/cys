@@ -781,21 +781,20 @@ public class OrderServiceImpl implements OrderService {
         Integer count = null;
 
         //通过订单id查询订单status状态和part区分
-        HashMap statusAndPart = orderMapper.statusAndPartById(id);
+        HashMap SAP = orderMapper.statusAndPartById(id);
 
-
-        if (statusAndPart.get("status").toString().equals(status) ){
+        if (SAP.get("status").toString().equals(status) ){
             throw new NullPointerException("订单已被操作了");
         }
 
         int staff_id = 0;
 
-        if (status != 5  ){ // 不是拒绝订单
+        if (status != 5 && status != 6 ){ // 不是拒绝订单
 
             //判断是线上的订单还是线下的订单
 
             //线上的订单需要减库存 条件是 :part == 1 && 查询订单原来的状态：Integer.valueOf(statusAndPart.get("status").toString()) == 1
-            if (statusAndPart.get("part").toString().equals("1") && Integer.valueOf(statusAndPart.get("status").toString()) == 1){
+            if (SAP.get("part").toString().equals("1") && Integer.valueOf(SAP.get("status").toString()) == 1){
 
                 //通过订单id查询订单详情，
                 List<HashMap> hashMaps = orderMapper.detail(id);
@@ -812,13 +811,13 @@ public class OrderServiceImpl implements OrderService {
 
         }else if (status == 6){
             //店铺取消订单了，判断此订单是否使用个人优惠券
-            if (statusAndPart.get("coupon_id") != null && !statusAndPart.get("coupon_id").toString().equals("0")){
+            if (SAP.get("coupon_id") != null  && !SAP.get("coupon_id").toString().equals("0")){
                 //修改用户优惠券使用的状态为无使用中
-                orderMapper.updateUserCouponState(Integer.valueOf(statusAndPart.get("coupon_id").toString() ) , 0);
+                orderMapper.updateUserCouponState(Integer.valueOf(SAP.get("coupon_id").toString() ) , 0);
             }
         }
 
-        //修改订单状态（接受或拒绝）
+        //修改订单状态（接受或拒绝）print_frequ
         return orderMapper.updateAcceptOrRejectionStatus(id,staff_id ,status,new Date(),reason);
     }
 

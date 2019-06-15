@@ -1057,9 +1057,13 @@ public class ClerkContorller {
     })
     public Message shareUserOrder(String token , Integer role ,Integer pageNo,Integer type ,Integer bindingID ,String name ,String startTime , String endTime ){
         Message message= Message.non();
+        String start = DateUtil.getDay();  String end = DateUtil.getDay();
         try {
-            Page page = clerkService.shareUserOrder(token ,role ,pageNo ,type ,bindingID ,name ,startTime  ,endTime);
-
+            if ( IntegerUtils.isEmpty(startTime ,endTime)){
+                //当没有传开始时间和结束时间，默认查询当天的订单
+                start = startTime; end = endTime;
+            }
+            Page page = clerkService.shareUserOrder(token ,role ,pageNo ,type ,bindingID ,name ,start  ,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());

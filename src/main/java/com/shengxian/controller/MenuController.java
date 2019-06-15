@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -449,17 +450,12 @@ public class MenuController {
     })
     public Message selectThreeMenu(String token ,Integer role ,Integer sort){
         Message message = Message.non();
-        try {
-            if (role != 1 && role != 2) {
-                return message.code(Message.codeFailured).message("角色不能为空");
-            }
-            List<Menu> menus = menuService.selectThreeMenu(token, role, sort);
-            return message.code(Message.codeSuccessed).data(menus).message("获取成功");
-        }catch (Exception e){
-            log.error("菜单控制层（/menu/selectThreeMenu）接口报错---------"+e.getMessage());
-            return message.code(Message.codeFailured).message(Global.ERROR);
-        }
 
+        if (role != 1 && role != 2) {
+            return message.code(Message.codeFailured).message("角色不能为空");
+        }
+        List<Menu> menus = menuService.selectThreeMenu(token, role, sort);
+        return message.code(Message.codeSuccessed).data(menus).message("获取成功");
     }
 
     /** 员工APP菜单
@@ -558,11 +554,9 @@ public class MenuController {
     public Message queryPrinter(String token,Integer role ){
         Message message = Message.non();
         try {
-
             List<Printer> printers = menuService.queryPrinter(token ,role);
             return message.code(Message.codeSuccessed).data(printers).message("查询成功");
-        }catch (Exception e){
-            log.error("菜单控制层（/menu/queryPrinter）接口报错---------"+e.getMessage());
+        }catch (UnsupportedEncodingException e){
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }

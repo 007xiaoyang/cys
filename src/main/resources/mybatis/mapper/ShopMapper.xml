@@ -1070,7 +1070,7 @@
         </if>
         <if test="role == 2 ">
             select b.`password` from shengxian_staff s,shengxian_business b
-            where s.is_del = 0 and b.is_del=0 and s.business_id=b.id
+            where s.is_del = 0 and b.is_del=0 and s.business_id = b.id
             and s.token= #{token}
         </if>
     </select>
