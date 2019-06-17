@@ -248,7 +248,8 @@ public class MenuServiceImpl implements MenuService {
         if (role == 1){
             return menuMapper.businessSelectThreeMenu(sort);
         }else {
-            return menuMapper.staffSelectThreeMenu(token , sort);
+            Integer id = shopMapper.registerIdByTokenAndRole(token, role);
+            return menuMapper.staffSelectThreeMenu(id , sort);
         }
     }
 

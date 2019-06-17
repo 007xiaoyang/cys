@@ -302,7 +302,7 @@ public class ClerkServiceImpl implements ClerkService {
         }
 
         //根据token和角色查询注册ID
-        Integer id = shopMapper.selectIdByTokenAndRole(token, role);
+        Integer id = shopMapper.registerIdByTokenAndRole(token, role);
 
         //已录入的订单总数
         Integer totalCount = clerkMapper.haveJoinedShoppingcartCount(id , mold , type );
@@ -424,7 +424,7 @@ public class ClerkServiceImpl implements ClerkService {
     @Transactional
     public Integer addShoppingMall(String token , Integer role, Integer binding_id, Integer goods_id, Integer type ,Integer mold, Double price  ,Double num) throws Exception {
 
-        Integer op_id = shopMapper.selectIdByTokenAndRole(token, role); //获取注册id
+        Integer op_id = shopMapper.registerIdByTokenAndRole(token, role); //获取注册id
 
 
         //通过登录的注册id和绑定客户ID查询是否有商城购物车id
@@ -521,7 +521,7 @@ public class ClerkServiceImpl implements ClerkService {
     public HashMap currentBindingShoppingMallCountAndMoney(String token ,Integer role , Integer binding_id ,Integer mold)throws Exception {
         HashMap hashMap = new HashMap();
 
-        Integer op_id = shopMapper.selectIdByTokenAndRole(token, role); //获取注册id
+        Integer op_id = shopMapper.registerIdByTokenAndRole(token, role); //获取注册id
 
         //通过员工ID和客户绑定ID查询购物车信息
         HashMap hash = clerkMapper.selectShoppingMallInfo(role , op_id, binding_id, mold);
@@ -957,7 +957,7 @@ public class ClerkServiceImpl implements ClerkService {
     @Override
     public Page percentageClassification(String token, Integer role, Integer pageNo, Integer type, String startTime, String endTime) {
 
-        Integer id = shopMapper.selectIdByTokenAndRole(token ,role);
+        Integer id = shopMapper.registerIdByTokenAndRole(token ,role);
         int pageNum = 1 ;
         if(pageNo != null && pageNo != 0 ){
             pageNum = pageNo;

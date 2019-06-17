@@ -86,15 +86,15 @@ public interface ShopMapper {
      * @param role 1店铺，2员工
      * @return
      */
-    Integer selectIdByTokenAndRole(@Param("token") String token ,@Param("role") Integer role );
+    Integer registerIdByTokenAndRole(@Param("token") String token ,@Param("role") Integer role );
 
     /**
-     * 通过注册ID和角色查询店铺信息
-     * @param id
+     * 通过token和角色查询店铺信息
+     * @param token
      * @param role 1店铺，2员工
      * @return
      */
-    HashMap selectShopInfoByIdAndRole(@Param("id") Integer id ,@Param("role") Integer role);
+    HashMap selectShopInfoByIdAndRole(@Param("token") String token  ,@Param("role") Integer role);
 
 
     /**

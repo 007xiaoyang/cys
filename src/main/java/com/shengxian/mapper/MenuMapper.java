@@ -355,7 +355,7 @@ public interface MenuMapper {
      * @param sort
      * @return
      */
-    List<Menu> staffSelectThreeMenu(@Param("token") String token , @Param("sort") Integer sort );
+    List<Menu> staffSelectThreeMenu(@Param("id") Integer id , @Param("sort") Integer sort );
 
     /**
      * 员工APP菜单

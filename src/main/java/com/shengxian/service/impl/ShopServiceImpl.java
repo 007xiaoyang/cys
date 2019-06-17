@@ -158,30 +158,23 @@ public class ShopServiceImpl implements ShopService {
         @Override
         public HashMap home(String token ,Integer role) throws NullPointerException, Exception{
 
-            //根据token和角色查询注册ID
-            Integer id = shopMapper.selectIdByTokenAndRole(token, role);
-            if (id == null ){
+            //通过token和角色查询店铺信息
+            HashMap shop = shopMapper.selectShopInfoByIdAndRole(token , role);
+            if (shop == null ){
                 throw new NullPointerException("您的账号登录失效或在另一台设备登录");
             }
+            List<Menu> oneMenu = null;
 
-            //通过注册ID和角色查询店铺信息
-            HashMap shop = shopMapper.selectShopInfoByIdAndRole(id, role);
-
-            if (role == 1 ){ //角色1为店铺
-
+            if (role == 1 ){
                 //商家没权限，获取一级所有的菜单，
-                List<Menu> menu = menuMapper.selectOneMenuList();
-
-                shop.put("menu", menu);
+                oneMenu = menuMapper.selectOneMenuList();
 
             }else if(role == 2) {
-
                 //通过员工id查询一级菜单权限
-                List<Menu> oneMenu = menuMapper.findOneMenu(id, 1);
-
-                shop.put("menu", oneMenu);
+                oneMenu = menuMapper.findOneMenu( Integer.valueOf(shop.get("id").toString()) , 1);
 
             }
+            shop.put("menu", oneMenu);
             return shop;
         }
 
@@ -445,15 +438,15 @@ public class ShopServiceImpl implements ShopService {
             HashMap goods = shopMapper.findGoodsByGid(goodsId);
 
             if (goods == null) {
-                throw new NullPointerException("产品ID不存在");
+                throw new NullPointerException(" 产品ID不存在");
             }
 
             //查询当前登录的是否是员工账号,是则判断进价是否屏蔽
             HashMap shield = purchaseMapper.selectShield(token);
             if (shield != null && Integer.valueOf(shield.get("shield").toString()) == 1){
-                goods.put("cost","进价不可见");
+                goods.put("cost","进价不可见 ");
             }else {
-                goods.put("cost","进价可见");
+                goods.put("cost","进价可见 ");
             }
 
             //通过产品ID查询产品轮播图片

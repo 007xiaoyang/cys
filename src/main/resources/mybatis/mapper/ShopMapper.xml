@@ -85,19 +85,19 @@
     <!--通过注册ID和角色查询店铺信息-->
     <select id="selectShopInfoByIdAndRole" resultType="HashMap">
         <if test="role == 1">
-            select id,phone,store_name,DATEDIFF(duration,NOW())duration
-            from shengxian_business where id=#{id}
+            select id , phone,store_name,DATEDIFF(duration,NOW())duration
+            from shengxian_business where is_del = 0 and token = #{token}
         </if>
         <if test="role == 2">
-            select c.id ,c.phone,s.store_name,DATEDIFF(s.duration,NOW())duration
-            from shengxian_business s ,shengxian_staff c
-            where s.id=c.business_id and c.id=#{id}
+            select s.id ,s.phone,b.store_name,DATEDIFF(b.duration,NOW())duration
+            from shengxian_business b ,shengxian_staff s
+            where b.id = s.business_id and  b.is_del = 0 and s.is_del = 0  and s.token = #{token}
         </if>
     </select>
 
     <!--找回密码-->
     <update id="updateRetrievePwd">
-        update shengxian_business set password=#{password} where phone=#{phone}
+        update shengxian_business set password = #{password} where phone = #{phone}
     </update>
 
     <!--通过token和role查询店铺ID-->
