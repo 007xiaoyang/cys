@@ -26,16 +26,16 @@
         select count(o.id)
         from shengxian_binding bd
         inner join shengxian_order o on bd.id = o.binding_id
-        where o.is_del = 0 and bd.is_del =0 and o.status in (1,2) and o.business_id = #{business_id} and o.mold = 0
+        where o.is_del = 0 and bd.is_del =0 and o.status in (1,2) and o.business_id = #{business_id}
     </select>
 
     <!--查询共享订单集合-->
     <select id="sharingOrder" resultType="HashMap">
         select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.making,o.order_number ,o.create_time,
-        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.mold
         from shengxian_binding bd
         inner join shengxian_order o on bd.id = o.binding_id
-        where o.is_del = 0 and bd.is_del =0 and o.status in (1,2)  and o.business_id = #{business_id} and o.mold = 0
+        where o.is_del = 0 and bd.is_del =0 and o.status in (1,2)  and o.business_id = #{business_id}
         order by o.create_time desc limit #{startIndex} ,#{pageSize}
     </select>
 
@@ -51,8 +51,7 @@
 
     <!--通过订单ID查询订单详情的产品信息-->
     <select id="orderDateilGoods" resultType="HashMap">
-        select g.`name`,g.units, od.order_number ,od.order_price ,(od.order_number *od.order_price )total,od.type ,
-        (select img from shengxian_goods_img gi where g.id= gi.goods_id order by gi.id asc limit 1)img
+        select g.`name`,g.units, od.order_number ,od.order_price ,(od.order_number *od.order_price )total,od.type
         from shengxian_order_details od
         inner join (select id ,name ,units,is_del  from shengxian_goods )g on g.id = od.goods_id and g.is_del =0
         where od.order_id = #{order_id}
