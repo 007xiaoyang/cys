@@ -783,7 +783,7 @@ public class OrderServiceImpl implements OrderService {
         //通过订单id查询订单status状态和part区分
         HashMap SAP = orderMapper.statusAndPartById(id);
 
-        if (SAP.get("status").toString().equals(status) ){
+        if (Integer.valueOf(SAP.get("status").toString()) == status ||  Integer.valueOf(SAP.get("status").toString()) == 4 ){
             throw new NullPointerException("订单已被操作了");
         }
 

@@ -50,7 +50,7 @@
         <if test="role == 1">
             select id , token, is_disable as b_ble, 0 as s_ble , if_adopt ,DATEDIFF(duration,NOW())duration ,power,`password`
             from shengxian_business
-            where is_del=0 and phone = #{phone}
+            where is_del= 0 and phone = #{phone}
         </if>
         <!--员工登录-->
         <if test="role == 2">
@@ -112,27 +112,32 @@
 
     <!--通过店铺ID和级别level查询添加所有类别的总数-->
     <select id="selectCategoryCount" resultType="Integer">
-        select count(id) from shengxian_goods_category where business_id=#{bid} and level = #{level}
+        select count(id) from shengxian_goods_category
+        where business_id = #{bid} and level = #{level}
     </select>
 
     <!--根据一级类别id查询二级类别的最后一条序号-->
     <select id="findGoodsCategoryCodeByLevel" resultType="String">
-        select code from shengxian_goods_category where level=#{level} order by id desc limit 1
+        select code from shengxian_goods_category
+        where level = #{level} order by id desc limit 1
     </select>
 
     <!--根据一级类别id查询一级序号-->
     <select id="findOneCodeByLevel" resultType="String">
-         select code from shengxian_goods_category where id=#{id}
+         select code from shengxian_goods_category
+         where id = #{id}
     </select>
 
     <!--添加产品类别-->
     <insert id="addGoodsCategory">
-        insert into shengxian_goods_category(business_id,name,level,code)values(#{business_id},#{name},#{level},#{code})
+        insert into shengxian_goods_category(business_id ,name ,level ,code)
+        values(#{business_id} ,#{name} ,#{level} ,#{code})
     </insert>
 
     <!--查询服务商一级商品类别-->
     <select id="findOneCategoryList" resultType="HashMap">
-        select id,name,status from shengxian_goods_category where business_id=#{bid} and level = 0 order by status desc
+        select id,name,status from shengxian_goods_category
+        where business_id = #{bid} and level = 0 order by status desc
     </select>
 
     <!--根据一级类别id查询二级类别-->
@@ -142,7 +147,7 @@
 
     <!--判断是大类别还是小类别-->
     <select id="largeClassOrSmalClass" resultType="Integer">
-        select `level` from shengxian_goods_category  where id=#{id}
+        select `level` from shengxian_goods_category  where id = #{id}
     </select>
 
     <!--分页查询类别下的产品信息总数-->
@@ -151,18 +156,18 @@
         from shengxian_goods g
         inner join shengxian_goods_category gc on gc.id = g.category_id
         inner join (select actual ,fictitious ,goods_id from shengxian_goods_inventory ) gi on gi.goods_id = g.id
-        where g.is_del = 0 and g.business_id =#{business_id}
+        where g.is_del = 0 and g.business_id = #{business_id}
         <if test="category_id != null">
-            and g.category_id=#{category_id}
+            and g.category_id = #{category_id}
         </if>
         <if test="name != null and name != ''">
             and (g.name  LIKE CONCAT('%',#{name},'%') or g.number  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="barcode != null">
-            and g.barcode=#{barcode}
+            and g.barcode = #{barcode}
         </if>
         <if test="level != null">
-            and gc.level =#{level}
+            and gc.level = #{level}
         </if>
     </select>
 
@@ -192,7 +197,7 @@
 
     <!--修改产品类别-->
     <update id="updateGoodsCategory">
-        update shengxian_goods_category set name=#{name} where id=#{categoryId}
+        update shengxian_goods_category set name = #{name} where id = #{categoryId}
     </update>
 
     <!--查询当前的类别id是否是二级类别-->
@@ -665,12 +670,12 @@
 
     <!--获取电子协议-->
     <select id="agreement" resultType="HashMap">
-        select noticeContent from shengxian_notice   where distinguish =3
+        select noticeContent from shengxian_notice   where distinguish = 3
     </select>
 
     <!--通过商家id查询商家信息-->
     <select id="findBusinessInfo" resultType="HashMap">
-        select id, img,amount_set ,confine,business_hours,notice,telephone,address ,LAL
+        select id, img,amount_set ,confine,business_hours,notice,telephone,address
         from shengxian_business where id=#{id}
     </select>
 

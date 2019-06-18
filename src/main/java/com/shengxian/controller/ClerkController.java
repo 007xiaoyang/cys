@@ -1,16 +1,11 @@
 package com.shengxian.controller;
 
-import com.alibaba.druid.util.StringUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
 import com.shengxian.common.util.*;
-import com.shengxian.entity.Goods;
 import com.shengxian.entity.WageSettlement;
-import com.shengxian.entity.clerkApp.BOMap;
 import com.shengxian.entity.clerkApp.ShoppingMall;
 import com.shengxian.entity.clerkApp.ShoppingMallDateil;
 import com.shengxian.service.ClerkService;
-import com.shengxian.sysLog.SysLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,9 +30,9 @@ import java.util.List;
 @Api(description = "员工APP接口")
 @RestController
 @RequestMapping("/clerk")
-public class ClerkContorller {
+public class ClerkController {
 
-    private static Logger log = Logger.getLogger(ClerkContorller.class);
+    private static Logger log = Logger.getLogger(ClerkController.class);
 
     @Autowired
     private ClerkService clerkService;
