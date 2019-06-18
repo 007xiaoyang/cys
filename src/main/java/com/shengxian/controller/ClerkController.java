@@ -134,12 +134,14 @@ public class ClerkController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query")
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "客户名称或标识码" ,paramType = "query"),
+            @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query")
     })
-    public Message sharingOrder(String token ,Integer role ,Integer pageNo ){
+    public Message sharingOrder(String token ,Integer role ,Integer pageNo ,String name , String number){
         Message message = Message.non();
         try {
-            Page page  = clerkService.sharingOrder(token ,role ,pageNo);
+            Page page  = clerkService.sharingOrder(token ,role ,pageNo , name , number);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());

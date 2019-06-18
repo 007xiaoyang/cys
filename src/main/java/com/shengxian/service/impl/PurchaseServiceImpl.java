@@ -277,12 +277,29 @@ public class PurchaseServiceImpl implements PurchaseService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
+        //查询当前登录的是否是员工账号,是则判断进价是否屏蔽
+        HashMap shield = purchaseMapper.selectShield(token);
+
         //代采购报表总数
         Integer tatolCount = purchaseMapper.PurchasereportCount(bid,id);
         Page page = new Page(pageNum,tatolCount,20);
 
         //代采购报表
         List<HashMap> purchasereport = purchaseMapper.Purchasereport(bid,id, page.getStartIndex(), page.getPageSize());
+        for (HashMap hash:purchasereport){
+
+            if (shield != null && Integer.valueOf(shield.get("inv").toString()) == 1){
+                hash.put("inv","库存不可见");
+            }else {
+                hash.put("inv","库存可见");
+            }
+
+            if (shield != null && Integer.valueOf(shield.get("shield").toString()) == 1){
+                hash.put("cost","进价不可见");
+            }else {
+                hash.put("cost","进价可见");
+            }
+        }
         page.setRecords(purchasereport);
         return page;
     }

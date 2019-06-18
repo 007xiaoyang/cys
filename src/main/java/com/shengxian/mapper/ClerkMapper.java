@@ -57,19 +57,15 @@ public interface ClerkMapper {
 
     /**
      * 查询共享订单总数
-     * @param business_id
      * @return
      */
-    Integer sharingOrderCount(@Param("business_id") Integer business_id);
+    Integer sharingOrderCount(Paramt paramt);
 
     /**
      * 查询共享订单集合
-     * @param business_id
-     * @param startIndex
-     * @param pageSize
      * @return
      */
-    List<HashMap> sharingOrder(@Param("business_id") Integer business_id , @Param("startIndex") Integer startIndex , @Param("pageSize") Integer pageSize);
+    List<HashMap> sharingOrder(Paramt paramt);
 
     /**
      * 通过订单ID查询订单信息

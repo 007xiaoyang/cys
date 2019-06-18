@@ -27,6 +27,12 @@
         from shengxian_binding bd
         inner join shengxian_order o on bd.id = o.binding_id
         where o.is_del = 0 and bd.is_del =0 and o.status in (1,2) and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and ( bd.user_name like CONCAT('%',#{name},'%') or o.no like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
     </select>
 
     <!--查询共享订单集合-->
@@ -36,6 +42,12 @@
         from shengxian_binding bd
         inner join shengxian_order o on bd.id = o.binding_id
         where o.is_del = 0 and bd.is_del =0 and o.status in (1,2)  and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and ( bd.user_name like CONCAT('%',#{name},'%') or o.no like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
         order by o.create_time desc limit #{startIndex} ,#{pageSize}
     </select>
 

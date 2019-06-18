@@ -57,7 +57,7 @@ public interface ClerkService {
      * @return
      * @throws Exception
      */
-    Page sharingOrder(String token ,Integer role , Integer pageNo )throws NullPointerException, Exception;
+    Page sharingOrder(String token ,Integer role , Integer pageNo ,String name , String number)throws NullPointerException, Exception;
 
 
 

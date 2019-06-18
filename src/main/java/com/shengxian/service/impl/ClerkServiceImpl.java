@@ -80,7 +80,7 @@ public class ClerkServiceImpl implements ClerkService {
 
     //共享订单
     @Override
-    public Page sharingOrder(String token ,Integer role , Integer pageNo) throws NullPointerException, Exception {
+    public Page sharingOrder(String token ,Integer role , Integer pageNo ,String name , String number) throws NullPointerException, Exception {
         int pageNum = 1 ;
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum = pageNo;
@@ -89,10 +89,10 @@ public class ClerkServiceImpl implements ClerkService {
         Integer business_id =  shopMapper.shopipByTokenAndRole(token , role);
 
         //查询共享订单总数
-        Integer totalCount = clerkMapper.sharingOrderCount(business_id);
+        Integer totalCount = clerkMapper.sharingOrderCount(new Paramt(business_id , name ,number ));
         Page page = new Page(pageNum,totalCount);
         //查询共享订单集合
-        List<HashMap> hashMaps = clerkMapper.sharingOrder(business_id ,page.getStartIndex() ,page.getPageSize());
+        List<HashMap> hashMaps = clerkMapper.sharingOrder(new Paramt(business_id , name ,number ,page.getStartIndex() ,page.getPageSize() ));
         page.setRecords(hashMaps);
         return page;
     }
