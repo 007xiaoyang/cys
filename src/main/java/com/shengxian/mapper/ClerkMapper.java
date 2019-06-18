@@ -111,12 +111,6 @@ public interface ClerkMapper {
      */
     Double noArrivedOrderTotalMoney(AppParameter appParameter);
 
-    /**
-     * 取消接单
-     * @param order_id
-     * @return
-     */
-    Integer upateOrderRegression(@Param("id") Integer order_id);
 
     /**
      * 未收款的订单总数

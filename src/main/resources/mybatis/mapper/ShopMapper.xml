@@ -73,7 +73,7 @@
     </update>
 
     <!--根据token和角色查询注册ID-->
-    <select id="selectIdByTokenAndRole" resultType="Integer">
+    <select id="registerIdByTokenAndRole" resultType="Integer">
         <if test="role == 1">
             select id from  shengxian_business where  token = #{token} and is_del = 0
         </if>

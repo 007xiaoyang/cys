@@ -101,11 +101,6 @@
     </select>
 
 
-    <!--取消接单-->
-    <update id="upateOrderRegression">
-        update shengxian_order set status = 2 , staff_id =0 where id = #{id}
-    </update>
-
     <!--未收款的订单总数-->
     <select id="uncollectedOrderListCount" resultType="Integer">
         select count(o.id)

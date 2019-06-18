@@ -31,7 +31,6 @@ public class InterceptorConfig implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         log.info("---------------------开始进入请求地址拦截----------------------------");
-
         String token = request.getParameter("token");
         String role = request.getParameter("role");
         HashMap hashMap = null;

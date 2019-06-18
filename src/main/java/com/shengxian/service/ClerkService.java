@@ -78,13 +78,7 @@ public interface ClerkService {
      */
     Page noArrivedOrder(String token ,Integer role ,Integer pageNo ,String name)throws Exception;
 
-    /**
-     * 取消接单
-     * @param order_id
-     * @return
-     * @throws Exception
-     */
-    Integer upateOrderRegression(Integer order_id)throws NullPointerException, Exception;
+
 
     /**
      * 未收款的订单

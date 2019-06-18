@@ -142,39 +142,18 @@ public class ClerkServiceImpl implements ClerkService {
         return page;
     }
 
-    //取消接单
-    @Override
-    @Transactional
-    public Integer upateOrderRegression(Integer order_id) throws NullPointerException, Exception {
-        //通过订单ID查询订单status状态
-        Integer status = orderMapper.findOrderStatus(order_id);
-        if (status == null){
-            throw new NullPointerException("您订单不存在");
-        }
-        if (status == 4){
-            throw new NullPointerException("您的订单已被确认到货过了！");
-        }
-        if (status == 2){
-            throw new NullPointerException("您已取消接单了,不能再取消了哟～");
-        }
-        //取消接单
-        return clerkMapper.upateOrderRegression(order_id);
-    }
 
     //未收款的订单
     @Override
     public Page uncollectedOrderList(String token ,Integer role , Integer pageNo, String name) throws NullPointerException, Exception {
-        HashMap hashMap = new HashMap();
 
+        HashMap hashMap = new HashMap();
         int pageNum = 1 ;
         if (IntegerUtils.isNotEmpty(pageNo) ){
-            pageNum = pageNo;
+            pageNum =  pageNo;
         }
         //通过token查询商家ID和员工ID
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
-        if (clerk == null ){
-            throw new NullPointerException("登录失效");
-        }
 
         //未收款的订单总数
         Integer totalCount = clerkMapper.uncollectedOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name));
@@ -201,9 +180,6 @@ public class ClerkServiceImpl implements ClerkService {
         }
         HashMap hashMap = new HashMap();
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
-        if (clerk == null ){
-            throw new NullPointerException("登录失效");
-        }
 
         Integer totalCount = clerkMapper.arrearsOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name));
         Page page = new Page(pageNum,totalCount);
@@ -226,9 +202,6 @@ public class ClerkServiceImpl implements ClerkService {
     public Page completeOrderList(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime) throws NullPointerException, Exception {
         HashMap hashMap = new HashMap();
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
-        if (clerk == null ){
-            throw new NullPointerException("登录失效");
-        }
         int pageNum = 1 ;
         if (IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
