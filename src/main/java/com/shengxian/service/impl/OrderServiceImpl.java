@@ -784,7 +784,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap SAP = orderMapper.statusAndPartById(id);
 
         if (Integer.valueOf(SAP.get("status").toString()) == status ||  Integer.valueOf(SAP.get("status").toString()) == 4 ){
-            throw new NullPointerException("订单已被操作了");
+            throw new NullPointerException("该订单已被操作过了哟");
         }
 
         int staff_id = 0;
@@ -944,7 +944,7 @@ public class OrderServiceImpl implements OrderService {
         Integer status1 = orderMapper.findOrderStatus(id);
         //判断status是否一致
         if (status1 == null || status1 == status){
-            throw new NullPointerException("该订单已被确认或取消过了");
+            throw new NullPointerException("该订单已被操作过了哟～");
         }
 
         //通过订单id查询订单信息（销售单才有提成）
