@@ -504,6 +504,14 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.deleteExpense(id);
     }
 
+    //超期进货的用户总数
+    @Override
+    public Integer overduePurchaseUserCount(String token, Integer role) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
+        return orderMapper.overduePurchaseUserCount(bid,null,null);
+    }
+
     //超期进货的用户
     @Override
     public Page overduePurchaseUser(String token ,Integer role, Integer pageNo, String name, Integer cycle)throws NullPointerException {
@@ -523,6 +531,14 @@ public class OrderServiceImpl implements OrderService {
         List<HashMap> hashMaps = orderMapper.overduePurchaseUser(bid, name, cycle,page.getStartIndex(),page.getPageSize());
         page.setRecords(hashMaps);
         return page;
+    }
+
+    //没有销售的用户总数
+    @Override
+    public Integer noSalesUserCount(String token, Integer role) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
+        return orderMapper.noSalesUserCount(bid,null);
     }
 
     //没有销售的用户
@@ -600,6 +616,11 @@ public class OrderServiceImpl implements OrderService {
             throw new NullPointerException("订单详情id不存在");
         }
 
+        Integer status = orderMapper.findOrderStatus(Integer.valueOf(hashMap.get("order_id").toString()));
+        if (status == 4 ){
+            throw new NullPointerException("订单已到货不能删除");
+        }
+
         if (mold == 0){
             //增加产品虚拟库存
             shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(hashMap.get("goods_id").toString()),Double.valueOf(hashMap.get("order_number").toString()));
@@ -629,6 +650,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public synchronized  Integer updateOrderPrice(String token ,Integer role, Order order)throws NullPointerException, Exception {
         double  price = 0;
+        Integer status = orderMapper.findOrderStatus(order.getId());
+        if (status == 4 ){
+            throw new NullPointerException("订单已到货不能修改");
+        }
 
         OrderDetail[] orderDetails = order.getOrderDetails();
         if (orderDetails.length <= 0 ){
@@ -782,9 +807,13 @@ public class OrderServiceImpl implements OrderService {
 
         //通过订单id查询订单status状态和part区分
         HashMap SAP = orderMapper.statusAndPartById(id);
-
-        if (Integer.valueOf(SAP.get("status").toString()) == status ||  Integer.valueOf(SAP.get("status").toString()) == 4 ){
-            throw new NullPointerException("该订单已被操作过了哟");
+        if (SAP == null ){
+            throw new NullPointerException("订单不存在");
+        }
+        Integer oStatus = Integer.valueOf(SAP.get("status").toString());
+        if (oStatus == status ||  ( oStatus == 4 && status == 6  ) || (oStatus == 6 && status == 4 ) ||
+                (oStatus == 4 && status == 2 ) || (oStatus == 6 && status == 2) || (oStatus == 5 && status == 3 )){
+            throw new NullPointerException("订单已被操作过");
         }
 
         int staff_id = 0;
@@ -941,10 +970,10 @@ public class OrderServiceImpl implements OrderService {
 
         //处理是否有同时操作订单的隐患
         //通过订单id查询订单到货状态
-        Integer status1 = orderMapper.findOrderStatus(id);
+        Integer oStatus = orderMapper.findOrderStatus(id);
         //判断status是否一致
-        if (status1 == null || status1 == status){
-            throw new NullPointerException("该订单已被操作过了哟～");
+        if (oStatus == null || oStatus == status || (oStatus == 4 && status == 6) || (oStatus == 6 && status == 4 ) ){
+            throw new NullPointerException("订单已被操作过");
         }
 
         //通过订单id查询订单信息（销售单才有提成）
@@ -979,7 +1008,7 @@ public class OrderServiceImpl implements OrderService {
                 List<Percentage> percentages = orderMapper.selectBusienssAndGoodsAllStaffPercentage( bid ,Integer.valueOf(detail.get("goods_id").toString()) );
                 for (Percentage pt : percentages  ) {
 
-                    if (pt.getA() != null  && pt.getB() != null ){
+                    if (pt.getA() != null  && pt.getB() != null && pt.getA() != 0.0 && pt.getB() != 0.0 ){
 
                         double value = GroupNumber.getValue(Double.valueOf(detail.get("num").toString()) , pt.getA(), pt.getB() );
                         if (value != 0.0){
@@ -1108,7 +1137,7 @@ public class OrderServiceImpl implements OrderService {
             //通过店铺id和下订单的绑定客户id查询店铺所有有客户提成比例的员工
             List<Percentage> bindings = orderMapper.selectBusinessAndBindingAllStaffPercentage(bid, Integer.valueOf(order.get("binding_id").toString()));
             for (Percentage pt : bindings  ) {
-                if (pt.getA() != null &&  pt.getB() != null && !pt.getA().equals("") && !pt.getB().equals("")){
+                if (pt.getA() != null &&  pt.getB() != null && pt.getA() != 0.0 && pt.getB() != 0.0 ){
                     double value = GroupNumber.getValue(price, pt.getA() , pt.getB()) ;
                     if (value != 0.0){
                         //添加员工提成金额记录
@@ -1120,9 +1149,8 @@ public class OrderServiceImpl implements OrderService {
             //通过店铺id查询店铺所有有金额提成比例的员工
             List<Percentage> moneys = orderMapper.selectBusinessAllMoneyStaffPercentage(bid);
             for (Percentage pt : moneys  ) {
-                if (pt.getA() != null && pt.getB() != null && !pt.getA().equals("") && !pt.getB().equals("")){
-
-                    //添加员工到货提成次数 type=6到货
+                if (pt.getA() != null && pt.getB() != null && pt.getA() != 0.0  && pt.getB() != 0.0){
+                    //添加员工到货提成次数 type=6店铺总销售
                     orderMapper.addStaffFrequency( pt.getStaff_id() ,id,6 ,price , new Date());
                 }
             }

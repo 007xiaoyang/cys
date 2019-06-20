@@ -54,6 +54,8 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 .excludePathPatterns("/purchase/selectPurchaseOrderDetailById" ,"/purchase/findPurchaseOrderDetail","/purchase/printTemplate" ,"/purchase/purchasePrintDetail" ,"/purchase/updatePurchaseStatus" ,"/purchase/excelPurchasereport" )
                 // 计算这一年总采购金额,计算这季度总采购金额 ,计算这月总采购金额 ,计算这周总采购金额 ,计算当天总采购金额 ,自定义时间段总采购金额
                 .excludePathPatterns("/purchase/yearPurchassPirce","/purchase/quarterPurchassPrice","/purchase/monthPurchassPrice","/purchase/weekPurchassPrice","/purchase/daysPurchassPrice","/purchase/definitionPurchassPrice")
+                //
+                .excludePathPatterns("/purchase/PurchasereportCount" , "/order/noSalesUserCount" ,"/order/overduePurchaseUserCount" )
                 //创建订单编号 ,搜索商家用户 ,通过用户id查询用户信息 ,通过用户方案id和产品id查询查询产品信息 ,通过订单id查询订单详情
                 .excludePathPatterns("/order/createOrder" ,"/order/selectBindingUser" ,"/order/selectUserInfoById" ,"/order/findGoodsInfoBySidAndGid" ,"/order/findOrderInfoById")
                 //打印销售订单 ,打印销售订单详情
@@ -84,7 +86,8 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 .excludePathPatterns("/clerk/shareWXRecord" ,"/clerk/selectWXShareRecord" ,"/clerk/orderWXShareRecord")
                 //临时用户
                 //查询店铺类别 ,店铺类别下的产品 ,加入购物车 ,减掉购物车 ,当前临时客户的购物车 ,结算 ,下订单
-                .excludePathPatterns("/temporary/businessCategory" , "/temporary/businessGoods","/temporary/addShoppingCart" ,"/temporary/reduceShoppingCart" ,"/temporary/temporaryShoppingcart","/temporary/settlement","/temporary/addOrdre"  );
+                .excludePathPatterns("/temporary/businessCategory" , "/temporary/businessGoods","/temporary/addShoppingCart" ,"/temporary/reduceShoppingCart" ,"/temporary/temporaryShoppingcart","/temporary/settlement","/temporary/addOrdre"  )
+                .excludePathPatterns("/shopApp/version", "/shopApp/appIsLogin" ,"/shopApp/updateEquipment");
         super.addInterceptors(registry);
     }
 

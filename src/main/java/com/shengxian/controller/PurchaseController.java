@@ -339,6 +339,23 @@ public class PurchaseController {
     }
 
     /**
+     * 代采购报表总数
+     * @param token
+     * @return
+     */
+    @RequestMapping("/PurchasereportCount")
+    @ApiOperation(value = "代采购报表总数" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message PurchasereportCount(String token ,Integer role){
+        Message message = Message.non();
+        Integer count = purchaseService.PurchasereportCount(token ,role );
+        return message.code(Message.codeSuccessed).data(count).message("查询成功");
+    }
+
+    /**
      * 代采购报表
      * @param token
      * @return
@@ -713,10 +730,10 @@ public class PurchaseController {
             Integer count =  purchaseService.deletePurchaseDetail(id ,mold);
             if (IntegerUtils.isEmpty(count)){
                 return message.code(Message.codeFailured).message("删除失败");
-            }else if (count == -1){
-                return message.code(Message.codeFailured).message("订单详情id不存在");
             }
             return message.code(Message.codeSuccessed).message("删除成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
             log.error("采购控制层（/purchase/deletePurchaseDetail）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -746,6 +763,8 @@ public class PurchaseController {
                 return message.code(Message.codeFailured).message("修改订单总金额失败");
             }
             return message.code(Message.codeSuccessed).message("修改成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
             log.error("采购控制层（/purchase/updatePurchaseOrderPrice）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);

@@ -506,12 +506,13 @@ public class FinanceController {
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "用户名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
             @ApiImplicitParam(name = "type" ,value = "1用户销售汇总，2用户销售明细" ,paramType = "query"),
             @ApiImplicitParam(name = "bindindId" ,value = "用户id" ,paramType = "query")
     })
-    public Message userSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name , String startTime, String endTime ,Integer bindindId ){
+    public Message userSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name ,String goodsName, String startTime, String endTime ,Integer bindindId ){
         Message message = Message.non();
         Page page = null;
         try {
@@ -521,13 +522,12 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-
             if (type == 1){
                 //用户销售汇总
-                page = financeService.userSaleProfitSummary(token ,role ,pageNo,name,start,end ,bindindId);
+                page = financeService.userSaleProfitSummary(token ,role ,pageNo,name ,goodsName ,start,end ,bindindId);
             }else if (type == 2){
                 //用户销售明细
-                page = financeService.userSaleProfitDetails(token ,role ,pageNo,name,start,end ,bindindId);
+                page = financeService.userSaleProfitDetails(token ,role ,pageNo,name ,goodsName ,start,end ,bindindId);
             }
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){

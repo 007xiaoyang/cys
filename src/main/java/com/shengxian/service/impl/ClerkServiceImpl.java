@@ -106,7 +106,6 @@ public class ClerkServiceImpl implements ClerkService {
         if (hashMap == null ){
             throw new NullPointerException("订单不存在");
         }
-
         //通过订单ID查询订单详情的产品信息
         List<HashMap> dateil = clerkMapper.orderDateilGoods(order_id);
         hashMap.put("dateil" ,dateil);
@@ -976,16 +975,16 @@ public class ClerkServiceImpl implements ClerkService {
 
     //客户账单
     @Override
-    public Page shareUserOrder(String token, Integer role ,Integer pageNo, Integer type,Integer bindingID , String name, String startTime, String endTime) {
+    public Page shareUserOrder(String token, Integer role ,Integer pageNo, Integer type,Integer bindingID , String name ,String goodsName , String startTime, String endTime) {
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
         int pageNum = 1 ;
         if(IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
-        Integer tatolCount = clerkMapper.shareUserOrderCount(new Paramt(bid , type , bindingID , name , startTime , endTime ));
+        Integer tatolCount = clerkMapper.shareUserOrderCount(new Paramt( goodsName ,bid , type , bindingID , name , startTime , endTime ));
         Page page = new Page(pageNum , tatolCount);
-        List<HashMap> hashMaps = clerkMapper.shareUserOrder(new Paramt(bid , type , bindingID , name , startTime , endTime , page.getStartIndex() ,page.getPageSize()));
-        HashMap hashMap = clerkMapper.shareUserOrderTotalMoeny(new Paramt(bid, type, bindingID, name, startTime, endTime));
+        List<HashMap> hashMaps = clerkMapper.shareUserOrder(new Paramt(goodsName ,bid , type , bindingID , name , startTime , endTime , page.getStartIndex() ,page.getPageSize()));
+        HashMap hashMap = clerkMapper.shareUserOrderTotalMoeny(new Paramt(goodsName , bid, type, bindingID, name, startTime, endTime));
         page.setRecords(hashMaps);
         page.setHashMap(hashMap);
         return page;
@@ -994,19 +993,19 @@ public class ClerkServiceImpl implements ClerkService {
     //客户账单分享到微信上
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public synchronized String shareWXRecord(String token, Integer role ,Integer type, Integer bindingID, String name, String startTime, String endTime) throws NullPointerException{
+    public synchronized String shareWXRecord(String token, Integer role ,Integer type, Integer bindingID, String name ,String goodsName , String startTime, String endTime) throws NullPointerException{
 
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
         StringBuffer sb = new StringBuffer();
 
-        List<Integer> shareWxRecord = clerkMapper.shareWXRecord(new Paramt(bid, type, bindingID, name, startTime, endTime));
+        List<Integer> shareWxRecord = clerkMapper.shareWXRecord(new Paramt(goodsName ,bid, type, bindingID, name, startTime, endTime));
         if (shareWxRecord.size() <= 0 ){
             throw new NullPointerException("没有要分享的订单");
         }
         for (Integer  shareId : shareWxRecord){
             sb.append(shareId + ",");
         }
-        Double sharePrice = clerkMapper.userSaleDetailDownloadTatolMoney(new Paramt(bid, type, bindingID, name, startTime, endTime));
+        Double sharePrice = clerkMapper.userSaleDetailDownloadTatolMoney(new Paramt(goodsName , bid, type, bindingID, name, startTime, endTime));
         System.out.println(sb.toString());
         //添加到微信分享记录表里
         String uuid = GroupNumber.getUUID();

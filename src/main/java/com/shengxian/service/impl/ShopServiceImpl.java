@@ -444,9 +444,9 @@ public class ShopServiceImpl implements ShopService {
             //查询当前登录的是否是员工账号,是则判断进价是否屏蔽
             HashMap shield = purchaseMapper.selectShield(token);
             if (shield != null && Integer.valueOf(shield.get("shield").toString()) == 1){
-                goods.put("cost","进价不可见 ");
+                goods.put("cost","进价不可见");
             }else {
-                goods.put("cost","进价可见 ");
+                goods.put("cost","进价可见");
             }
 
             //通过产品ID查询产品轮播图片

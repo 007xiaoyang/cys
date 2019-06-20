@@ -139,12 +139,28 @@ public interface OrderService {
     Integer deleteExpense(String token ,Integer role ,Integer id)throws NullPointerException ,Exception;
 
     /**
+     * 超期进货的用户总数
+     * @param token
+     * @param role
+     * @return
+     */
+    Integer overduePurchaseUserCount(String token ,Integer role);
+
+    /**
      * 超期进货的用户
      * @param token
      * @return
      */
     Page overduePurchaseUser(String token ,Integer role , Integer pageNo, String name, Integer cycle)throws NullPointerException;
 
+
+    /**
+     * 没有销售的用户总数
+     * @param token
+     * @param role
+     * @return
+     */
+    Integer noSalesUserCount(String token ,Integer role);
     /**
      * 没有销售的用户
      * @param token

@@ -529,6 +529,22 @@ public class OrderController {
         }
     }
 
+    /**
+     * 超期进货的用户总数
+     * @param token
+     * @return
+     */
+    @RequestMapping("/overduePurchaseUserCount")
+    @ApiOperation(value = "超期进货的用户总数" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message overduePurchaseUserCount(String token ,Integer role){
+        Message message = Message.non();
+        Integer count = orderService.overduePurchaseUserCount(token ,role );
+        return message.code(Message.codeSuccessed).data(count).message("获取成功");
+    }
 
 
     /**
@@ -558,6 +574,25 @@ public class OrderController {
             log.error("订单控制层（/order/overduePurchaseUser）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
+    }
+
+
+    /**
+     * 没有销售的用户总数
+     * @param token
+     * @return
+     */
+    @RequestMapping("/noSalesUserCount")
+    @ApiOperation(value = "没有销售的用户总数" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message noSalesUserCount(String token ,Integer role){
+        Message message = Message.non();
+        Integer count = orderService.noSalesUserCount(token ,role );
+        return message.code(Message.codeSuccessed).data(count).message("获取成功");
+
     }
 
     /**
@@ -769,7 +804,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping("/updateOrderAcceptOrRejectionStatus")
-    @SysLog(module = "销售管理" ,methods = "接受或拒绝")
+    @SysLog(module = "销售管理" ,methods = "接受或拒绝（员工取消接单）")
     @ApiOperation(value = "接受或拒绝（员工取消接单）" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),

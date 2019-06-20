@@ -22,7 +22,7 @@ public class Paramt {
     private String state;
     private  String staffName ;
     private Integer bindindId ;
-
+    private String goodsName;
 
     private Integer is;
     private Integer part;
@@ -37,7 +37,8 @@ public class Paramt {
     /**
      *分享微信上需要的参数
      */
-    public Paramt (Integer business_id ,Integer type ,Integer bindindId ,String name, String startTime, String endTime ){
+    public Paramt (  String goodsName ,Integer business_id ,Integer type ,Integer bindindId ,String name, String startTime, String endTime){
+        this.goodsName = goodsName;
         this.business_id = business_id;
         this.type = type;
         this.bindindId = bindindId;
@@ -49,7 +50,8 @@ public class Paramt {
     /**
      *分享微信上需要的参数
      */
-    public Paramt (Integer business_id ,Integer type ,Integer bindindId ,String name, String startTime, String endTime ,Integer startIndex ,Integer pageSize){
+    public Paramt (String goodsName ,Integer business_id ,Integer type ,Integer bindindId ,String name, String startTime, String endTime ,Integer startIndex ,Integer pageSize){
+        this.goodsName = goodsName;
         this.business_id = business_id;
         this.type = type;
         this.bindindId = bindindId;
@@ -245,6 +247,44 @@ public class Paramt {
         this.mold = mold;
     }
 
+    /**
+     * 用户销售毛利
+     * @param business_id
+     * @param name
+     * @param startTime
+     * @param endTime
+     * @param is
+     */
+    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer is ,String goodsName) {
+        this.business_id = business_id;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.is = is;
+        this.goodsName = goodsName;
+    }
+
+    /**
+     * 用户销售毛利页数
+     * @param business_id
+     * @param name
+     * @param startTime
+     * @param endTime
+     * @param startIndex
+     * @param pageSize
+     * @param is
+     * @param goodsName
+     */
+    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer startIndex, Integer pageSize, Integer is ,String goodsName) {
+        this.business_id = business_id;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startIndex = startIndex;
+        this.pageSize = pageSize;
+        this.is = is;
+        this.goodsName = goodsName;
+    }
 
     public Paramt(Integer business_id, String name, String startTime, String endTime, Integer is) {
         this.business_id = business_id;
@@ -476,9 +516,11 @@ public class Paramt {
                 ", state='" + state + '\'' +
                 ", staffName='" + staffName + '\'' +
                 ", bindindId=" + bindindId +
+                ", goodsName='" + goodsName + '\'' +
                 ", is=" + is +
                 ", part=" + part +
                 ", mold=" + mold +
+                ", type=" + type +
                 '}';
     }
 }

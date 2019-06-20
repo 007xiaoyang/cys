@@ -266,6 +266,14 @@ public class PurchaseServiceImpl implements PurchaseService {
         return purchaseOrder.getId();
     }
 
+    //代采购报表总数
+    @Override
+    public Integer PurchasereportCount(String token, Integer role) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+        return  purchaseMapper.PurchasereportCount(bid,null);
+    }
+
     //代采购报表
     @Override
     public Page Purchasereport(String token  ,Integer role , Integer pageNo, Integer id)throws NullPointerException {
@@ -356,14 +364,14 @@ public class PurchaseServiceImpl implements PurchaseService {
         //查询当天是否有结算过
         Settlement sett = orderMapper.financialSettlement(bid ,1);
         if (sett != null && DateUtil.compareDate1(DateUtil.getDay(), sett.getTime()) == true ){
-            throw new NullPointerException("今天的账单已经结算了，等待明天再结算");
+            throw new NullPointerException("今天的账单已经结算了，等待明天再结算 ");
         }
 
-        //处理是否有同时操作订单的隐患
-        //通过订单id查询订单确认状态
-        Integer purchaseStatus = purchaseMapper.findPurchaseStatus(purchase_id);
-        if (purchaseStatus == null || purchaseStatus == status){
-            throw new NullPointerException("订单id不存在或已被别的账号操作了");
+
+        //  处理是否有同时操作订单的隐患 通过订单id查询订单确认状态
+        Integer pStatus = purchaseMapper.findPurchaseStatus(purchase_id);
+        if (pStatus == null || pStatus == status || (  pStatus == 1 && status == 2 ) || (pStatus == 2 && status == 1 ) ){
+            throw new NullPointerException("订单已被操作过～");
         }
 
         //判断商家是否设置了库存设置
@@ -385,7 +393,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     //采购退货订单数量报损数量是否大于实际库存
                     Integer num = purchaseMapper.isLessthanActualInventory(detail.getGoods_id() , detail.getPurchase_number() );
                     if (num == null){
-                        throw new NullPointerException("产品["+detail.getName()+"]采购退货数量大于实际库存，因此不能到货。如要到货，则到商家设置里进行修改");
+                        throw new NullPointerException("产品["+detail.getName()+"]采购退货数量大于实际库存 ，因此不能到货。如要到货，则到商家设置里进行修改");
                     }
                 }
                 //采购退货单减少产品实际库存
@@ -807,12 +815,16 @@ public class PurchaseServiceImpl implements PurchaseService {
     //删除采购详情产品
     @Override
     @Transactional
-    public Integer deletePurchaseDetail(Integer id ,Integer mold)throws Exception {
+    public Integer deletePurchaseDetail(Integer id ,Integer mold)throws NullPointerException, Exception {
 
         //通过详情id查询采购产品的数量
         HashMap hashMap = purchaseMapper.purchaseGoodsNum(id);
         if (hashMap == null){
-            return -1;
+            throw new NullPointerException("订单不存在");
+        }
+        Integer pStatus = purchaseMapper.findPurchaseStatus( Integer.valueOf(hashMap.get("purchase_id").toString()) );
+        if (pStatus == 1 || pStatus == 2 ){
+            throw new NullPointerException("订单已到货不能删除");
         }
 
         if (mold == 0 ){
@@ -840,7 +852,13 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     //修改采购订单产品
     @Override
-    public Integer updatePurchaseOrderPrice(String token ,Integer role, PurchaseOrder purchaseOrder)throws Exception {
+    public Integer updatePurchaseOrderPrice(String token ,Integer role, PurchaseOrder purchaseOrder)throws NullPointerException , Exception {
+
+        Integer pStatus = purchaseMapper.findPurchaseStatus( purchaseOrder.getId() );
+        if (pStatus == 1 || pStatus == 2 ){
+            throw new NullPointerException("订单已到货不能修改");
+        }
+
         double  price = 0;
         Give give = new Give();
         PurchaseOrderDetail[] purchaseOrderDetail = purchaseOrder.getPurchaseOrderDetail();

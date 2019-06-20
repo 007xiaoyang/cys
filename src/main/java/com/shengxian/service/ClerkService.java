@@ -380,7 +380,7 @@ public interface ClerkService {
      * @param endTime
      * @return
      */
-    Page shareUserOrder(String token , Integer role ,Integer pageNo ,Integer type ,Integer bindingID,String name ,String startTime , String endTime);
+    Page shareUserOrder(String token , Integer role ,Integer pageNo ,Integer type ,Integer bindingID,String name ,String goodsName ,String startTime , String endTime);
 
 
     /**
@@ -392,7 +392,7 @@ public interface ClerkService {
      * @param endTime
      * @return
      */
-    String shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String startTime , String endTime )throws NullPointerException;
+    String shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String goodsName ,String startTime , String endTime )throws NullPointerException;
 
 
 

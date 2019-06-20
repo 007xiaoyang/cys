@@ -57,7 +57,7 @@
         select o.binding_id, bd.user_name,bd.number ,o.price,o.difference_price,o.freight,o.beizhu ,
         if(coupon_id = 0 ,0,(select reduce from shengxian_binding_coupon where id = o.coupon_id ))coupon
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id and bd.is_del =0
+        inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del = 0 and  o.id = #{id}
     </select>
 
@@ -856,6 +856,9 @@
         <if test="name != null and name != ''">
             and bd.user_name LIKE CONCAT('%',#{name},'%')
         </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
@@ -882,6 +885,9 @@
         <if test="name != null and name != ''">
             and bd.user_name LIKE CONCAT('%',#{name},'%')
         </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
@@ -907,6 +913,9 @@
         <if test="name != null and name != ''">
             and bd.user_name LIKE CONCAT('%',#{name},'%')
         </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
@@ -928,6 +937,9 @@
         </if>
         <if test="name != null and name != ''">
             and bd.user_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -951,6 +963,9 @@
         </if>
         <if test="name != null and name != ''">
             and bd.user_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}

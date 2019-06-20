@@ -305,9 +305,9 @@
 
     <!--通过订单id查询订单运费差价和用户会员方案-->
     <select id="freightAndDifferencePrice" resultType="HashMap">
-        select o.freight,o.difference_price,o.binding_id,
+        select o.freight,o.difference_price,o.binding_id ,
         (select b.scheme_id from shengxian_binding b where b.id = o.binding_id) scheme_id
-        from shengxian_order o where o.id = #{id}
+        from shengxian_order o where  o.is_del = 0 and  o.id = #{id}
     </select>
 
     <!--订单详情-->

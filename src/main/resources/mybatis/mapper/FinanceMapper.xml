@@ -700,6 +700,9 @@
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
@@ -723,6 +726,9 @@
         </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -748,6 +754,9 @@
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
@@ -768,6 +777,9 @@
         </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -791,6 +803,9 @@
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
@@ -812,6 +827,9 @@
         </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}

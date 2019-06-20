@@ -97,6 +97,14 @@ public interface PurchaseService {
     Integer addPurchaseReturnOrder(String token  ,Integer role , PurchaseOrder purchaseOrder)throws NullPointerException;
 
     /**
+     * 代采购报表总数
+     * @param token
+     * @param role
+     * @return
+     */
+    Integer PurchasereportCount(String token  ,Integer role);
+
+    /**
      * 代采购报表
      * @param token
      * @return
@@ -209,7 +217,7 @@ public interface PurchaseService {
      * @param id 详情id
      * @return
      */
-    Integer deletePurchaseDetail(Integer id ,Integer mold)throws Exception;
+    Integer deletePurchaseDetail(Integer id ,Integer mold)throws NullPointerException , Exception;
 
     /**
      * 修改采购订单金额
@@ -217,7 +225,7 @@ public interface PurchaseService {
      * @param
      * @return
      */
-    Integer updatePurchaseOrderPrice(String token ,Integer role, PurchaseOrder purchaseOrder)throws Exception;
+    Integer updatePurchaseOrderPrice(String token ,Integer role, PurchaseOrder purchaseOrder)throws NullPointerException, Exception;
 
 
     /**

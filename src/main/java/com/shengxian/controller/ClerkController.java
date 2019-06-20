@@ -1049,10 +1049,11 @@ public class ClerkController {
             @ApiImplicitParam(name = "type" ,value = "查全部不传，查未完成的传1" ,paramType = "query"),
             @ApiImplicitParam(name = "bindingID" ,value = "客户id" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "用户名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
     })
-    public Message shareUserOrder(String token , Integer role ,Integer pageNo,Integer type ,Integer bindingID ,String name ,String startTime , String endTime ){
+    public Message shareUserOrder(String token , Integer role ,Integer pageNo,Integer type ,Integer bindingID ,String name ,String goodsName ,String startTime , String endTime ){
         Message message= Message.non();
         String start = DateUtil.getDay();  String end = DateUtil.getDay();
         try {
@@ -1060,7 +1061,7 @@ public class ClerkController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = clerkService.shareUserOrder(token ,role ,pageNo ,type ,bindingID ,name ,start  ,end);
+            Page page = clerkService.shareUserOrder(token ,role ,pageNo ,type ,bindingID ,name ,goodsName ,start  ,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1084,16 +1085,17 @@ public class ClerkController {
             @ApiImplicitParam(name = "type" ,value = "查全部不传，查未完成的传1" ,paramType = "query"),
             @ApiImplicitParam(name = "bindingID" ,value = "客户id" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "用户名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
     })
-    public Message shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String startTime , String endTime ){
+    public Message shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String goodsName,String startTime , String endTime ){
         Message message= Message.non();
         if (IntegerUtils.isEmpty(bindingID)){
             return message.code(Message.codeFailured).message("要指定客户才能分享～");
         }
         try {
-            String count = clerkService.shareWXRecord(token ,role ,type ,bindingID ,name ,startTime  ,endTime);
+            String count = clerkService.shareWXRecord(token ,role ,type ,bindingID ,name ,goodsName,startTime  ,endTime);
             return message.code(Message.codeSuccessed).data(count).message("分享成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
