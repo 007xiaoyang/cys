@@ -451,7 +451,7 @@ public class MenuController {
     public Message selectThreeMenu(String token ,Integer role ,Integer sort){
         Message message = Message.non();
 
-        if (role != 1 && role != 2) {
+        if (role == null || (role != 1 && role != 2) ) {
             return message.code(Message.codeFailured).message("角色不能为空");
         }
         List<Menu> menus = menuService.selectThreeMenu(token, role, sort);
