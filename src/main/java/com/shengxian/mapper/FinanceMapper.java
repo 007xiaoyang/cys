@@ -292,9 +292,17 @@ public interface FinanceMapper {
      * @param time
      * @return
      */
-    Settlement fiveMoneyType(@Param("bid") Integer bid ,@Param("type") Integer type, @Param("time") String time);
+    Settlement fiveMoneyType(@Param("bid") Integer bid ,@Param("type") Integer type, @Param("time") String time );
 
 
+    /**
+     * 财务结算时查询五种（退货的）收款分类
+     * @param bid
+     * @param type 1 销售 ，2 采购
+     * @param time
+     * @return
+     */
+    Settlement fiveRetreatMoneyType(@Param("bid") Integer bid ,@Param("type") Integer type, @Param("time") String time );
 
 
     /**

@@ -34,7 +34,11 @@ public class Settlement {
     private double other;
     private Date oldTime;
     private String time ;
-
+    private double rWx;
+    private double rAlipay;
+    private double rCash;
+    private double rBankcard;
+    private double rOther;
 
     public Settlement() {
     }
@@ -211,5 +215,45 @@ public class Settlement {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public double getrWx() {
+        return rWx;
+    }
+
+    public void setrWx(double rWx) {
+        this.rWx = rWx;
+    }
+
+    public double getrAlipay() {
+        return rAlipay;
+    }
+
+    public void setrAlipay(double rAlipay) {
+        this.rAlipay = rAlipay;
+    }
+
+    public double getrCash() {
+        return rCash;
+    }
+
+    public void setrCash(double rCash) {
+        this.rCash = rCash;
+    }
+
+    public double getrBankcard() {
+        return rBankcard;
+    }
+
+    public void setrBankcard(double rBankcard) {
+        this.rBankcard = rBankcard;
+    }
+
+    public double getrOther() {
+        return rOther;
+    }
+
+    public void setrOther(double rOther) {
+        this.rOther = rOther;
     }
 }

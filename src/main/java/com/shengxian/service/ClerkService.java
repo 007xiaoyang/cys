@@ -410,4 +410,12 @@ public interface ClerkService {
      * @return
      */
     HashMap orderWXShareRecord(Integer orderID );
+
+    /**
+     * 员工APP提成标题提醒
+     * @param token
+     * @param role
+     * @return
+     */
+    List ritleReminder(String token ,Integer role );
 }

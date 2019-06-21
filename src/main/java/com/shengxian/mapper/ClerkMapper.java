@@ -321,7 +321,7 @@ public interface ClerkMapper {
      * @param smd_id 购物车详情id
      * @return
      */
-    Integer updateShoppingMallDateilPlusNum(@Param("id") Integer smd_id ,@Param("num") Double num);
+    Integer updateShoppingMallDateilPlusNum(@Param("id") Integer smd_id ,@Param("num") Double num ,@Param("price") Double price );
 
     /**
      * 计算加入购物车里产品的总金额（数量乘以单价）
@@ -632,5 +632,12 @@ public interface ClerkMapper {
 
 
 
+    /**
+     * 员工APP其它提成标题提醒
+     * @param staffId
+     * @param
+     * @return
+     */
+    List<Integer> otherRitleReminder(@Param("staffId") Integer staffId  );
 
 }

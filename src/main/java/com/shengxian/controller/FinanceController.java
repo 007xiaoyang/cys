@@ -226,7 +226,7 @@ public class FinanceController {
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "json" ,value = "json格式" ,paramType = "query")
     })
-    public Message financeSettlement(String token  ,Integer role , String json){
+    public synchronized Message financeSettlement(String token  ,Integer role , String json){
         Message message = Message.non();
         try {
             Settlement settlement = JSONObject.parseObject(json, Settlement.class);
@@ -323,7 +323,6 @@ public class FinanceController {
         }
     }
 
-
     /**
      *采购退货订单
      * @param token
@@ -417,7 +416,7 @@ public class FinanceController {
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "json" ,value = "json格式" ,paramType = "query")
     })
-    public Message purchaseFinanceSettlement(String token  ,Integer role , String json){
+    public synchronized Message purchaseFinanceSettlement(String token  ,Integer role , String json){
         Message message = Message.non();
         try {
             Settlement settlement = JSONObject.parseObject(json, Settlement.class);

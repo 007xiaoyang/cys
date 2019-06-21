@@ -82,8 +82,8 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 .excludePathPatterns("/business/goodsOR" , "/business/refreshGoodsORIdentificationCode" )
                //收款记录
                 .excludePathPatterns("/order/selectOrderMoneyRecords" ,"/purchase/selectOrderMoneyRecords" ,"/clerk/IP")
-                //客户账单 ,查看分享到微信的信息
-                .excludePathPatterns("/clerk/shareWXRecord" ,"/clerk/selectWXShareRecord" ,"/clerk/orderWXShareRecord")
+                //客户账单 ,查看分享到微信的信息 ,员工APP提成标题提醒
+                .excludePathPatterns("/clerk/shareWXRecord" ,"/clerk/selectWXShareRecord" ,"/clerk/orderWXShareRecord" ,"/clerk/ritleReminder")
                 //临时用户
                 //查询店铺类别 ,店铺类别下的产品 ,加入购物车 ,减掉购物车 ,当前临时客户的购物车 ,结算 ,下订单
                 .excludePathPatterns("/temporary/businessCategory" , "/temporary/businessGoods","/temporary/addShoppingCart" ,"/temporary/reduceShoppingCart" ,"/temporary/temporaryShoppingcart","/temporary/settlement","/temporary/addOrdre"  )

@@ -322,18 +322,26 @@ public class FinanceServiceImpl implements FinanceService {
             financeMapper.updateNotSettlementExpense(id);
         }
 
-        //通过上次结算时间查询5种收款分类的金额
-        Settlement settl = financeMapper.fiveMoneyType(bid, 1, set == null ? null : set.getTime() );
-
         settlement.setStaff_id(staffId);
         settlement.setBusiness_id(bid);
         settlement.setCreate_time(new Date());
+        settlement.setOldTime(  set == null ? null : set.getCreate_time() );
+
+        //通过上次结算时间查询5种收款分类的金额
+        Settlement settl = financeMapper.fiveMoneyType(bid, 1, set == null ? null : set.getTime() );
         settlement.setWx(settl.getWx());
         settlement.setAlipay(settl.getAlipay());
         settlement.setCash(settl.getCash());
         settlement.setBankcard(settl.getBankcard());
         settlement.setOther(settl.getOther());
-        settlement.setOldTime(  set == null ? null : set.getCreate_time() );
+
+        //财务结算时查询五种（退货的）收款分类
+        Settlement sett2 = financeMapper.fiveRetreatMoneyType(bid, 1, set == null ? null : set.getTime() );
+        settlement.setrWx(sett2.getrWx());
+        settlement.setrAlipay(sett2.getrAlipay());
+        settlement.setrCash(sett2.getrCash());
+        settlement.setrBankcard(sett2.getrBankcard());
+        settlement.setrOther(sett2.getrOther());
        //添加销售财务结算记录
         return financeMapper.addSettlement(settlement);
     }
@@ -585,20 +593,26 @@ public class FinanceServiceImpl implements FinanceService {
         for (Integer id:pid ) {
             financeMapper.updatePurchaseNotSettlement(id,1);
         }
-
+        settlement.setBusiness_id(bid);
+        settlement.setStaff_id(staffId);
+        settlement.setOldTime(  set == null ? null : set.getCreate_time() );
 
         //通过上次结算时间查询5种收款分类的金额
-        Settlement settl = financeMapper.fiveMoneyType(bid, 2, set == null ? null : set.getTime() );
-
-        settlement.setStaff_id(staffId);
-        settlement.setBusiness_id(bid);
+        Settlement settl = financeMapper.fiveMoneyType(bid, 2, set == null ? null : set.getTime());
+        settlement.setAlipay(settl.getAlipay());
         settlement.setCreate_time(new Date());
         settlement.setWx(settl.getWx());
-        settlement.setAlipay(settl.getAlipay());
+        settlement.setOther(settl.getOther());
         settlement.setCash(settl.getCash());
         settlement.setBankcard(settl.getBankcard());
-        settlement.setOther(settl.getOther());
-        settlement.setOldTime(  set == null ? null : set.getCreate_time() );
+
+        //财务结算时查询五种（退货的）收款分类
+        Settlement sett2 = financeMapper.fiveRetreatMoneyType(bid, 2, set == null ? null : set.getTime() );
+        settlement.setrAlipay(sett2.getrAlipay());
+        settlement.setrWx(sett2.getrWx());
+        settlement.setrCash(sett2.getrCash());
+        settlement.setrBankcard(sett2.getrBankcard());
+        settlement.setrOther(sett2.getrOther());
 
         //添加采购财务结算记录
         return financeMapper.addSettlement(settlement);

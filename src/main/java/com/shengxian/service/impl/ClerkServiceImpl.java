@@ -16,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Description: 员工APP接口业务实现层
@@ -398,18 +395,17 @@ public class ClerkServiceImpl implements ClerkService {
 
         Integer op_id = shopMapper.registerIdByTokenAndRole(token, role); //获取注册id
 
-
         //通过登录的注册id和绑定客户ID查询是否有商城购物车id
         Integer sm_id = clerkMapper.selectShoppingMall( role ,op_id , binding_id, mold); // sm_id购物车ID
 
         //判断购物车ID是否存在 ，等于null则添加购物车
         if (sm_id == null ){
+            int sType = 0 ;
             ShoppingMall shoppingMall = null;
-            if (role == 1){
-                shoppingMall = new ShoppingMall(op_id, binding_id, 0, mold, new Date());
-            }else {
-                shoppingMall = new ShoppingMall(op_id, binding_id, 1, mold, new Date());
+            if (role == 2){
+                sType = 1 ;
             }
+            shoppingMall = new ShoppingMall(op_id, binding_id, sType , mold , new Date());
             //添加购物车
             clerkMapper.addShoppingMall(shoppingMall);
             sm_id = shoppingMall.getId();
@@ -426,9 +422,8 @@ public class ClerkServiceImpl implements ClerkService {
             clerkMapper.addShoppingMallDateil(shoppingMallDateil);
             smd_id = shoppingMallDateil.getId();
         }else {
-
             //通过购物车详情ID修改加数量
-            clerkMapper.updateShoppingMallDateilPlusNum(smd_id , num );
+            clerkMapper.updateShoppingMallDateilPlusNum(smd_id , num , price );
         }
 
         //计算加入购物车里产品的总金额（数量乘以单价）
@@ -671,8 +666,6 @@ public class ClerkServiceImpl implements ClerkService {
                 }
             }
         }
-
-
         return order.getId();
     }
 
@@ -723,8 +716,6 @@ public class ClerkServiceImpl implements ClerkService {
             shield = Byte.parseByte(hash.get("shield").toString());
 
         }
-
-
         Integer totalCount = clerkMapper.bindingCollectionSuppliersGoodsListCount(business_id,suppliersId ,name ,shield, inv  );
         Page page = new Page(pageNum,totalCount);
         List<HashMap> hashMaps = clerkMapper.bindingCollectionSuppliersGoodsList(business_id , suppliersId ,name ,  shield ,inv ,page.getStartIndex() ,page.getPageSize());
@@ -1043,5 +1034,13 @@ public class ClerkServiceImpl implements ClerkService {
             hashMap.put("orderDetail" ,hashMaps);
         }
         return hashMap;
+    }
+
+    @Override
+    public List ritleReminder(String token, Integer role) {
+
+        Integer id = shopMapper.registerIdByTokenAndRole(token, role);
+
+        return clerkMapper.otherRitleReminder(id );
     }
 }

@@ -632,10 +632,10 @@
 
     <!--添加财务结算记录-->
     <insert id="addSettlement">
-        insert into shengxian_financial_settlement(business_id,staff_id,tatol,money,arrears,unpaid,
-        incomes,expenditure ,return_tatol,create_time,type,risk ,wx ,alipay ,cash ,bankcard ,other ,old_time )
-        values(#{business_id},#{staff_id},#{tatol},#{money},#{arrears},#{unpaid},
-        #{incomes},#{expenditure} ,#{return_tatol} ,#{create_time},#{type},#{risk} , #{wx} ,#{alipay} , #{cash} ,#{bankcard} ,#{other} ,#{oldTime})
+        insert into shengxian_financial_settlement(business_id,staff_id,tatol,money,arrears,unpaid, incomes,expenditure ,return_tatol
+        ,create_time,type,risk ,wx ,alipay ,cash ,bankcard ,other ,old_time ,r_wx ,r_alipay ,r_cash ,r_bankcard ,r_other)
+        values(#{business_id},#{staff_id},#{tatol},#{money},#{arrears},#{unpaid}, #{incomes},#{expenditure} ,#{return_tatol} , #{create_time}
+        ,#{type},#{risk} , #{wx} ,#{alipay} , #{cash} ,#{bankcard} ,#{other} ,#{oldTime} , #{rWx} ,#{rAlipay} , #{rCash} ,#{rBankcard} ,#{rOther})
     </insert>
 
 
@@ -680,7 +680,7 @@
     <select id="settlementByid" resultType="HashMap">
         select fs.id,fs.tatol,fs.arrears,fs.money,fs.expenditure,fs.incomes,fs.unpaid,fs.type,fs.return_tatol,fs.risk,
         fs.create_time, if(fs.staff_id=0,'商家',(select s.name from shengxian_staff s where s.id = fs.staff_id))staff_name
-         ,fs.wx , fs.alipay , fs.cash , fs.bankcard ,fs.other , fs.old_time
+         ,fs.wx , fs.alipay , fs.cash , fs.bankcard ,fs.other , fs.old_time  ,fs.r_wx , fs.r_alipay , fs.r_cash , fs.r_bankcard ,fs.r_other
         from shengxian_financial_settlement fs
         where fs.id = #{id}
     </select>
@@ -1376,6 +1376,7 @@
         </if>
     </select>
 
+    <!--财务结算时查询五种收款分类-->
     <select id="fiveMoneyType" resultType="com.shengxian.entity.Settlement">
         <if test="type == 1 ">
             select
@@ -1460,6 +1461,95 @@
             <if test="time != null and time != ''">
                 and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
             </if>   )other
+
+        </if>
+    </select>
+
+    <!--财务结算时查询五种收款分类-->
+    <select id="fiveRetreatMoneyType" resultType="com.shengxian.entity.Settlement">
+        <if test="type == 1 ">
+            select
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 1
+            and o.state in (2,3) and mt.type = 1
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>    )rWx,
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 1
+            and o.state in (2,3) and mt.type = 2
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>     )rAlipay,
+
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 1
+            and o.state in (2,3) and mt.type = 3
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>     )rCash,
+
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 1
+            and o.state in (2,3) and mt.type = 4
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>     )rBankcard,
+
+            (select ifnull(sum(mt.money),0) from shengxian_order o
+            inner join shengxian_order_money_type mt on  o.id in (mt.order_id)
+            WHERE o.business_id = #{bid} and o.is_del=0 and o.`status` = 4 and mt.business_id = #{bid} and o.mold = 1
+            and o.state in (2,3) and mt.type = 5
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>    )rOther
+        </if>
+
+        <if test=" type == 2 ">
+            select
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 1
+            and state in (1,2) and mt.type = 1
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>  )rWx,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 1
+            and state in (1,2) and mt.type = 2
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>  )rAlipay,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 1
+            and state in (1,2) and mt.type = 3
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>   )rCash,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 1
+            and state in (1,2) and mt.type = 4
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>   )rBankcard,
+
+            (select ifnull(sum(mt.money),0) from shengxian_purchase p
+            inner join shengxian_purchase_money_type mt on  p.id in (mt.order_id)
+            WHERE p.business_id =#{bid} and p.is_del=0 and p.`status` =1 and mt.business_id = #{bid} and mold = 1
+            and state in (1,2) and mt.type = 5
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(mt.receivable_time,'%Y-%m-%d')  &gt; #{time}
+            </if>   )rOther
 
         </if>
     </select>

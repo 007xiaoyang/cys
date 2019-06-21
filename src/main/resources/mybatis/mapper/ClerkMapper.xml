@@ -469,7 +469,7 @@
 
     <!--通过购物车详情ID加购物车产品数量-->
     <update id="updateShoppingMallDateilPlusNum">
-        update shengxian_shopping_mall_dateil set num =  #{num} where id = #{id}
+        update shengxian_shopping_mall_dateil set num =  #{num} , price = #{price} where id = #{id}
     </update>
 
     <!--计算加入购物车里产品的总金额（数量乘以单价）-->
@@ -1010,6 +1010,23 @@
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.id = #{id};
+    </select>
+
+
+
+    <select id="otherRitleReminder" resultType="Integer">
+            select a.type from (
+            (select type  from shengxian_staff_percentage
+            where staff_id = #{staffId}
+            and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '')
+            UNION ALL
+            (select 1 as type  from shengxian_goods_percentage
+            where staff_id = #{staffId}
+            and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '' limit 1)
+            UNION ALL
+            (select 2 as type  from shengxian_user_percentage
+            where staff_id = #{staffId}
+            and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '' limit 1 ))a ORDER BY a.type asc
     </select>
     
 </mapper>

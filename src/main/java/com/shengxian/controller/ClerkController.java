@@ -1150,7 +1150,22 @@ public class ClerkController {
         }
     }
 
+    /**
+     * 员工APP提成标题提醒
+     * @return
+     */
+    @RequestMapping("/ritleReminder")
+    @ApiOperation(value = "员工APP提成标题提醒" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
 
+    })
+    public synchronized Message ritleReminder(String token ,Integer role){
+        Message message= Message.non();
+        List list = clerkService.ritleReminder(token , role );
+        return message.code(Message.codeSuccessed).data(list).message("查询成功");
+    }
 
 
     /**
