@@ -562,7 +562,7 @@ public class ClerkServiceImpl implements ClerkService {
         //生成订单号
         String orderNumber = OrderCodeFactory.getOnlineOrderCode("5" ,(long) SM.getOp_id(), 5);
         Order order = new Order();
-        order.setStaff_id(staff_id);
+        order.setStaff_id(0);
         order.setOrder_number(orderNumber); //订单号
         order.setNo(OrderCodeFactory.getStringRandom(3,3)); //销售的是6位二维码标识
         order.setBinding_id(SM.getConsume_id()); //客户ID
