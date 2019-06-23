@@ -92,8 +92,13 @@ public class OrderServiceImpl implements OrderService {
     //添加用户的产品收藏
     @Override
     @Transactional
-    public Integer addBandingUserGoodsCollection(Integer binding, Integer goods_id) {
+    public Integer addBandingUserGoodsCollection(Integer binding, Integer goods_id) throws NullPointerException{
         Collect collect = new Collect(binding, goods_id, new Date());
+
+        Integer isExist = orderMapper.selectBindingIsExist(binding, goods_id);
+        if (isExist != null ){
+            throw new NullPointerException("已收藏过，不能再收藏了哟");
+        }
         orderMapper.addBandingUserGoodsCollection(collect);
         return collect.getId();
     }

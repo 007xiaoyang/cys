@@ -165,7 +165,7 @@ public interface MenuService {
      * @param role
      * @return
      */
-    List<Printer> queryPrinter(String token ,Integer role) throws UnsupportedEncodingException;
+    List<Printer> queryPrinter(String token ,Integer role) throws NullPointerException, UnsupportedEncodingException;
 
     /**
      * 修改打印机

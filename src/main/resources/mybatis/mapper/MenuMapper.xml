@@ -312,6 +312,11 @@
         update shengxian_menu_staff set state = #{state} where id = #{id}
     </update>
 
+    <select id="findBusinessPrinterIsExist" resultType="Integer">
+        select id from shengxian_business_printer
+        where business_id = #{bid} and sn1 = #{sn1};
+    </select>
+
     <!--添加飞蛾打印机-->
     <insert id="addPrinter">
         insert into shengxian_business_printer(business_id ,sn1 ,key1 ,remark1 ,carnum1 ,msg1 ,num ,ors)

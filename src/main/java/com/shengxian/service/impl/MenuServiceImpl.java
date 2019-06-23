@@ -289,6 +289,11 @@ public class MenuServiceImpl implements MenuService {
         JSONArray ok = data.getJSONArray("ok");
         if (ok.size() > 0){
             Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
+            Integer isExist = menuMapper.findBusinessPrinterIsExist(bid, sn);
+            if (isExist != null ){
+                menuMapper.deletePrinter(bid , sn );
+            }
             count = menuMapper.addPrinter(new Printer(bid , sn ,key, remark ,carnum , msg ,num ,ors));
         }else {
             String no = data.getString("no");
@@ -303,13 +308,17 @@ public class MenuServiceImpl implements MenuService {
 
     //查询店铺打印机
     @Override
-    public List<Printer> queryPrinter(String token, Integer role) throws UnsupportedEncodingException {
+    public List<Printer> queryPrinter(String token, Integer role) throws NullPointerException , UnsupportedEncodingException {
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
         List<Printer> printers = menuMapper.queryPrinter(bid ,null);
         for (Printer printer : printers  ) {
             //查询打印机的状态
             String msg = MothPrinter.queryPrinterStatus(printer.getSn1());
             JSONObject json = JSONObject.parseObject(msg);
+            Integer r = json.getInteger("ret");
+            if (r == 1002 ){
+                throw new NullPointerException(json.getString("msg"));
+            }
             String data = json.getString("data");
             byte[] bytes = data.getBytes();
             String s = new String(bytes, "UTF-8");

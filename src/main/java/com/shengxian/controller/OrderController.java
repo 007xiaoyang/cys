@@ -178,9 +178,11 @@ public class OrderController {
                 return message.code(Message.codeFailured).message("收藏失败");
             }
             return message.code(Message.codeSuccessed).data(count).message("收藏成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
             log.error("订单控制层（/order/addBandingUserGoodsCollection）接口报错---------"+e.getMessage());
-            return message.code(Message.codeFailured).message(e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
 

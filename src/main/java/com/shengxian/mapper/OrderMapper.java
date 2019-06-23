@@ -42,6 +42,14 @@ public interface OrderMapper {
     List<HashMap> selectBandingUserGoodsCollection(@Param("business_id") Integer bid, @Param("binding_id") Integer bindind_id, @Param("name") String name);
 
     /**
+     * 判断用户是否收藏过该产品
+     * @param bindingId
+     * @param goodsId
+     * @return
+     */
+    Integer selectBindingIsExist(@Param("bindingId") Integer bindingId , @Param("goodsId") Integer goodsId);
+
+    /**
      * 添加用户的产品收藏
      * @return
      */

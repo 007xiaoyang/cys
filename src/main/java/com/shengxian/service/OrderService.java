@@ -47,7 +47,7 @@ public interface OrderService {
      * @param goods_id 产品id
      * @return
      */
-    Integer addBandingUserGoodsCollection(Integer binding_id, Integer goods_id);
+    Integer addBandingUserGoodsCollection(Integer binding_id, Integer goods_id)throws  NullPointerException;
 
     /**
      * 取消用户收藏产品

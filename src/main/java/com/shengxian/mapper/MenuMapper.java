@@ -372,6 +372,9 @@ public interface MenuMapper {
      */
     Integer updateStaffAppMenu(@Param("id") Integer id ,@Param("state") Integer state );
 
+
+    Integer findBusinessPrinterIsExist(@Param("bid") Integer business_id , @Param("sn") String sn);
+
     /**
      * 添加飞蛾打印机
      * @param printer

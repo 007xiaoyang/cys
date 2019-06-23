@@ -35,6 +35,12 @@
         order by gc.id desc
     </select>
 
+    <!--判断用户是否收藏过该产品-->
+    <select id="selectBindingIsExist" resultType="Integer">
+        select id from shengxian_goods_collection
+        where binding_id = #{bindingId} and  goods_id = #{goodsId};
+    </select>
+
     <!--添加用户的产品收藏-->
     <insert id="addBandingUserGoodsCollection" keyProperty="id" useGeneratedKeys="true" >
         insert into shengxian_goods_collection(binding_id , goods_id ,collection_time)

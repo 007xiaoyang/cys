@@ -123,6 +123,7 @@ public class Message extends HashMap<String, Object>{
 	 * 失败码
 	 */
 	public static final int codeFailured = -1;
+
 	/**
 	 * 未知状态
 	 */

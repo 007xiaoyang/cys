@@ -556,7 +556,9 @@ public class MenuController {
         try {
             List<Printer> printers = menuService.queryPrinter(token ,role);
             return message.code(Message.codeSuccessed).data(printers).message("查询成功");
-        }catch (UnsupportedEncodingException e){
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
