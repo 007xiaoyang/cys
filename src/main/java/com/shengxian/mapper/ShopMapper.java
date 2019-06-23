@@ -1,6 +1,7 @@
 package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -1146,6 +1147,22 @@ public interface ShopMapper {
      * @return
      */
     Integer findStaffIdByToken(@Param("token") String token);
+
+    /**
+     * 通过角色和登录token查询密码
+     * @param token
+     * @param role
+     * @return
+     */
+    String selectPasswordByRoleAndToken(@Param("token") String token  , @Param("role")Integer role );
+
+    /**
+     * 通过角色和登录token修改密码
+     * @param token
+     * @param role
+     * @return
+     */
+    Integer updatePasswordByTokenAndRole(@Param("token") String token  , @Param("role")Integer role ,@Param("password") String password );
 
     /**
      * 通过token查询服务商信息

@@ -13,6 +13,7 @@ import org.apache.http.cookie.SM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -950,17 +951,16 @@ public class ClerkServiceImpl implements ClerkService {
     @Override
     @Transactional
     public Integer updatePassword(String token, Integer role, String password, String password2) throws NullPointerException ,Exception{
-        //获取员工ID
-        Integer staff_id = shopMapper.findStaffIdByToken(token);
-        //通过员工id查询原来密码
-        String pwd = staffMapper.findStaffPassword(staff_id);
 
-        String pwd1 = PasswordMD5.EncoderByMd5(password + Global.passwordKey);
-        if (!pwd.equals(pwd1)){
+        //通过角色和登录token查询密码
+        String pwd = shopMapper.selectPasswordByRoleAndToken(token, role);
+
+        String oldPassword = PasswordMD5.EncoderByMd5(password + Global.passwordKey);
+        if (!pwd.equals(oldPassword)){
            throw new NullPointerException("旧密码不匹配");
         }
-        String pwd2 = PasswordMD5.EncoderByMd5(password2 + Global.passwordKey);
-        return staffMapper.updateStaffPwd(staff_id ,pwd2 );
+        String newPassword = PasswordMD5.EncoderByMd5(password2 + Global.passwordKey);
+        return shopMapper.updatePasswordByTokenAndRole(token , role , newPassword);
     }
 
 

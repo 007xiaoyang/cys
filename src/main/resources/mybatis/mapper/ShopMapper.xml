@@ -1139,6 +1139,27 @@
         select id from shengxian_staff where is_del = 0 and  token = #{token}
     </select>
 
+
+    <!--通过角色和登录token查询密码-->
+    <select id="selectPasswordByRoleAndToken" resultType="String">
+        <if test="role == 1">
+            select password from shengxian_business where is_del = 0 and  token = #{token};
+        </if>
+        <if test="role == 2">
+            select password from shengxian_staff where is_del = 0 and  token = #{token};
+        </if>
+    </select>
+
+    <!--通过角色和登录token修改密码-->
+    <update id="updatePasswordByTokenAndRole">
+        <if test="role == 1">
+            update shengxian_business set password = #{password}  where  is_del = 0 and token = #{token};
+        </if>
+        <if test="role == 2">
+            update shengxian_staff set password = #{password}  where is_del = 0 and token = #{token};
+        </if>
+    </update>
+
     <!--通过token查询服务商信息-->
     <select id="findSellerBySellerToken" resultType="HashMap">
         select id,is_disable,"商家"as name , type

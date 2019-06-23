@@ -1002,7 +1002,7 @@ public class ClerkController {
 
 
     /**
-     * 员工APP修改密码
+     * 店铺或者员工APP修改密码
      * @param token
      * @param role
      * @param password
@@ -1010,7 +1010,7 @@ public class ClerkController {
      * @return
      */
     @RequestMapping("/updatePassword")
-    @ApiOperation(value = "员工APP修改密码" ,httpMethod = "POST")
+    @ApiOperation(value = "店铺或者员工APP修改密码" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
