@@ -571,16 +571,17 @@ public class ClerkServiceImpl implements ClerkService {
         order.setFreight(freight); // 运费
         order.setDifference_price(difference_price); //差价
         order.setPrice(price); //订单总金额
-        order.setStatus(3);
+        order.setStatus(2);
         order.setCreate_time(new Date());
         order.setPrint_frequ(print); //0未打印
         order.setMold(mold); //销售单
-        HashMap staff = clerkMapper.staffNameAndBusiness_id(token);
-        if (staff == null ){
+
+        HashMap hash = shopMapper.selectNameAndShopIdByTokenAndRole(token , role );
+        if (hash == null ){
             throw new NullPointerException("登录失效");
         }
-        order.setMaking(staff.get("name").toString()); //制单人
-        order.setBusiness_id(Integer.valueOf(staff.get("business_id").toString())); //店铺ID
+        order.setMaking(hash.get("name").toString()); //制单人
+        order.setBusiness_id(Integer.valueOf(hash.get("id").toString())); //店铺ID
         //添加订单
         orderMapper.addOrder(order);
 
@@ -751,8 +752,8 @@ public class ClerkServiceImpl implements ClerkService {
             staff_id = SM.getOp_id();
         }
         //通过员工登录token查询员工所在店铺ID和员工姓名
-        HashMap staff = clerkMapper.staffNameAndBusiness_id(token);
-        if (staff == null ){
+        HashMap hash = shopMapper.selectNameAndShopIdByTokenAndRole(token , role);
+        if (hash == null ){
             throw new NullPointerException("登录失效");
         }
         //生成订单号
@@ -771,8 +772,8 @@ public class ClerkServiceImpl implements ClerkService {
         purchaseOrder.setMold(mold); //销售单
         purchaseOrder.setStaff_id(staff_id);
 
-        purchaseOrder.setMaking(staff.get("name").toString()); //制单人
-        purchaseOrder.setBusiness_id(Integer.valueOf(staff.get("business_id").toString())); //店铺ID
+        purchaseOrder.setMaking(hash.get("name").toString()); //制单人
+        purchaseOrder.setBusiness_id(Integer.valueOf(hash.get("id").toString())); //店铺ID
         //添加采购订单
         purchaseMapper.addPurchaseOrder(purchaseOrder);
 

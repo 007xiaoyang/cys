@@ -95,6 +95,19 @@
         </if>
     </select>
 
+    <!--根据token和角色查询店铺ID和注册名称-->
+    <select id="selectNameAndShopIdByTokenAndRole" resultType="HashMap">
+        <if test="role == 1">
+            select id ,"商家" as name
+            from shengxian_business where is_del = 0 and token = #{token}
+        </if>
+        <if test="role == 2">
+            select business_id as id , name
+            from shengxian_staff
+            where  is_del = 0  and token = #{token}
+        </if>
+    </select>
+
     <!--找回密码-->
     <update id="updateRetrievePwd">
         update shengxian_business set password = #{password} where phone = #{phone}

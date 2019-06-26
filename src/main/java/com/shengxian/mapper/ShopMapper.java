@@ -97,6 +97,14 @@ public interface ShopMapper {
      */
     HashMap selectShopInfoByIdAndRole(@Param("token") String token  ,@Param("role") Integer role);
 
+    /**
+     * 根据token和角色查询店铺ID和注册名称
+     * @param token
+     * @param role
+     * @return
+     */
+    HashMap selectNameAndShopIdByTokenAndRole(@Param("token") String token  ,@Param("role") Integer role);
+
 
     /**
      * 找回密码

@@ -314,7 +314,7 @@
 
     <select id="findBusinessPrinterIsExist" resultType="Integer">
         select id from shengxian_business_printer
-        where business_id = #{bid} and sn1 = #{sn1};
+        where business_id = #{bid} and sn1 = #{sn};
     </select>
 
     <!--添加飞蛾打印机-->

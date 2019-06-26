@@ -421,13 +421,6 @@ public interface ClerkMapper {
      */
     List<HashMap> ShoppingMallGoodsListBySMID(@Param("sm_id") Integer sm_id );
 
-    /**
-     * 通过token查询员工姓名店铺ID
-     * @param token
-     * @return
-     */
-    HashMap staffNameAndBusiness_id(@Param("token") String token);
-
 
     /**
      * 根据产品id查询产品进价

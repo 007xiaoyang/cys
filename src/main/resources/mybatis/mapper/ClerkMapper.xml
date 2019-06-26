@@ -553,10 +553,6 @@
         where  smd.sm_id = #{sm_id}
     </select>
 
-    <!--通过token查询员工姓名店铺ID-->
-    <select id="staffNameAndBusiness_id" resultType="HashMap">
-        select name ,business_id from shengxian_staff where is_del =  0 and token = #{token}
-    </select>
 
     <!--根据产品id查询产品进价金额-->
     <select id="findGoodsCostPrice" resultType="Double">
