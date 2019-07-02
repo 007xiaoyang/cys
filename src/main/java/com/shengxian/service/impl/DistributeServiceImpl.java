@@ -341,7 +341,7 @@ public class DistributeServiceImpl implements DistributeService {
         //员工销售订单明细和采购订单明细总数
         Integer saleSatolCount = distributeMapper.staffDayDetailCount(staff_id,time ,name ,type);
 
-        Page page = new Page(pageNum,saleSatolCount,8);
+        Page page = new Page(pageNum,saleSatolCount,10);
 
         //员工销售订单明细和采购订单明细
         List<HashMap> sale = distributeMapper.staffDayDetail(staff_id,time ,name ,type ,page.getStartIndex(),page.getPageSize());

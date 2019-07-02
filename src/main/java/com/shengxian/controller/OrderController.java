@@ -1280,7 +1280,7 @@ public class OrderController {
     }
 
     /**
-     * 查询拒绝订单
+     * 查询
      * @param token
      * @return
      */

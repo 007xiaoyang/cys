@@ -318,7 +318,7 @@ public interface DistributeMapper {
      * @param time
      * @return
      */
-    Integer purchaseDetailCount(@Param("staff_id") Integer staff_id, @Param("time") String time ,@Param("name") String name,@Param("type") Integer type);
+    //Integer purchaseDetailCount(@Param("staff_id") Integer staff_id, @Param("time") String time ,@Param("name") String name,@Param("type") Integer type);
 
     /**
      * 员工的采购订单明细
@@ -328,7 +328,7 @@ public interface DistributeMapper {
      * @param pageSize
      * @return
      */
-    List<HashMap> purchaseDetail(@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
+    //List<HashMap> purchaseDetail(@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
 
 

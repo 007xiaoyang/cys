@@ -706,12 +706,12 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        group by  bd.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc ) a
+        group by  bd.id ,g.id  order by o.audit_time desc ) a
     </select>
 
     <!--用户销售汇总-->
     <select id="userSaleProfitSummary" resultType="HashMap">
-        select o.id,bd.user_name ,DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
+        select o.id,bd.user_name , g.name ,DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
         sum(od.profit)profit,
         sum(od.order_number * od.cost_price)cost_price,
         sum(od.order_number * od.order_price)sale_price,
@@ -733,16 +733,17 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        group by  bd.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc limit #{startIndex},#{pageSize}
+        group by  bd.id ,g.id  order by o.audit_time desc limit #{startIndex},#{pageSize}
     </select>
 
     <!--用户销售汇总总金额-->
     <select id="userSaleProfitSummaryTatolMoney" resultType="HashMap">
         select ifnull(sum(a.sale_price),0)sale_price,ifnull(sum(a.cost_price) , 0)cost_price,ifnull(sum(a.profit) ,0)profit
+         ,ifnull(sum(a.num),0)num
         from
         (select  sum(od.profit)profit,
         sum(od.order_number * od.cost_price)cost_price,
-        sum(od.order_number * od.order_price)sale_price
+        sum(od.order_number * od.order_price)sale_price , sum(od.order_number)num
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
@@ -760,7 +761,7 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        group by  bd.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d'))a
+        group by  bd.id ,g.id )a
     </select>
 
 
@@ -816,7 +817,7 @@
     <select id="userSaleProfitDetailsTatolMoney" resultType="HashMap">
         select ifnull( sum(od.profit) ,0)profit,
         ifnull(sum( od.cost_price * od.order_number),0)cost_price,
-        ifnull(sum(( od.order_number * od.order_price)), 0)sale_price
+        ifnull(sum(( od.order_number * od.order_price)), 0)sale_price ,ifnull(sum(od.order_number),0)num
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
@@ -855,7 +856,7 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        group by g.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc )a
+        group by g.id  order by o.audit_time desc )a
     </select>
 
     <!--产品销售汇总-->
@@ -880,15 +881,18 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        group by g.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') order by o.audit_time desc limit #{startIndex},#{pageSize}
+        group by g.id  order by o.audit_time desc limit #{startIndex},#{pageSize}
     </select>
 
     <!--产品销售汇总总金额-->
     <select id="goodsSaleProfitSummaryTatolMoney" resultType="HashMap">
-        select ifnull(sum(a.sale_price),0)sale_price,ifnull(sum(a.profit),0)profit,ifnull(sum(a.cost_price),0)cost_price  from
+        select ifnull(sum(a.sale_price),0)sale_price,ifnull(sum(a.profit),0)profit
+        ,ifnull(sum(a.cost_price),0)cost_price   , ifnull(sum(a.num), 0)num
+        from
         (select sum(od.profit)profit,
         sum( od.cost_price * od.order_number)cost_price,
-        sum(od.order_number * od.order_price)sale_price
+        sum(od.order_number * od.order_price)sale_price ,
+        sum(od.order_number)num
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
         inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
@@ -903,7 +907,7 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-        group by g.id ,DATE_FORMAT(o.audit_time,'%Y-%m-%d') )a
+        group by g.id )a
     </select>
 
 
@@ -957,7 +961,8 @@
     <select id="goodsSaleProfitDetailsTatolMoney" resultType="HashMap">
         select ifnull(sum(od.profit) ,0)profit,
         ifnull(sum(od.cost_price * od.order_number),0)cost_price,
-        ifnull(sum(od.order_number * od.order_price),0)sale_price
+        ifnull(sum(od.order_number * od.order_price),0)sale_price ,
+        ifnull(sum(od.order_number) , 0) num
         from shengxian_order o
         inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
         inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id

@@ -1048,7 +1048,8 @@ public class OrderServiceImpl implements OrderService {
                     //通过产品id查询每天产品的初始库存
                     goodsInventory = shopMapper.selectGoodsInventory(Integer.valueOf(detail.get("goods_id").toString()));
 
-                }else if (statisId == null && mold == 0 ){
+                }
+                if (statisId == null && mold == 0 ){
 
                     //当前这件销售产品没有产品库存统计记录 则添加
                     shopMapper.addSaleGoodsInventoryStatis( bid ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
@@ -1287,7 +1288,8 @@ public class OrderServiceImpl implements OrderService {
                 //通过产品id查询每天产品的初始库存
                 goodsInventory = shopMapper.selectGoodsInventory( detail.getGoods_id() );
 
-            }else if (statisId == null && mold == 0 ){
+            }
+            if (statisId == null && mold == 0 ){
 
                 //当前这件销售产品没有产品库存统计记录 则添加
                 shopMapper.addSaleGoodsInventoryStatis( bid ,detail.getGoods_id() , new BigDecimal(goodsInventory) ,new BigDecimal( detail.getOrder_number().toString() ) , new Date()  );

@@ -506,7 +506,7 @@
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del= 0  and sf.staff_id=#{staff_id} and sf.type in (3,5,6,7)
+        where o.is_del= 0  and sf.staff_id=#{staff_id} group by o.order_number , sf.type
         union ALL
         select o.audit_time ,bd.user_name , op.type
         from  shengxian_order o
@@ -518,7 +518,7 @@
         from  shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id= o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del=0 and os.staff_id=#{staff_id}
+        where o.is_del=0 and os.staff_id=#{staff_id} group by o.order_number , os.type
          )a  where DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
         <if test="name != null and name != ''">
             and a.user_name like CONCAT ('%', #{name}, '%')
@@ -532,11 +532,11 @@
     <select id="staffDayDetail" resultType="HashMap">
         select a.id, a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold,a.statis from (
         select o.id,  o.order_number, bd.user_name ,
-        o.price,ifnull(o.money,0)money,sf.type ,o.audit_time,o.mold,sf.statis
+        o.price,ifnull(o.money,0)money,sf.type ,o.audit_time,o.mold , sum(sf.statis)as statis
         from shengxian_order o
-        inner join shengxian_staff_frequency sf on o.id=sf.order_id and sf.type in (3,5,6,7,8,9,10)
+        inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del= 0  and sf.staff_id = #{staff_id}
+        where o.is_del= 0  and sf.staff_id = #{staff_id}  group by o.order_number , sf.type
         union ALL
         select o.id,  o.order_number,bd.user_name ,
         o.price,ifnull(o.money,0)money ,op.type ,o.audit_time,o.mold , 1 as statis
@@ -546,11 +546,11 @@
         where o.is_del=0 and op.staff_id = #{staff_id}
         UNION ALL
         select o.id, o.order_number,bd.user_name ,
-        o.price,ifnull(o.money,0)money ,os.type ,o.audit_time,o.mold , os.statis
+        o.price,ifnull(o.money,0)money ,os.type ,o.audit_time,o.mold , sum(os.statis) as statis
         from  shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id= o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del=0 and os.staff_id = #{staff_id}
+        where o.is_del=0 and os.staff_id = #{staff_id} group by o.order_number , os.type
         )a  where DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
         <if test="name != null and name != ''">
             and a.user_name like CONCAT ('%', #{name}, '%')
@@ -564,7 +564,7 @@
 
     
     <!--员工的采购提成订单明细总数-->
-    <select id="purchaseDetailCount" resultType="Integer">
+   <!-- <select id="purchaseDetailCount" resultType="Integer">
         select count(1)
         from (
         select p.audit_time
@@ -572,12 +572,10 @@
         inner join shengxian_staff_frequency sf on p.id=sf.order_id
         where p.is_del= 0  and sf.staff_id = #{staff_id} and sf.type in(8,9,10)
         )a  where DATE_FORMAT(a.audit_time,'%Y-%m') =#{time}
-    </select>
-
-
+    </select>-->
 
     <!--员工的采购提成订单明细-->
-    <select id="purchaseDetail" resultType="HashMap">
+    <!--<select id="purchaseDetail" resultType="HashMap">
         select a.id,a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold ,a.statis
         from (
         select p.id, p.order_number,(select name from shengxian_suppliers where id=p.suppliers_id) user_name ,
@@ -588,7 +586,7 @@
 
         )a  where DATE_FORMAT(a.audit_time,'%Y-%m') =#{time}
         order by a.audit_time desc
-    </select>
+    </select>-->
 
 
     <!--根据类型查询员工的各种提成比例-->

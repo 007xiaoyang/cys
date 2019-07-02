@@ -413,16 +413,16 @@ public class PurchaseServiceImpl implements PurchaseService {
 
             //确认到货的订单需要 记录每一件的产品库存
             if (status == 1 ){
-
+                Double goodsInventory = null ;
                 //通过店铺产品id和当前时间判断该产品是否在每天产品库存统计记录里
                 Integer statisId = shopMapper.selectGoodsInventoryStatisByBidAndDate(detail.getGoods_id()  );
-                Double goodsInventory = null ;
 
                 if (statisId == null ){
                     //通过产品id查询每天产品的初始库存
                     goodsInventory = shopMapper.selectGoodsInventory(detail.getGoods_id() );
 
-                }else if (statisId == null && mold == 0 ){
+                }
+                if (statisId == null && mold == 0 ){
 
                     //添加采购产品是否在每天产品库存统计记录(采购）
                     shopMapper.addPurchaseGoodsInventoryStatis( bid ,detail.getGoods_id()  ,new BigDecimal(goodsInventory) ,new BigDecimal(detail.getPurchase_number().toString() ) , new Date()  );
