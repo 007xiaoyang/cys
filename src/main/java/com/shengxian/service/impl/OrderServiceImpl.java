@@ -138,15 +138,14 @@ public class OrderServiceImpl implements OrderService {
     //销售订单
     @Override
     @Transactional
-    public Integer addOrder(String token ,Integer role, Order order)throws IndexOutOfBoundsException ,NullPointerException,Exception{
-
+    public synchronized Integer addOrder(String token ,Integer role, Order order)throws IndexOutOfBoundsException ,NullPointerException,Exception{
+        HashMap hashMap = null;
         //以防订单号出现重复
         List<Integer> id = orderMapper.orderNumber(order.getOrder_number());
         if (id.size() > 0){
             throw new NullPointerException("您提交的订单重复了");
         }
 
-        HashMap hashMap = null;
         //登录人id ，店铺默认0
         int operate = 0;
 
@@ -194,15 +193,14 @@ public class OrderServiceImpl implements OrderService {
 
             //根据产品id查询产品进价
             costPrice = shopMapper.findGoodsCostPrice(orderDetail.getGoods_id());
-
+            double profit = 0 ;
             //type == 0 是销售产品
             if (orderDetail.getType() == 0){
+                //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以销售数量等于纯盈利润
 
+                profit = (orderDetail.getOrder_price() - costPrice) * orderDetail.getOrder_number();
                 //计算当前订单的总金额，数量乘以产品销售价格
                 price += orderDetail.getOrder_number() * orderDetail.getOrder_price();
-
-                //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以销售数量等于纯盈利润
-                orderDetail.setProfit( (orderDetail.getOrder_price() - costPrice) * orderDetail.getOrder_number());
 
              //type == 1 是报损赠送用户的产品
             }else if (orderDetail.getType() == 1){
@@ -211,12 +209,14 @@ public class OrderServiceImpl implements OrderService {
                 give = new Give(orderDetail.getGoods_id(),order.getBinding_id(),orderDetail.getOrder_number(),new Date(),operate,1,orderDetail.getId());
                 //添加报损记录
                 inventoryMapper.addLossGoods(give);
+                profit =  0 - ( (orderDetail.getOrder_price() - costPrice) * orderDetail.getOrder_number());
                 orderDetail.setOrder_price(0.0); //报损售价归零
             }
 
+
             //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
             shopMapper.reduceGoodsFictitiousInventory(orderDetail.getGoods_id(),orderDetail.getOrder_number());
-
+            orderDetail.setProfit(profit );
             //订单id
             orderDetail.setOrder_id(order.getId());
             //进价
@@ -729,6 +729,8 @@ public class OrderServiceImpl implements OrderService {
             //报损产品
             }else if (detail.getType() == 1){
 
+
+
                 //新增的报损产品
                 if (detail.getId() == null){
                     //报损产品
@@ -743,9 +745,15 @@ public class OrderServiceImpl implements OrderService {
 
                     //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
                     shopMapper.reduceGoodsFictitiousInventory(detail.getGoods_id(),detail.getOrder_number());
-                    detail.setOrder_id(order.getId());//订单id
+                    //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以数量等于纯盈利润
+                    double profit = 0 - ( (detail.getOrder_price() - costPrice) * detail.getOrder_number()) ;
+                    //销售价归零
+                    detail.setOrder_price(0.0);
                     detail.setCost_price(costPrice); //进价
-                    detail.setOrder_price(0.0); //销售价归零
+                    detail.setProfit(profit);
+                    detail.setOrder_id(order.getId());//订单id
+
+
                     //提交订单详情
                     orderMapper.addOrderDetail(detail);
                     //修改报损单的订单详情id
@@ -780,10 +788,8 @@ public class OrderServiceImpl implements OrderService {
                     //通过订单详情id修改报损表里的报损数量
                     orderMapper.updateGiveNum(detail.getId(),detail.getOrder_number(),new Date());
 
-                    detail.setOrder_price(0.0); //销售价归零
-
                     //通过订单详情id修改产品数量和价格
-                    orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),0 ,costPrice);
+                    orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),null ,costPrice);
                 }
 
             } //报损产品

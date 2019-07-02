@@ -381,7 +381,7 @@ public interface OrderMapper {
      * @param order_price
      * @return
      */
-    Integer updateOrderDetailPrice(@Param("id") Integer id, @Param("order_number") double order_number, @Param("order_price") double order_price, @Param("profit") double profit ,@Param("cost_price") double cost_price);
+    Integer updateOrderDetailPrice(@Param("id") Integer id, @Param("order_number") double order_number, @Param("order_price") double order_price, @Param("profit") Double profit ,@Param("cost_price") double cost_price);
 
     /**
      * 通过订单id修改订单运费和差价

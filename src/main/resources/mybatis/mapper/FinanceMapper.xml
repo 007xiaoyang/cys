@@ -844,7 +844,7 @@
         (select o.id
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
-        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
         <if test=" is != null">
@@ -869,7 +869,7 @@
         sum(od.order_number)order_number
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
-        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
         <if test="is != null ">
@@ -895,7 +895,7 @@
         sum(od.order_number)num
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
-        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
         <if test="is != null ">
@@ -915,11 +915,11 @@
     <select id="goodsSaleProfitDetailsCount" resultType="Integer">
         select count(od.id)
         from shengxian_order o
-        inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
+        inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
-        inner join  (select id , name from shengxian_warehouse  ) w on w.id = gi.warehouse_id
-        left join (select id ,name ,number,cost_price ,is_del from shengxian_goods ) g on g.id = od.goods_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
         <if test="is != null ">
             and gi.warehouse_id = #{is}
@@ -939,11 +939,11 @@
         (od.order_number * od.order_price)sale_price , w.name as wname ,
         od.order_number
         from shengxian_order o
-        inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
+        inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
-        inner join  (select id , name from shengxian_warehouse  ) w on w.id = gi.warehouse_id
-        left join (select id ,name ,number,cost_price ,is_del from shengxian_goods ) g on g.id = od.goods_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
         <if test="is != null ">
             and gi.warehouse_id = #{is}
@@ -964,10 +964,11 @@
         ifnull(sum(od.order_number * od.order_price),0)sale_price ,
         ifnull(sum(od.order_number) , 0) num
         from shengxian_order o
-        inner join (select id, order_id,profit,order_number,order_price,goods_id ,cost_price from shengxian_order_details) od on od.order_id = o.id
-        inner join (select goods_id,warehouse_id from shengxian_goods_inventory) gi on gi.goods_id = od.goods_id
-        inner join  (select id , name from shengxian_warehouse  ) w on w.id = gi.warehouse_id
-        left join (select id ,name ,number,cost_price ,is_del from shengxian_goods ) g on g.id = od.goods_id
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_warehouse w on w.id = gi.warehouse_id
+        left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
         <if test="is != null ">
             and gi.warehouse_id = #{is}

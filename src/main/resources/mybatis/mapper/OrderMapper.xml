@@ -372,7 +372,11 @@
 
     <!--通过订单详情id修改产品数量和价格-->
     <update id="updateOrderDetailPrice">
-        update shengxian_order_details set order_number = #{order_number}, order_price = #{order_price}, profit = #{profit} , cost_price = #{cost_price}
+        update shengxian_order_details
+        <trim prefix="set" suffixOverrides=",">
+            order_number = #{order_number}, order_price = #{order_price},  cost_price = #{cost_price} ,
+            <if test="profit != null"> profit = #{profit} , </if>
+        </trim>
         where id = #{id}
     </update>
 

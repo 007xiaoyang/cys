@@ -261,7 +261,7 @@ public class OrderController {
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "json" ,value = "json格式" ,paramType = "query")
     })
-    public synchronized Message addOrder(String token ,Integer role, String json){
+    public  Message addOrder(String token ,Integer role, String json){
         Message message = Message.non();
 
         try {

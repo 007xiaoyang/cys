@@ -595,6 +595,7 @@ public class ClerkServiceImpl implements ClerkService {
         }
 
         double costPrice = 0;
+        double money = 0 ;
         for (HashMap mall: mallDetail ) {
             //根据type来判断是销售的还是报损的
             if (Integer.valueOf(mall.get("type").toString()) == 0){
@@ -603,12 +604,14 @@ public class ClerkServiceImpl implements ClerkService {
                  costPrice = clerkMapper.findGoodsCostPrice(Integer.valueOf(mall.get("goods_id").toString()));
                 //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以数量等于纯盈利润
                 profit = (Double.valueOf(mall.get("price").toString()) - costPrice) * Double.valueOf(mall.get("num").toString());
-
+                money = Double.valueOf(mall.get("price").toString());
             }else if (Integer.valueOf(mall.get("type").toString()) == 1){
                 //报损产品
                 give = new Give(Integer.valueOf(mall.get("goods_id").toString()),SM.getConsume_id(),Double.valueOf(mall.get("num").toString()),new Date(),SM.getOp_id() ,1);
                 //添加报损记录
                 inventoryMapper.addLossGoods(give);
+                //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以数量等于纯盈利润
+                profit = 0 -( (Double.valueOf(mall.get("price").toString()) - costPrice) * Double.valueOf(mall.get("num").toString()) );
             }
 
            if(mold != null && mold == 0 ){
@@ -622,7 +625,7 @@ public class ClerkServiceImpl implements ClerkService {
            }
             orderDetail.setGoods_id(Integer.valueOf(mall.get("goods_id").toString())); //产品ID
             orderDetail.setOrder_number(Double.valueOf(mall.get("num").toString())); //购买数量
-            orderDetail.setOrder_price(Double.valueOf(mall.get("price").toString())); //购买单价
+            orderDetail.setOrder_price(money); //购买单价
             orderDetail.setProfit(profit); //盈利
             orderDetail.setOrder_id(order.getId()); //订单ID
             orderDetail.setType(Integer.valueOf(mall.get("type").toString()));

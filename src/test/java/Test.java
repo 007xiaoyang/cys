@@ -12,11 +12,10 @@ public class Test {
 
     public static void main(String[] args) {
 
-      Integer role = null;
+      double a = 300.0;
 
-      if (role == null || (role != 1 && role != 2) ){
-          System.out.println("kong");
-      }
+        a -= a ;
+        System.out.println(a);
     }
 
 }
