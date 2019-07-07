@@ -185,6 +185,7 @@
             <if test="business_id != null">business_id,</if>
             <if test="shield != null">shield,</if>
             <if test="shield_inventory != null">shield_inventory,</if>
+            <if test="shieldMin != null">shield_inventory,</if>
             <if test="create_time != null">create_time,</if>
         </trim>
         <trim prefix=" values (" suffix=")" suffixOverrides=",">
@@ -197,6 +198,7 @@
             <if test="business_id != null">#{business_id,jdbcType=BIGINT},</if>
             <if test="shield != null"> #{shield},</if>
             <if test="shield_inventory != null"> #{shield_inventory},</if>
+            <if test="shieldMin != null">shieldMin,</if>
             <if test="create_time != null">#{create_time,jdbcType=DATE},</if>
         </trim>
     </insert>
@@ -228,7 +230,7 @@
 
     <!--根据员工id查询员工信息-->
     <select id="findStaffInfoById" resultType="HashMap">
-        select s.id,s.phone ,s.name ,s.category_id ,s.number,sc.name as cateroyName,shield ,shield_inventory
+        select s.id,s.phone ,s.name ,s.category_id ,s.number,sc.name as cateroyName,shield ,shield_inventory ,shield_min
         from shengxian_staff s,shengxian_staff_category sc
         where sc.id=s.category_id and s.id = #{id} and s.is_del = 0
     </select>
@@ -272,6 +274,7 @@
             <if test="name != null "> name =#{name},</if>
             <if test="shield != null">shield =#{shield},</if>
             <if test="shield_inventory != null">shield_inventory =#{shield_inventory},</if>
+            <if test="shieldMin != null">shield_inventory =#{shieldMin},</if>
         </trim>
         where id=#{id}
     </update>

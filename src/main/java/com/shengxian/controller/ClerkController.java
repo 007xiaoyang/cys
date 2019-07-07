@@ -1,8 +1,10 @@
 package com.shengxian.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.WageSettlement;
+import com.shengxian.entity.clerkApp.Calculator;
 import com.shengxian.entity.clerkApp.ShoppingMall;
 import com.shengxian.entity.clerkApp.ShoppingMallDateil;
 import com.shengxian.service.ClerkService;
@@ -965,8 +967,13 @@ public class ClerkController {
     public Message percentageClassification(String token ,Integer role ,Integer pageNo  ,Integer type ,String startTime ,String endTime){
         Message message = Message.non();
         try {
-
-            Page page = clerkService.percentageClassification(token ,role ,pageNo ,type ,startTime ,endTime );
+            String start = DateUtil.thisMonthOneNum();
+            String end = DateUtil.getDay();
+            if ( IntegerUtils.isEmpty(startTime ,endTime)){
+                //当没有传开始时间和结束时间，默认查询当天的订单
+                start = startTime; end = endTime;
+            }
+            Page page = clerkService.percentageClassification(token ,role ,pageNo ,type ,start ,end );
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/percentageClassification）接口报错---------"+e.getMessage());
@@ -1165,6 +1172,157 @@ public class ClerkController {
         Message message= Message.non();
         List list = clerkService.ritleReminder(token , role );
         return message.code(Message.codeSuccessed).data(list).message("查询成功");
+    }
+
+    /**
+     * 采购产品汇总
+     * @param token
+     * @param role
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @RequestMapping("/purchaseGoodsSummary")
+    @ApiOperation(value = "采购产品汇总" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "suppliersName" ,value = "供应商名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
+    })
+    public Message purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName,String goodsName ,String startTime ,String endTime){
+        Message message =Message.non();
+        String start = DateUtil.getDay();  String end = DateUtil.getDay();
+        try {
+            if ( IntegerUtils.isEmpty(startTime ,endTime)){
+                //当没有传开始时间和结束时间，默认查询当天的订单
+                start = startTime; end = endTime;
+            }
+
+            Page page = clerkService.purchaseGoodsSummary(token, role, pageNo, suppliersName, goodsName, start, end);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (Exception e){
+            return message.code(Message.codeSuccessed).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 采购产品明细
+     * @param token
+     * @param role
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @RequestMapping("/purchaseGoodsDetails")
+    @ApiOperation(value = "采购产品明细" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "suppliersName" ,value = "供应商名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
+    })
+    public Message purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName,String goodsName ,String startTime ,String endTime){
+        Message message =Message.non();
+        String start = DateUtil.getDay();  String end = DateUtil.getDay();
+        try {
+            if ( IntegerUtils.isEmpty(startTime ,endTime)){
+                //当没有传开始时间和结束时间，默认查询当天的订单
+                start = startTime; end = endTime;
+            }
+            Page page = clerkService.purchaseGoodsDetails(token, role, pageNo, suppliersName, goodsName, start, end);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (Exception e){
+            return message.code(Message.codeSuccessed).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 计算器
+     * @param token
+     * @param role
+     * @param json
+     * @return
+     */
+    @RequestMapping("/addCalculator")
+    @ApiOperation(value = "计算器" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "json" ,value = "{'name':'张三' , 'price': 30 , 'tatol': 3 ,'calculatorDatell':[{'num':2},{'num':23} ,{'num':5}]}" ,paramType = "query")
+    })
+    public Message addCalculator(String token , Integer role , String json){
+        Message message = Message.non();
+        try {
+            Calculator calculator = JSONObject.parseObject(json, Calculator.class);
+            Integer count = clerkService.addCalculator(token , role , calculator);
+            if (IntegerUtils.isEmpty(count)){
+                return message.code(Message.codeFailured).message("添加失败");
+            }
+            return message.code(Message.codeSuccessed).message("添加成功");
+        }catch (Exception e){
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 查询计算器
+     * @param token
+     * @param role
+     * @param name
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @RequestMapping("/selectCalculator")
+    @ApiOperation(value = "查询计算器" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
+    })
+    public Message selectCalculator(String token , Integer role ,Integer pageNo ,String name , String startTime ,String endTime){
+        Message message = Message.non();
+        String start = DateUtil.getDay();  String end = DateUtil.getDay();
+        try {
+            if (IntegerUtils.isEmpty(startTime, endTime)) {
+                //当没有传开始时间和结束时间，默认查询当天的订单
+                start = startTime; end = endTime;
+            }
+            Page page = clerkService.selectCalculator(token , role, pageNo, name, start, end);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (Exception e){
+            return message.code(Message.codeSuccessed).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 查询计算器详情
+     * @param calculatorId
+     * @return
+     */
+    @RequestMapping("/selectCalculatorDateilById")
+    @ApiOperation(value = "查询计算器详情" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "calculatorId" ,value = "计算器id" ,paramType = "query")
+    })
+    public Message selectCalculatorDateilById(Integer calculatorId){
+        Message message = Message.non();
+        List<HashMap> hashMaps = clerkService. selectCalculatorDateilById( calculatorId);
+        return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
     }
 
 

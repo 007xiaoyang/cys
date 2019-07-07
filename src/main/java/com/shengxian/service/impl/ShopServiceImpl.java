@@ -279,11 +279,17 @@ public class ShopServiceImpl implements ShopService {
             //分页查询类别下的产品信息集合
             List<HashMap> goodsList = shopMapper.findGoodsList(new Parameter(id, page.getStartIndex(), page.getPageSize(), cid, number, name, barcode ,level));
             for (HashMap goods: goodsList){
+                if (shield != null && Integer.valueOf(shield.get("min").toString()) == 1){
+                    goods.put("min","最低进价不可见");
+                }else {
+                    goods.put("min","最低进价可见");
+                }
                 if (shield != null && Integer.valueOf(shield.get("inv").toString()) == 1){
                     goods.put("inv","库存不可见");
                 }else {
                     goods.put("inv","库存可见");
                 }
+
             }
             page.setRecords(goodsList);
             return page;
@@ -448,7 +454,11 @@ public class ShopServiceImpl implements ShopService {
             }else {
                 goods.put("cost","进价可见");
             }
-
+            if (shield != null && Integer.valueOf(shield.get("min").toString()) == 1){
+                goods.put("min","最低进价不可见");
+            }else {
+                goods.put("min","最低进价可见");
+            }
             //通过产品ID查询产品轮播图片
             List<HashMap> goodsImg = shopMapper.findGoodsImgByGid(goodsId);
 
@@ -471,6 +481,11 @@ public class ShopServiceImpl implements ShopService {
 
             //查询当前登录的是否是员工账号,是则判断进价是否屏蔽
             HashMap shield = purchaseMapper.selectShield(token);
+            if (shield != null && Integer.valueOf(shield.get("min").toString()) == 1){
+                goods.put("min","最低进价不可见");
+            }else {
+                goods.put("min","最低进价可见");
+            }
             if (shield != null && Integer.valueOf(shield.get("shield").toString()) == 1){
                 goods.put("cost","进价不可见");
             }else {
@@ -482,6 +497,7 @@ public class ShopServiceImpl implements ShopService {
             }else {
                 goods.put("inv","库存可见");
             }
+
 
             return goods;
         }

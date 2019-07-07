@@ -130,6 +130,11 @@ public class OrderServiceImpl implements OrderService {
             }else {
                 hashMap.put("inv","库存可见");
             }
+            if (shield != null && Integer.valueOf(shield.get("min").toString()) == 1){
+                hashMap.put("min","最低进价不可见");
+            }else {
+                hashMap.put("min","最低进价可见");
+            }
             hashMaps.add(hashMap);
         }
         return hashMaps;
@@ -209,7 +214,7 @@ public class OrderServiceImpl implements OrderService {
                 give = new Give(orderDetail.getGoods_id(),order.getBinding_id(),orderDetail.getOrder_number(),new Date(),operate,1,orderDetail.getId());
                 //添加报损记录
                 inventoryMapper.addLossGoods(give);
-                profit =  0 - ( (orderDetail.getOrder_price() - costPrice) * orderDetail.getOrder_number());
+                profit =  0 - ( costPrice * orderDetail.getOrder_number());
                 orderDetail.setOrder_price(0.0); //报损售价归零
             }
 
@@ -730,6 +735,7 @@ public class OrderServiceImpl implements OrderService {
             }else if (detail.getType() == 1){
 
 
+                double profit = 0 - (  costPrice * detail.getOrder_number()) ;
 
                 //新增的报损产品
                 if (detail.getId() == null){
@@ -746,7 +752,7 @@ public class OrderServiceImpl implements OrderService {
                     //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
                     shopMapper.reduceGoodsFictitiousInventory(detail.getGoods_id(),detail.getOrder_number());
                     //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以数量等于纯盈利润
-                    double profit = 0 - ( (detail.getOrder_price() - costPrice) * detail.getOrder_number()) ;
+
                     //销售价归零
                     detail.setOrder_price(0.0);
                     detail.setCost_price(costPrice); //进价
@@ -789,7 +795,7 @@ public class OrderServiceImpl implements OrderService {
                     orderMapper.updateGiveNum(detail.getId(),detail.getOrder_number(),new Date());
 
                     //通过订单详情id修改产品数量和价格
-                    orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),null ,costPrice);
+                    orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),profit ,costPrice);
                 }
 
             } //报损产品

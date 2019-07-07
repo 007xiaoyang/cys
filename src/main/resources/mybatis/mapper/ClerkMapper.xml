@@ -702,7 +702,7 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{id} and os.type = #{type}
+            where os.staff_id = #{id} and os.type = #{type}  group by o.order_number , os.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -722,7 +722,7 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type}
+            where f.staff_id = #{id} and f.type = #{type}  group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -732,7 +732,7 @@
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{id} and f.type = #{type}
+            where f.staff_id = #{id} and f.type = #{type}  group by p.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -748,7 +748,7 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{id} and os.type = #{type}
+            where os.staff_id = #{id} and os.type = #{type} group by o.order_number , os.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -770,7 +770,7 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type}
+            where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -781,7 +781,7 @@
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{id} and f.type = #{type}
+            where f.staff_id = #{id} and f.type = #{type} group by p.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -797,7 +797,7 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{id} and os.type = #{type}
+            where os.staff_id = #{id} and os.type = #{type} group by o.order_number , os.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -817,7 +817,7 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type}
+            where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -827,7 +827,7 @@
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{id} and f.type = #{type}
+            where f.staff_id = #{id} and f.type = #{type} group by p.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
@@ -1024,5 +1024,175 @@
             where staff_id = #{staffId}
             and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '' limit 1 ))a ORDER BY a.type asc
     </select>
-    
+
+
+
+
+    <!--采购产品汇总总数-->
+    <select id="userSaleProfitSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select s.id
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        inner join shengxian_goods g on g.id = pd.goods_id
+        where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersName != null and suppliersName != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  s.id ,g.id  order by p.audit_time desc ) a
+    </select>
+
+    <!--采购产品汇总-->
+    <select id="userSaleProfitSummary" resultType="HashMap">
+        select p.id,s.name , g.name ,DATE_FORMAT(p.audit_time,'%Y-%m-%d')audit_time,
+        sum(pd.purchase_number * pd.purchase_price)price,
+        sum(pd.purchase_number)number
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        inner join shengxian_goods g on g.id = pd.goods_id
+        where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersName != null and suppliersName != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  s.id ,g.id  order by p.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--采购产品汇总总金额-->
+    <select id="userSaleProfitSummaryTatolMoney" resultType="HashMap">
+        select ifnull(sum(a.price),0)price ,ifnull(sum(a.number) , 0)number
+        from
+        (select  sum(pd.purchase_number * pd.purchase_price)price,
+        sum(pd.purchase_number)number
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        inner join shengxian_goods g on g.id = pd.goods_id
+        where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersName != null and suppliersName != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  s.id ,g.id  )a
+    </select>
+
+
+
+    <!--采购产品明细总数-->
+    <select id="purchaseGoodsDetailsCount" resultType="Integer">
+        select count(s.id)
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        inner join shengxian_goods g on g.id = pd.goods_id
+        where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersName != null and suppliersName != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+    <!--采购产品明细-->
+    <select id="purchaseGoodsDetails" resultType="HashMap">
+        select p.id,s.name , g.name ,DATE_FORMAT(p.audit_time,'%Y-%m-%d')audit_time,
+        (pd.purchase_number * pd.purchase_price)price,
+        (pd.purchase_number)number
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        inner join shengxian_goods g on g.id = pd.goods_id
+        where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersName != null and suppliersName != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by p.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--采购产品明细总金额-->
+    <select id="purchaseGoodsDetailsTotalMoney" resultType="HashMap">
+        select  ifnull(sum(pd.purchase_number * pd.purchase_price) , 0)price,
+        ifnull(sum(pd.purchase_number) , 0)number
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        inner join shengxian_suppliers s on s.id = p.suppliers_id
+        inner join shengxian_goods g on g.id = pd.goods_id
+        where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersName != null and suppliersName != ''">
+            and (s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </select>
+
+
+    <!---->
+    <insert id="addCalculator" keyProperty="id" useGeneratedKeys="true">
+        insert into shengxian_calculator (business_id , name ,price , tatol ,create_time )
+        values (#{businessId} , #{name} , #{price} , #{tatol} , #{createTime});
+    </insert>
+
+    <!---->
+    <insert id="addCalculatorDateil">
+        insert into shengxian_calculator_dateil (calculator_id , num )
+        values (#{calculatorId} , #{num});
+    </insert>
+
+    <!---->
+    <select id="selectCalculatorCount" resultType="Integer">
+        select count(id)
+        from shengxian_calculator where business_id = #{bid};
+    </select>
+
+    <!---->
+    <select id="selectCalculator" resultType="HashMap">
+        select id , name , price , tatol , create_time
+        from shengxian_calculator where business_id = #{bid};
+    </select>
+
+    <!---->
+    <select id="selectCalculatorTotalMoney" resultType="HashMap">
+        select ifnull(sum(price) , 0 )price , ifnull(sum(tatol) , 0)tatol
+        from shengxian_calculator where business_id = #{bid};
+    </select>
+
+
+    <!---->
+    <select id="selectCalculatorDateilById" resultType="HashMap">
+        select id , num
+        from shengxian_calculator_dateil where calculator_id = #{calculatorId};
+    </select>
+
 </mapper>

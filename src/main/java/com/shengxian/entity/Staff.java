@@ -1,5 +1,6 @@
 package com.shengxian.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -22,6 +23,7 @@ public class Staff {
     private Integer business_id; //关联商家表ID
     private int shield; //屏蔽进价
     private int shield_inventory ; //屏蔽库存
+    private int shieldMin ; //屏蔽最低售价
     private Date create_time; //创建时间
     private Integer is_disable; //0默认，1禁用
     private Integer is_del; //0默认,1删除
@@ -164,6 +166,14 @@ public class Staff {
         this.warehousePercents = warehousePercents;
     }
 
+    public int getShieldMin() {
+        return shieldMin;
+    }
+
+    public void setShieldMin(int shieldMin) {
+        this.shieldMin = shieldMin;
+    }
+
     public OtherPercentage[] getOtherPercentages() {
         return otherPercentages;
     }
@@ -172,20 +182,28 @@ public class Staff {
         this.otherPercentages = otherPercentages;
     }
 
-    public String toSring(){
+
+    @Override
+    public String toString() {
         return "Staff{" +
-                "phone"+phone+
-                "password"+password+
-                "category_id"+category_id+
-                "number"+number+
-                "name"+name+
-                "token"+token+
-                "business_id"+business_id+
-                "create_time"+create_time+
-                "}";
+                "id=" + id +
+                ", phone='" + phone + '\'' +
+                ", password='" + password + '\'' +
+                ", category_id=" + category_id +
+                ", number='" + number + '\'' +
+                ", name='" + name + '\'' +
+                ", token='" + token + '\'' +
+                ", business_id=" + business_id +
+                ", shield=" + shield +
+                ", shield_inventory=" + shield_inventory +
+                ", shieldMin=" + shieldMin +
+                ", create_time=" + create_time +
+                ", is_disable=" + is_disable +
+                ", is_del=" + is_del +
+                ", goodsPercent=" + Arrays.toString(goodsPercent) +
+                ", userPercents=" + Arrays.toString(userPercents) +
+                ", warehousePercents=" + Arrays.toString(warehousePercents) +
+                ", otherPercentages=" + Arrays.toString(otherPercentages) +
+                '}';
     }
-
-
-
-
 }

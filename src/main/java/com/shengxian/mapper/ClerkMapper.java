@@ -1,9 +1,7 @@
 package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
-import com.shengxian.entity.clerkApp.Clerk;
-import com.shengxian.entity.clerkApp.ShoppingMall;
-import com.shengxian.entity.clerkApp.ShoppingMallDateil;
+import com.shengxian.entity.clerkApp.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -633,4 +631,93 @@ public interface ClerkMapper {
      */
     List<Integer> otherRitleReminder(@Param("staffId") Integer staffId  );
 
+    /**
+     * 采购产品汇总总数
+     * @param businessId
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Integer purchaseGoodsSummaryCount(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+
+    /**
+     * 采购产品汇总
+     * @param businessId
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<HashMap> purchaseGoodsSummary(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
+
+    /**
+     * 采购产品汇总总金额
+     * @param businessId
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    HashMap purchaseGoodsSummaryTotalMoney(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+
+
+    /**
+     * 采购产品明细总数
+     * @param businessId
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Integer purchaseGoodsDetailsCount(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+
+    /**
+     * 采购产品明细
+     * @param businessId
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<HashMap> purchaseGoodsDetails(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
+
+    /**
+     * 采购产品明细总金额
+     * @param businessId
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    HashMap purchaseGoodsDetailsTotalMoney(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+
+    /**
+     *添加计算器
+     * @param calculator
+     * @return
+     */
+    Integer addCalculator(Calculator calculator);
+
+    /**
+     *添加计算器详情
+     * @param calculatorDatell
+     * @return
+     */
+    Integer addCalculatorDateil(CalculatorDatell calculatorDatell);
+
+    Integer selectCalculatorCount(@Param("bid") Integer businessId , @Param("name") String name,  @Param("startTime") String startTime,@Param("endTime") String endTime);
+
+    List<HashMap> selectCalculator(@Param("bid") Integer businessId , @Param("name") String name,  @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
+
+    HashMap selectCalculatorTotalMoney(@Param("bid") Integer businessId , @Param("name") String name,  @Param("startTime") String startTime,@Param("endTime") String endTime);
+
+
+    List<HashMap> selectCalculatorDateilById(@Param("calculatorId") Integer calculatorId);
 }

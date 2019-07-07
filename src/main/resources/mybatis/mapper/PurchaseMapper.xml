@@ -46,7 +46,7 @@
 
     <!--查询员工进价屏蔽状态-->
     <select id="selectShield" resultType="HashMap">
-        select shield ,shield_inventory as inv
+        select shield ,shield_inventory as inv ,shield_min as min
         from shengxian_staff where is_del = 0 and  token = #{token}
     </select>
 

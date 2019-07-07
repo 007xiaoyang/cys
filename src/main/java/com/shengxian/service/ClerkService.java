@@ -3,6 +3,7 @@ package com.shengxian.service;
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.Goods;
 import com.shengxian.entity.WageSettlement;
+import com.shengxian.entity.clerkApp.Calculator;
 import com.shengxian.entity.clerkApp.ShoppingMall;
 import com.shengxian.entity.clerkApp.ShoppingMallDateil;
 import io.swagger.models.auth.In;
@@ -418,4 +419,57 @@ public interface ClerkService {
      * @return
      */
     List ritleReminder(String token ,Integer role );
+
+    /**
+     * 采购产品汇总
+     * @param token
+     * @param role
+     * @param pageNo
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Page purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName,String goodsName ,String startTime ,String endTime);
+
+    /**
+     * 采购产品明细
+     * @param token
+     * @param role
+     * @param pageNo
+     * @param suppliersName
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Page purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName,String goodsName ,String startTime ,String endTime);
+
+    /**
+     * 添加计算器
+     * @param calculator
+     * @return
+     */
+    Integer addCalculator(String token , Integer role , Calculator calculator);
+
+    /**
+     * 查询计算器
+     * @param token
+     * @param role
+     * @param pageNo
+     * @param name
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Page selectCalculator(String token , Integer role ,Integer pageNo ,String name , String startTime ,String endTime);
+
+    /**
+     * 查询计算器详情
+     * @param calculatorId
+     * @return
+     */
+    List<HashMap> selectCalculatorDateilById(Integer calculatorId);
+
 }

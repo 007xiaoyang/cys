@@ -506,7 +506,13 @@
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del= 0  and sf.staff_id=#{staff_id} group by o.order_number , sf.type
+        where   sf.staff_id=#{staff_id} and sf.type in(3,5,6 ,7) and o.is_del= 0   group by o.order_number , sf.type
+        union ALL
+        select p.audit_time ,s.name as user_name ,sf.type
+        from shengxian_staff_frequency sf
+        left join shengxian_purchase p on p.id = sf.order_id
+        left join shengxian_suppliers s on s.id = p.suppliers_id
+        where sf.staff_id = #{staff_id} and sf.type in(8 , 9 ,10) and p.is_del= 0 group by p.order_number , sf.type
         union ALL
         select o.audit_time ,bd.user_name , op.type
         from  shengxian_order o
@@ -530,13 +536,23 @@
 
     <!--员工提成订单明细-->
     <select id="staffDayDetail" resultType="HashMap">
-        select a.id, a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold,a.statis from (
+        select a.id, a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold,a.statis
+        from (
+
         select o.id,  o.order_number, bd.user_name ,
         o.price,ifnull(o.money,0)money,sf.type ,o.audit_time,o.mold , sum(sf.statis)as statis
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del= 0  and sf.staff_id = #{staff_id}  group by o.order_number , sf.type
+
+        union ALL
+        select p.id, p.order_number ,s.name as user_name ,
+        p.price,ifnull(p.money,0)money ,sf.type ,p.audit_time,p.mold ,  sum(sf.statis)as statis
+        from shengxian_staff_frequency sf
+        left join shengxian_purchase p on p.id = sf.order_id
+        left join shengxian_suppliers s on s.id = p.suppliers_id
+        where sf.staff_id = #{staff_id} and sf.type in(8 , 9 ,10) and p.is_del= 0 group by p.order_number , sf.type
         union ALL
         select o.id,  o.order_number,bd.user_name ,
         o.price,ifnull(o.money,0)money ,op.type ,o.audit_time,o.mold , 1 as statis

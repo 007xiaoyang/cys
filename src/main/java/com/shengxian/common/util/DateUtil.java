@@ -474,8 +474,15 @@ public class DateUtil {
         return getTime(calendar.getTime());
     }
 
-
-
+    /**
+     * 获得本月一号日期
+     * @return
+     */
+    public static String thisMonthOneNum(){
+        Calendar calendar1=Calendar.getInstance();
+        calendar1.set(Calendar.DAY_OF_MONTH, 1);
+        return sdfDay.format(calendar1.getTime());
+    }
 
 
     /**
@@ -489,42 +496,6 @@ public class DateUtil {
     }
 
 
-    public static void main(String[] args) {
-/*
-        //数据库拼接起来的时间
-        String startTime = "2019-04-12 12:30";
-
-        //课程开始多少分钟后答题
-        String start = "5";
-        //转换成int类型
-        Integer i = Integer.valueOf(start);
-
-        Date time = parseDate(startTime ,"yyyy-MM-dd HH:mm");
-
-        long l = time.getTime() + i * 60 * 1000;
-        String s = transferLongToDate(l, "yyyy-MM-dd HH:mm");
-
-        //比较两个时间大小
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");*/
-
-        Date date = new Date();
-        System.out.println(date);
-        String a = "2019-05-06 05:00:00";
-        String b = "2019-05-06 09:31:00";
 
 
-
-        String c = "2019-04";
-        String d = "2019-04";
-
-
-       /* if (!(a.compareTo(b) <= 0 && c.compareTo(d) >= 0)){
-            System.out.println("不成立");
-        }*/
-
-        boolean b1 = compareDateTime(a, b);
-        System.out.println(b1);
-
-
-    }
 }

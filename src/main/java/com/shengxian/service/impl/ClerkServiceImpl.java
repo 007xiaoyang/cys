@@ -3,9 +3,7 @@ package com.shengxian.service.impl;
 import com.shengxian.common.MothPrinter;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.*;
-import com.shengxian.entity.clerkApp.Clerk;
-import com.shengxian.entity.clerkApp.ShoppingMall;
-import com.shengxian.entity.clerkApp.ShoppingMallDateil;
+import com.shengxian.entity.clerkApp.*;
 import com.shengxian.mapper.*;
 import com.shengxian.service.ClerkService;
 import io.swagger.models.auth.In;
@@ -896,7 +894,7 @@ public class ClerkServiceImpl implements ClerkService {
         //本月总提成
         Double tatol = clerkMapper.statisMoneyCount(staffId);
         hashMap.put("count" ,count);
-        hashMap.put("tatol" , count);
+        hashMap.put("tatol" , tatol);
         return hashMap;
     }
 
@@ -1046,5 +1044,76 @@ public class ClerkServiceImpl implements ClerkService {
         Integer id = shopMapper.registerIdByTokenAndRole(token, role);
 
         return clerkMapper.otherRitleReminder(id );
+    }
+
+
+    @Override
+    public Page purchaseGoodsSummary(String token, Integer role, Integer pageNo, String suppliersName, String goodsName, String startTime, String endTime) {
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
+        int pageNum = 1 ;
+        if(IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum = pageNo;
+        }
+        Integer totalCount = clerkMapper.purchaseGoodsSummaryCount(bid , suppliersName , goodsName , startTime , endTime);
+        Page page = new Page(pageNum , totalCount);
+        List<HashMap> hashMaps = clerkMapper.purchaseGoodsSummary(bid , suppliersName , goodsName ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
+        page.setRecords(hashMaps);
+        HashMap hashMap = clerkMapper.purchaseGoodsSummaryTotalMoney(bid , suppliersName , goodsName , startTime , endTime);
+        page.setHashMap(hashMap);
+        return page;
+    }
+
+    @Override
+    public Page purchaseGoodsDetails(String token, Integer role, Integer pageNo, String suppliersName, String goodsName, String startTime, String endTime) {
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
+        int pageNum = 1 ;
+        if(IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum = pageNo;
+        }
+        Integer totalCount = clerkMapper.purchaseGoodsDetailsCount(bid , suppliersName , goodsName , startTime , endTime);
+        Page page = new Page(pageNum , totalCount);
+        List<HashMap> hashMaps = clerkMapper.purchaseGoodsDetails(bid , suppliersName , goodsName ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
+        page.setRecords(hashMaps);
+        HashMap hashMap = clerkMapper.purchaseGoodsDetailsTotalMoney(bid , suppliersName , goodsName , startTime , endTime);
+        page.setHashMap(hashMap);
+        return page;
+    }
+
+    //添加计算器
+    @Override
+    @Transactional
+    public Integer addCalculator(String token , Integer role ,Calculator calculator) {
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+        calculator.setBusinessId(bid);
+        calculator.setCreateTime(new Date());
+        Integer count = clerkMapper.addCalculator(calculator);
+        CalculatorDatell[] calculatorDatell = calculator.getCalculatorDatell();
+        for (CalculatorDatell c:calculatorDatell) {
+            c.setCalculatorId(calculator.getId());
+            clerkMapper.addCalculatorDateil(c);
+        }
+        return count;
+    }
+
+    //查询计算器
+    @Override
+    public Page selectCalculator(String token, Integer role, Integer pageNo, String name, String startTime, String endTime) {
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
+        int pageNum = 1 ;
+        if(IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum = pageNo;
+        }
+        Integer totalCount = clerkMapper.selectCalculatorCount(bid  , name , startTime , endTime);
+        Page page = new Page(pageNum , totalCount);
+        List<HashMap> hashMaps = clerkMapper.selectCalculator(bid , name ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
+        page.setRecords(hashMaps);
+        HashMap hashMap = clerkMapper.selectCalculatorTotalMoney(bid , name ,  startTime , endTime);
+        page.setHashMap(hashMap);
+        return page;
+    }
+
+    @Override
+    public List<HashMap> selectCalculatorDateilById(Integer calculatorId) {
+        return clerkMapper.selectCalculatorDateilById(calculatorId);
     }
 }
