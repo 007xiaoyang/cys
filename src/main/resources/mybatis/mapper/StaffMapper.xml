@@ -185,7 +185,7 @@
             <if test="business_id != null">business_id,</if>
             <if test="shield != null">shield,</if>
             <if test="shield_inventory != null">shield_inventory,</if>
-            <if test="shieldMin != null">shield_inventory,</if>
+            <if test="shieldMin != null">shield_min,</if>
             <if test="create_time != null">create_time,</if>
         </trim>
         <trim prefix=" values (" suffix=")" suffixOverrides=",">
@@ -198,7 +198,7 @@
             <if test="business_id != null">#{business_id,jdbcType=BIGINT},</if>
             <if test="shield != null"> #{shield},</if>
             <if test="shield_inventory != null"> #{shield_inventory},</if>
-            <if test="shieldMin != null">shieldMin,</if>
+            <if test="shieldMin != null">#{shieldMin},</if>
             <if test="create_time != null">#{create_time,jdbcType=DATE},</if>
         </trim>
     </insert>
@@ -274,7 +274,7 @@
             <if test="name != null "> name =#{name},</if>
             <if test="shield != null">shield =#{shield},</if>
             <if test="shield_inventory != null">shield_inventory =#{shield_inventory},</if>
-            <if test="shieldMin != null">shield_inventory =#{shieldMin},</if>
+            <if test="shieldMin != null">shield_min =#{shieldMin},</if>
         </trim>
         where id=#{id}
     </update>
