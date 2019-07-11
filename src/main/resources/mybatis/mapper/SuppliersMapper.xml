@@ -86,8 +86,10 @@
 
     <!--通过id查询供应商信息-->
     <select id="findSuppliersInfoById" resultType="HashMap">
-        select id,category_id,number,phone,name,address,illustrated,remarks
-        from shengxian_suppliers where id = #{id} and is_del=0
+        select s.id,s.category_id ,s.number ,s.phone, s.name, s.address,s.illustrated ,s.remarks , sc.name as category_name
+        from shengxian_suppliers s
+        inner join shengxian_suppliers_category sc on sc.id = s.category_id
+        where s.id = #{id} and s.is_del=0
     </select>
 
     <!--根据类别id和编号查询是否存在-->
