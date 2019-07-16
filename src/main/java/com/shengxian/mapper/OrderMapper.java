@@ -1,6 +1,7 @@
 package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -259,6 +260,13 @@ public interface OrderMapper {
     /**
      * 超期进货的用户总数
      * @param bid
+     * @return
+     */
+    Integer overdueUserCount(@Param("business_id") Integer bid);
+
+    /**
+     * 超期进货的用户总数
+     * @param bid
      * @param name
      * @param cycle
      * @return
@@ -270,6 +278,14 @@ public interface OrderMapper {
      * @return
      */
     List<HashMap> overduePurchaseUser(@Param("business_id") Integer bid, @Param("name") String name, @Param("cycle") Integer cycle, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
+
+    /**
+     * 标记超期进货为已读
+     * @param orderId
+     * @return
+     */
+    Integer markReaded(@Param("id") Integer orderId);
+
 
     /**
      * 没有销售的用户总数
@@ -382,6 +398,13 @@ public interface OrderMapper {
      * @return
      */
     Integer updateOrderDetailPrice(@Param("id") Integer id, @Param("order_number") double order_number, @Param("order_price") double order_price, @Param("profit") Double profit ,@Param("cost_price") double cost_price);
+
+    /**
+     * 查询订单是否使用优惠券
+     * @param orderId
+     * @return
+     */
+    Double selectConponMoney(@Param("id") Integer orderId);
 
     /**
      * 通过订单id修改订单运费和差价

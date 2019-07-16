@@ -25,7 +25,9 @@
 
     <!--查询绑定用户的收藏产品-->
     <select id="selectBandingUserGoodsCollection" resultType="HashMap">
-        select gc.id,g.`name`,g.id as goods_id,gc.collection_time from shengxian_goods_collection gc
+        select gc.id,g.`name`,g.id as goods_id,gc.collection_time  ,
+        (select order_price from shengxian_order_details od where od.goods_id = gc.goods_id and g.id = od.goods_id order by od.id desc limit 1 ) price
+        from shengxian_goods_collection gc
         INNER JOIN shengxian_binding b on b.id=gc.binding_id
         inner join shengxian_goods g on g.id=gc.goods_id and g.is_del=0
         where b.is_del= 0  and b.business_id = #{business_id} and gc.binding_id = #{binding_id} and g.business_id = #{business_id}
@@ -227,12 +229,23 @@
     </delete>
 
     <!--超期进货的用户总数-->
+    <select id="overdueUserCount" resultType="Integer">
+         select count(bd.id)
+        from shengxian_binding bd
+        inner join shengxian_binding_category bc on bc.id = bd.category_id
+        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time ,a.id as orderId ,a.overdue
+        from (select binding_id,MAX(create_time)create_time ,id ,overdue from shengxian_order where is_del = 0 and business_id = #{business_id} group by binding_id  )a
+        ) o  on o.binding_id = bd.id
+        where o.overdue = 0 and  bd.cycle &lt;= o.cycle  and bd.is_del = 0  and bd.cycle !=''
+    </select>
+
+    <!--超期进货的用户总数-->
     <select id="overduePurchaseUserCount" resultType="Integer">
         select count(bd.id)
         from shengxian_binding bd
         inner join shengxian_binding_category bc on bc.id = bd.category_id
-        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time
-        from (select binding_id,MAX(create_time)create_time from shengxian_order where is_del = 0 and business_id = #{business_id} group by binding_id  )a
+        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time ,a.id as orderId ,a.overdue
+        from (select binding_id,MAX(create_time)create_time ,id ,overdue from shengxian_order where is_del = 0 and business_id = #{business_id} group by binding_id  )a
         ) o  on o.binding_id = bd.id
         where bd.cycle &lt;= o.cycle  and bd.is_del = 0  and bd.cycle !=''
         <if test="name != null and name != ''">
@@ -248,11 +261,11 @@
     <!--超期进货的用户-->
     <select id="overduePurchaseUser" resultType="HashMap">
         select bd.id,bd.user_name,bc.`name`,IFNULL((select u.phone from user u where u.id = bd.user_id ),bd.telephone)phone,
-        bd.cycle ,bd.illustrated1,(select s.name from shengxian_staff s where bd.staff_id = s.id)staff_name,o.create_time,bd.number
+        bd.cycle ,bd.illustrated1,(select s.name from shengxian_staff s where bd.staff_id = s.id)staff_name,o.create_time,bd.number , o.orderId , o.overdue
         from shengxian_binding bd
         inner join shengxian_binding_category bc on bc.id = bd.category_id
-        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time
-        from (select binding_id,MAX(create_time)create_time from shengxian_order where is_del = 0 and  business_id = #{business_id} group by binding_id  )a
+        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time ,a.id as orderId ,a.overdue
+        from (select binding_id,MAX(create_time)create_time , id ,overdue from shengxian_order where is_del = 0 and  business_id = #{business_id} group by binding_id  )a
         ) o  on o.binding_id = bd.id
         where bd.cycle &lt;= o.cycle and bd.is_del = 0  and bd.cycle !=''
         <if test="name != null and name != ''">
@@ -264,6 +277,10 @@
          order by o.create_time desc limit #{startIndex},#{pageSize}
     </select>
 
+    <!--标记超期进货为已读-->
+    <update id="markReaded">
+        update shengxian_order set overdue = 1 where id = #{id};
+    </update>
 
     <!--没有销售的用户总数-->
     <select id="noSalesUserCount" resultType="Integer">
@@ -379,6 +396,13 @@
         </trim>
         where id = #{id}
     </update>
+
+    <!--查询订单是否使用优惠券-->
+    <select id="selectConponMoney" resultType="Double">
+        select ifnull( if( o.coupon_id = 0 ,(select reduce  from shengxian_full_reduction where id = o.activity )
+        , (select reduce from shengxian_binding_coupon where id = o.coupon_id ) ) , 0 )price
+        from shengxian_order o where o.id =  #{id} and o.is_del = 0
+    </select>
 
     <!--通过订单id修改订单运费和差价-->
     <update id="updatePurchaseOrderPriceid">

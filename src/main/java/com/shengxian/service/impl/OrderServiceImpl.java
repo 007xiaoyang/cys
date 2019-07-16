@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
 
     //查询绑定用户的收藏产品
     @Override
-    public List<HashMap> selectBandingUserGoodsCollection(String token ,Integer role, Integer binding_id,String name)throws NullPointerException {
+    public List<HashMap>    selectBandingUserGoodsCollection(String token ,Integer role, Integer binding_id,String name)throws NullPointerException {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
@@ -519,7 +519,7 @@ public class OrderServiceImpl implements OrderService {
     public Integer overduePurchaseUserCount(String token, Integer role) {
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
-        return orderMapper.overduePurchaseUserCount(bid,null,null);
+        return orderMapper.overdueUserCount(bid);
     }
 
     //超期进货的用户
@@ -541,6 +541,13 @@ public class OrderServiceImpl implements OrderService {
         List<HashMap> hashMaps = orderMapper.overduePurchaseUser(bid, name, cycle,page.getStartIndex(),page.getPageSize());
         page.setRecords(hashMaps);
         return page;
+    }
+
+    //标记超期进货为已读
+    @Override
+    @Transactional
+    public Integer markReaded(Integer orderId) {
+        return orderMapper.markReaded(orderId);
     }
 
     //没有销售的用户总数
@@ -801,9 +808,12 @@ public class OrderServiceImpl implements OrderService {
             } //报损产品
 
         }//遍历
+        Double couponMoney = orderMapper.selectConponMoney(order.getId());
 
         //总金额 = 销售所有产品价格 + 运费 +差价
-        double money = price +order.getFreight() + order.getDifference_price();
+        double money = ( price +order.getFreight() + order.getDifference_price() ) - couponMoney ;
+
+        //查询订单是否使用了优惠券
 
         //通过订单id修改订单运费和差价
         return orderMapper.updatePurchaseOrderPriceid(order.getId(),money ,order.getFreight(),order.getDifference_price());
@@ -2066,7 +2076,7 @@ public class OrderServiceImpl implements OrderService {
         return workbook;
     }
 
-    //回退取消订单
+    //取消订单
     @Override
     @Transactional
     public Integer updateOrderStatus(Integer id)throws NullPointerException {

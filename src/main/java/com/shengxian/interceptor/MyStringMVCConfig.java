@@ -59,7 +59,7 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 //创建订单编号 ,搜索商家用户 ,通过用户id查询用户信息 ,通过用户方案id和产品id查询查询产品信息 ,通过订单id查询订单详情
                 .excludePathPatterns("/order/createOrder" ,"/order/selectBindingUser" ,"/order/selectUserInfoById" ,"/order/findGoodsInfoBySidAndGid" ,"/order/findOrderInfoById")
                 //打印销售订单 ,打印销售订单详情
-                .excludePathPatterns("/order/orderPrint" ,"/order/orderPrintDetail" )
+                .excludePathPatterns("/order/orderPrint" ,"/order/orderPrintDetail" ,"/order/markReaded")
                 //待接单总数,未打印的订单总数 ,待送货订单总数 , 查询未付款,欠款订单总数 ,用户取消订单总数 ,申请审核用户信息总数 ,申请欠款审核总数
                 .excludePathPatterns("/order/waitingOrderCount" ,"/order/notPrintedOrderCount" ,"/order/stayDeliveredCount","/order/arrivalOrderCount" ,"/order/userCancelOrderCount" ,"/order/auditUserCount","/order/arrearsAuditCount")
                 //积分兑换订单总数 ,售货服务总数

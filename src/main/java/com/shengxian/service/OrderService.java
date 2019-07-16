@@ -3,6 +3,7 @@ package com.shengxian.service;
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.Expense;
 import com.shengxian.entity.Order;
+import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.util.HashMap;
@@ -153,6 +154,12 @@ public interface OrderService {
      */
     Page overduePurchaseUser(String token ,Integer role , Integer pageNo, String name, Integer cycle)throws NullPointerException;
 
+    /**
+     * 标记超期进货为已读
+     * @param orderId
+     * @return
+     */
+    Integer markReaded(Integer orderId);
 
     /**
      * 没有销售的用户总数

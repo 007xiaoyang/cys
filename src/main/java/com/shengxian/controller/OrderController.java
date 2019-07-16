@@ -578,6 +578,22 @@ public class OrderController {
         }
     }
 
+    /**
+     * 标记超期进货为已读
+     * @param
+     * @return
+     */
+    @RequestMapping("/markReaded")
+    @ApiOperation(value = "标记超期进货为已读" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId" ,value = "token" ,paramType = "query")
+    })
+    public Message markReaded(Integer orderId){
+        Message message = Message.non();
+        Integer count = orderService.markReaded(orderId );
+        return message.code(Message.codeSuccessed).data(count).message("操作成功");
+    }
+
 
     /**
      * 没有销售的用户总数

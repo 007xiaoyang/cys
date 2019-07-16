@@ -698,7 +698,8 @@
     <!--提成分类总数-->
     <select id="percentageClassificationCount" resultType="Integer">
         <if test="type lt 3">
-            select count(os.id)
+            select count(id) from
+            select os.id
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
@@ -706,6 +707,7 @@
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
+            )a
         </if>
         <if test="type == 4">
             select  count(op.id)
@@ -718,17 +720,21 @@
             </if>
         </if>
         <if test="type > 2 and type != 4 and type lt 8">
-            select count(f.id)
+            select id from (
+            select f.id
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type}  group by o.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')
+                &gt;= #{startTime}
             </if>
+            ) a
         </if>
         <if test="type > 7  and type lt 11">
-            select count(f.id)
+            select id from (
+            select f.id
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
@@ -736,6 +742,7 @@
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
+            ) a
         </if>
 
     </select>
@@ -793,14 +800,17 @@
     <!--提成分类总金额-->
     <select id="percentageClassificationTotalMoney" resultType="Double">
         <if test="type lt 3">
-            select ifnull(sum(os.statis) , 0)
+            select ifnull(sum(statis) , 0) from (
+            select os.statis
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
             where os.staff_id = #{id} and os.type = #{type} group by o.order_number , os.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d')
+                &gt;= #{startTime}
             </if>
+            ) a
         </if>
         <if test="type == 4">
             select  count(op.id)
@@ -813,24 +823,30 @@
             </if>
         </if>
         <if test="type > 2 and type != 4 and type lt 8">
-            select ifnull(sum(f.statis) , 0)
+            select ifnull(sum(statis) , 0) from (
+            select f.statis
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
             where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')
+                &gt;= #{startTime}
             </if>
+            ) a
         </if>
         <if test="type > 7  and type lt 11">
-            select ifnull(sum(f.statis) , 0)
+            select ifnull(sum(statis) , 0) from (
+            select f.statis
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
             where f.staff_id = #{id} and f.type = #{type} group by p.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')
+                &gt;= #{startTime}
             </if>
+            ) a
         </if>
     </select>
 
