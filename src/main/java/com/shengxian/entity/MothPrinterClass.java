@@ -16,6 +16,7 @@ public class MothPrinterClass {
     private Integer id ;
     private String goodsName ; //产品名称
     private Double num; //产品数量
+    private String  units;
     private BigDecimal price ; //产品单价
     private BigDecimal money ; //每个产品合计
     private Integer type;
@@ -23,35 +24,19 @@ public class MothPrinterClass {
     public MothPrinterClass() {
     }
 
-    public MothPrinterClass(String goodsName, Double num, BigDecimal price, BigDecimal money) {
-        this.goodsName = goodsName;
+    public MothPrinterClass(String  units, Double num, BigDecimal price, BigDecimal money) {
+        this. units =  units;
         this.num = num;
         this.price = price;
         this.money = money;
     }
 
-    public static String  divisionString(String goods , String num ,BigDecimal price ,BigDecimal money ){
+    public static String  divisionString( String num ,BigDecimal price ,BigDecimal money ){
 
         String value = "";
-        int goodsLength = goods.length();
         int numberLength = num.length();
-
-
-        if (goodsLength == 1){
-            value += goods +"           ";
-        }else if (goodsLength == 2 ){
-            value += goods +"         ";
-        }else if (goodsLength == 3 ){
-            value += goods +"       ";
-        }else if (goodsLength == 4 ){
-            value += goods +"     ";
-        }else if (goodsLength == 5 ){
-            value += goods +"   ";
-        }else if (goodsLength == 6 ){
-            value += goods +" ";
-        }else if (goodsLength > 6 ){
-            value += goods.substring(0 , 6) +" ";
-        }
+        String pl = price.toString() ;
+        int priceLength = pl.length();
 
         if (numberLength == 1 ){
             value += num + "        ";
@@ -74,14 +59,31 @@ public class MothPrinterClass {
         }else if (numberLength > 9){
             value += num.substring( 0  , 9);
         }
-        return value+price+"元<BR>"+money+"元";
+
+        if (priceLength == 1 ){
+            value += price + "元        ";
+        }else if (priceLength == 2 ){
+            value += price + "元       ";
+        }else if (priceLength == 3 ){
+            value += price + "元      ";
+        }else if (priceLength == 4){
+            value += price + "元     ";
+        }else if (priceLength == 5){
+            value += price + "元    ";
+        }else if (priceLength == 6){
+            value += price + "元   ";
+        }else if (priceLength == 7){
+            value += price + "元  ";
+        }else if (priceLength == 8){
+            value += price + "元 ";
+        }else if (priceLength == 9){
+            value += price ;
+        }else if (priceLength > 9){
+            value += price.toString().substring( 0  , 9)+"元";
+        }
+        return value+money+"元<BR>";
     }
 
-    public static void main(String[] args) {
-        String a = "地方的噶撒的发";
-        String substring = a.substring(0, 6);
-        System.out.println(substring);
-    }
 
     public Integer getId() {
         return id;
@@ -130,5 +132,27 @@ public class MothPrinterClass {
 
     public void setMoney(BigDecimal money) {
         this.money = money;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+
+    @Override
+    public String toString() {
+        return "MothPrinterClass{" +
+                "id=" + id +
+                ", goodsName='" + goodsName + '\'' +
+                ", num=" + num +
+                ", units='" + units + '\'' +
+                ", price=" + price +
+                ", money=" + money +
+                ", type=" + type +
+                '}';
     }
 }

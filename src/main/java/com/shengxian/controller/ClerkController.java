@@ -1271,6 +1271,7 @@ public class ClerkController {
             }
             return message.code(Message.codeSuccessed).message("添加成功");
         }catch (Exception e){
+            System.out.println(e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }

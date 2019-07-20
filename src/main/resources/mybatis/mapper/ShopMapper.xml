@@ -1251,7 +1251,7 @@
 
     <!--通过店铺产品id和当前时间判断该产品是否在每天产品库存统计记录里-->
     <select id="selectGoodsInventoryStatisByBidAndDate" resultType="Integer">
-        select id from shengxian_goods_inventory_statis where goods_id = #{goods_id} and DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE()
+        select id from shengxian_goods_inventory_statis where goods_id = #{goods_id} and DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE() limit 1
     </select>
 
     <!--添加销售产品是否在每天产品库存统计记录(销售）-->

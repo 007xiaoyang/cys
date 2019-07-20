@@ -39,15 +39,15 @@ public class MothPrinter {
     public static final String UKEY = "Acdsyb8v4zwKWS2U";//*必填*: 注册账号后生成的UKEY
     public static final String SN = "817006805";//*必填*：打印机编号，必须要在管理后台里添加打印机或调用API接口添加之后，才能调用API
 
+    private List<MothPrinterClass> mothPrinterClasses;
 
+    public List<MothPrinterClass> getMothPrinterClasses() {
+        return mothPrinterClasses;
+    }
 
-
-
-
-
-
-
-
+    public void setMothPrinterClasses(List<MothPrinterClass> mothPrinterClasses) {
+        this.mothPrinterClasses = mothPrinterClasses;
+    }
 
     //添加打印机接口
     public static String addPrinter(String snlist){
@@ -137,6 +137,7 @@ public class MothPrinter {
         //拼凑订单内容时可参考如下格式
         //根据打印纸张的宽度，自行调整内容的格式，可参考下面的样例格式
 
+
             String typename = "";
 
             String content;
@@ -144,18 +145,18 @@ public class MothPrinter {
             content += "名称："+name+"<BR>";
             content += "联系电话："+phone+"<BR>";
             content += "送货地点："+address+"<BR>";
-            content += "名称　　　　　数量      单价<BR>"+
-                    "金额<BR>";
+            content += "名称<BR>";
+            content += "数量　    单价         金额<BR>";
             content += "--------------------------------<BR>";
             for (MothPrinterClass moth: mothPrinterClasses  ) {
                 if (moth != null){
                     if (moth.getType() == 1){
                         typename = "（赠送）";
                     }
-                    String values = MothPrinterClass.divisionString(moth.getGoodsName(), String.valueOf(moth.getNum()) ,moth.getPrice() ,moth.getMoney());
-                    content += values +"    "+typename+"<BR>";
+                    content += moth.getGoodsName()+typename+"<BR>";
+                    String values = MothPrinterClass.divisionString( String.valueOf(moth.getNum())+moth.getUnits() ,moth.getPrice() ,moth.getMoney());
+                    content += values;
                 }
-
             }
             content += "--------------------------------<BR>";
             content += "备注："+beizhu+"<BR>";
@@ -262,16 +263,17 @@ public class MothPrinter {
         content += "名称："+name+"<BR>";
         content += "联系电话："+phone+"<BR>";
         content += "送货地点："+address+"<BR>";
-        content += "名称　　　　　数量      单价<BR>"+
-                "金额<BR>";
+        content += "名称<BR>";
+        content += "数量　    单价         金额<BR>";
         content += "--------------------------------<BR>";
         for (MothPrinterClass moth: mothPrinterClasses  ) {
             if (moth != null){
                 if (moth.getType() == 1){
                     typename = "（赠送）";
                 }
-                String values = MothPrinterClass.divisionString(moth.getGoodsName(), String.valueOf(moth.getNum()) ,moth.getPrice() ,moth.getMoney());
-                content += values +"    "+typename+"<BR>";
+                content += moth.getGoodsName()+typename+"<BR>";
+                String values = MothPrinterClass.divisionString( String.valueOf(moth.getNum())+moth.getUnits() ,moth.getPrice() ,moth.getMoney());
+                content += values;
             }
 
         }
@@ -805,5 +807,12 @@ public class MothPrinter {
     private static String signature(String USER,String UKEY,String STIME){
         String s = DigestUtils.sha1Hex(USER+UKEY+STIME);
         return s;
+    }
+
+    @Override
+    public String toString() {
+        return "MothPrinter{" +
+                "mothPrinterClasses=" + mothPrinterClasses +
+                '}';
     }
 }

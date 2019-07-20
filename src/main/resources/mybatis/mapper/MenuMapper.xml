@@ -424,7 +424,7 @@
     </resultMap>
 
     <select id="queryOrderDateil" resultMap="orderDateilMap">
-        select od.id , od.order_number , od.order_price  , od.type , g.name , od.order_number * od.order_price as money
+        select od.id , od.order_number , od.order_price  , od.type , g.name , od.order_number * od.order_price as money , g.units
         from shengxian_order_details od
         inner join shengxian_goods g on  g.id = od.goods_id
         where g.is_del = 0 and od.order_id = #{order_id}
@@ -466,7 +466,7 @@
     </resultMap>
 
     <select id="queryPurchaseOrderDateil" resultMap="puchasesOrderDateilMap">
-        select pd.id ,pd.purchase_number , pd.purchase_price  , pd.type , g.name , pd.purchase_number * pd.purchase_price as money
+        select pd.id ,pd.purchase_number , pd.purchase_price  , pd.type , g.name , pd.purchase_number * pd.purchase_price as money ,g.units
         from shengxian_purchase_detail pd
         inner join shengxian_goods g on  g.id = pd.purchase_id
         where g.is_del = 0 and pd.purchase_id = #{purchase_id}

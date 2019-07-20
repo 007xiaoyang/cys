@@ -477,8 +477,9 @@ public class MenuServiceImpl implements MenuService {
 
             for (int j = 1 ; j <= printers.get(i).getNum() ; j ++ ){
 
-                MothPrinter.puchasePrint(printers.get(i).getSn1() ,titile,purchaseOrder.getBeizhu(), new BigDecimal(purchaseOrder.getPrice().toString()),purchaseOrder.getAddress(),purchaseOrder.getPhone(),purchaseOrder.getName(),purchaseOrder.getOrder_number(),purchaseOrder.getNo(),purchaseOrder.getFreight() ,purchaseOrder.getDifference_price(),mothPrinters);
-
+                MothPrinter.puchasePrint(printers.get(i).getSn1() ,titile,purchaseOrder.getBeizhu(), new BigDecimal(purchaseOrder.getPrice().toString())
+                        ,purchaseOrder.getAddress(),purchaseOrder.getPhone(),purchaseOrder.getName(),purchaseOrder.getOrder_number()
+                        ,purchaseOrder.getNo(),purchaseOrder.getFreight() ,purchaseOrder.getDifference_price(),mothPrinters);
             }
 
         }

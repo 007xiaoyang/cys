@@ -699,7 +699,7 @@
     <select id="percentageClassificationCount" resultType="Integer">
         <if test="type lt 3">
             select count(id) from
-            select os.id
+            ( select os.id
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
@@ -720,20 +720,19 @@
             </if>
         </if>
         <if test="type > 2 and type != 4 and type lt 8">
-            select id from (
+            select count(id) from (
             select f.id
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
             where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')
-                &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
             ) a
         </if>
         <if test="type > 7  and type lt 11">
-            select id from (
+            select count(id) from (
             select f.id
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
@@ -807,8 +806,7 @@
             left join shengxian_binding bd on bd.id = o.binding_id
             where os.staff_id = #{id} and os.type = #{type} group by o.order_number , os.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d')
-                &gt;= #{startTime}
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d')  &gt;= #{startTime}
             </if>
             ) a
         </if>
@@ -830,8 +828,7 @@
             left join shengxian_binding bd on bd.id = o.binding_id
             where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')
-                &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')  &gt;= #{startTime}
             </if>
             ) a
         </if>
@@ -843,8 +840,7 @@
             left join shengxian_suppliers s on s.id = p.suppliers_id
             where f.staff_id = #{id} and f.type = #{type} group by p.order_number , f.type
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')
-                &gt;= #{startTime}
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')  &gt;= #{startTime}
             </if>
             ) a
         </if>
@@ -1174,13 +1170,13 @@
     </select>
 
 
-    <!---->
+    <!--添加计算器-->
     <insert id="addCalculator" keyProperty="id" useGeneratedKeys="true">
         insert into shengxian_calculator (business_id , name ,price , tatol ,create_time )
         values (#{businessId} , #{name} , #{price} , #{tatol} , #{createTime});
     </insert>
 
-    <!---->
+    <!--添加计算器详情-->
     <insert id="addCalculatorDateil">
         insert into shengxian_calculator_dateil (calculator_id , num )
         values (#{calculatorId} , #{num});
@@ -1189,19 +1185,38 @@
     <!---->
     <select id="selectCalculatorCount" resultType="Integer">
         select count(id)
-        from shengxian_calculator where business_id = #{bid};
+        from shengxian_calculator where business_id = #{bid}
+        <if test="name != null and name != ''">
+          and  name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
     </select>
 
     <!---->
     <select id="selectCalculator" resultType="HashMap">
         select id , name , price , tatol , create_time
-        from shengxian_calculator where business_id = #{bid};
+        from shengxian_calculator where business_id = #{bid}
+        <if test="name != null and name != ''">
+            and  name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        order by create_time desc limit #{startIndex},#{pageSize}
     </select>
 
     <!---->
     <select id="selectCalculatorTotalMoney" resultType="HashMap">
         select ifnull(sum(price) , 0 )price , ifnull(sum(tatol) , 0)tatol
-        from shengxian_calculator where business_id = #{bid};
+        from shengxian_calculator where business_id = #{bid}
+        <if test="name != null and name != ''">
+            and  name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
     </select>
 
 

@@ -1016,84 +1016,9 @@ public class OrderServiceImpl implements OrderService {
 
         //订单详情
         List<HashMap> hashMaps = orderMapper.detail(id);
-        for (HashMap detail:hashMaps ) {
 
-            if( status == 4 && mold == 0 ){ //销售单确认到货
+        orderDetailTraversal(hashMaps ,id , bid , status , mold ,set);
 
-                if (set == 1 ){
-                    //判断销售订单数量是否小于实际库存
-                    Integer num = orderMapper.isLessthanActualInventory(Integer.valueOf(detail.get("goods_id").toString()), Double.valueOf(detail.get("num").toString()));
-                    if (num == null){
-                        throw new NullPointerException("产品["+detail.get("name")+"]销售数量低于实际库存，因此不能到货。如要到货，则到商家设置里进行修改");
-                    }
-                }
-
-                //销售单，减少产品实际库存
-                shopMapper.reduceGoodsActualInventory(Integer.valueOf(detail.get("goods_id").toString()) , Double.valueOf(detail.get("num").toString()) );
-
-                //通过店铺id和产品id查询店铺所有有产品提成比例的员工
-                List<Percentage> percentages = orderMapper.selectBusienssAndGoodsAllStaffPercentage( bid ,Integer.valueOf(detail.get("goods_id").toString()) );
-                for (Percentage pt : percentages  ) {
-
-                    if (pt.getA() != null  && pt.getB() != null && pt.getA() != 0.0 && pt.getB() != 0.0 ){
-
-                        double value = GroupNumber.getValue(Double.valueOf(detail.get("num").toString()) , pt.getA(), pt.getB() );
-                        if (value != 0.0){
-                            //添加员工产品提成金额记录
-                            orderMapper.addStaffOrderStatis( id , pt.getStaff_id(),value,1,new Date());
-                        }
-                    }
-                }
-
-            }else if(status == 4 && mold == 1){ //销售退货单确认到货
-
-                //销售退货单，要增加产品实际库存
-                shopMapper.increaseGoodsActualInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
-
-            }else if( status == 6 && mold == 0 ){ //销售单取消订单
-
-                //销售单取消订单则增加产品虚拟库存
-                shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
-
-            }else if(status == 6 && mold == 1){ //销售退货单取消订单
-
-                //销售退货单取消订单则减少产品虚拟库存
-                shopMapper.reduceGoodsFictitiousInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
-            }
-
-            //确认到货的订单需要 记录每一件的产品库存
-            if(status == 4  ){
-                //通过店铺产品id和当前时间判断该产品是否在每天产品库存统计记录里
-                Integer statisId = shopMapper.selectGoodsInventoryStatisByBidAndDate(Integer.valueOf(detail.get("goods_id").toString()));
-                Double goodsInventory = null ;
-                if (statisId == null ){
-                    //通过产品id查询每天产品的初始库存
-                    goodsInventory = shopMapper.selectGoodsInventory(Integer.valueOf(detail.get("goods_id").toString()));
-
-                }
-                if (statisId == null && mold == 0 ){
-
-                    //当前这件销售产品没有产品库存统计记录 则添加
-                    shopMapper.addSaleGoodsInventoryStatis( bid ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
-
-                }else if(statisId != null && mold == 0 ){
-
-                    //增加销售产品是否在每天产品库存统计记录
-                    shopMapper.increaseSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
-
-                }else if(statisId == null && mold == 1 ){
-
-                    //当前这件销售产品没有产品库存统计记录 则添加数据
-                    shopMapper.addReduceSaleGoodsInventoryStatis( bid ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
-
-                }else if(statisId != null && mold == 1 ){
-
-                    //减少销售产品是否在每天产品库存统计记录
-                    shopMapper.reduceSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
-                }
-            }
-
-        }
 
         // 计算客户积分  销售单 status ==0
         if (status == 4 ){
@@ -1231,6 +1156,97 @@ public class OrderServiceImpl implements OrderService {
         //修改订单确认或取消状态（确认或取消）
         return orderMapper.updateOrderConfirmOrCancelStatus(id,status,new Date(),name);
     }
+
+    /**
+     * 订单详情遍历方法
+     * @param detailTraversal
+     * @param orderId 订单id
+     * @param businessId 店铺id
+     * @param status 订单状态
+     * @param mold 订单类型
+     * @param set 库存判断
+     */
+    public synchronized void orderDetailTraversal(List<HashMap> detailTraversal ,Integer orderId ,Integer businessId ,Integer status ,Integer mold ,Integer set  ){
+        for (HashMap detail:detailTraversal ) {
+
+            if( status == 4 && mold == 0 ){ //销售单确认到货
+
+                if (set == 1 ){
+                    //判断销售订单数量是否小于实际库存
+                    Integer num = orderMapper.isLessthanActualInventory(Integer.valueOf(detail.get("goods_id").toString()), Double.valueOf(detail.get("num").toString()));
+                    if (num == null){
+                        throw new NullPointerException("产品["+detail.get("name")+"]销售数量低于实际库存，因此不能到货。如要到货，则到商家设置里进行修改");
+                    }
+                }
+
+                //销售单，减少产品实际库存
+                shopMapper.reduceGoodsActualInventory(Integer.valueOf(detail.get("goods_id").toString()) , Double.valueOf(detail.get("num").toString()) );
+
+                //通过店铺id和产品id查询店铺所有有产品提成比例的员工
+                List<Percentage> percentages = orderMapper.selectBusienssAndGoodsAllStaffPercentage( businessId ,Integer.valueOf(detail.get("goods_id").toString()) );
+                for (Percentage pt : percentages  ) {
+
+                    if (pt.getA() != null  && pt.getB() != null && pt.getA() != 0.0 && pt.getB() != 0.0 ){
+
+                        double value = GroupNumber.getValue(Double.valueOf(detail.get("num").toString()) , pt.getA(), pt.getB() );
+                        if (value != 0.0){
+                            //添加员工产品提成金额记录
+                            orderMapper.addStaffOrderStatis( orderId , pt.getStaff_id(),value,1,new Date());
+                        }
+                    }
+                }
+
+            }else if(status == 4 && mold == 1){ //销售退货单确认到货
+
+                //销售退货单，要增加产品实际库存
+                shopMapper.increaseGoodsActualInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
+
+            }else if( status == 6 && mold == 0 ){ //销售单取消订单
+
+                //销售单取消订单则增加产品虚拟库存
+                shopMapper.increaseGoodsFictitiousInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
+
+            }else if(status == 6 && mold == 1){ //销售退货单取消订单
+
+                //销售退货单取消订单则减少产品虚拟库存
+                shopMapper.reduceGoodsFictitiousInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
+            }
+
+            //确认到货的订单需要 记录每一件的产品库存
+            if(status == 4  ){
+                //通过店铺产品id和当前时间判断该产品是否在每天产品库存统计记录里
+                Integer statisId = shopMapper.selectGoodsInventoryStatisByBidAndDate(Integer.valueOf(detail.get("goods_id").toString()));
+                Double goodsInventory = null ;
+                if (statisId == null ){
+                    //通过产品id查询每天产品的初始库存
+                    goodsInventory = shopMapper.selectGoodsInventory(Integer.valueOf(detail.get("goods_id").toString()));
+
+                }
+                if (statisId == null && mold == 0 ){
+
+                    //当前这件销售产品没有产品库存统计记录 则添加
+                    shopMapper.addSaleGoodsInventoryStatis( businessId ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
+
+                }else if(statisId != null && mold == 0 ){
+
+                    //增加销售产品是否在每天产品库存统计记录
+                    shopMapper.increaseSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
+
+                }else if(statisId == null && mold == 1 ){
+
+                    //当前这件销售产品没有产品库存统计记录 则添加数据
+                    shopMapper.addReduceSaleGoodsInventoryStatis( businessId ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
+
+                }else if(statisId != null && mold == 1 ){
+
+                    //减少销售产品是否在每天产品库存统计记录
+                    shopMapper.reduceSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
+                }
+            }
+        }
+    }
+
+
 
     //未到货的订单直接收款
     @Override

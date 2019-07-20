@@ -15,7 +15,7 @@ public class Calculator {
 
     private Integer id ;
     private Integer businessId;
-    private Integer name ;
+    private String name ;
     private BigDecimal price;
     private Integer tatol ;
     private Date createTime;
@@ -38,11 +38,11 @@ public class Calculator {
         this.businessId = businessId;
     }
 
-    public Integer getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(Integer name) {
+    public void setName(String name) {
         this.name = name;
     }
 
