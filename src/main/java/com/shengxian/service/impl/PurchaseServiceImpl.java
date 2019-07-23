@@ -1028,7 +1028,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     //所有采购单据
     @Override
-    public Page allPurchaseOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime , Integer mold)throws NullPointerException {
+    public Page allPurchaseOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime , Integer mold,Integer type)throws NullPointerException {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
@@ -1038,22 +1038,22 @@ public class PurchaseServiceImpl implements PurchaseService {
             pageNum = pageNo;
         }
         //所有采购单据总数
-        Integer tatolCont = purchaseMapper.allPurchaseOrderCount(new Paramt(bid,name ,number,startTime,endTime,mold));
+        Integer tatolCont = purchaseMapper.allPurchaseOrderCount(new Paramt(bid ,type ,name ,number,startTime,endTime,mold));
         Page page = new Page(pageNum,tatolCont);
         //所有采购单据(包括退货单据)
-        List<HashMap> hashMaps = purchaseMapper.allPurchaseOrder(new Paramt(bid,name ,number,startTime,endTime,page.getStartIndex(),page.getPageSize(),mold));
+        List<HashMap> hashMaps = purchaseMapper.allPurchaseOrder(new Paramt(bid ,type ,name ,number,startTime,endTime,page.getStartIndex(),page.getPageSize(),mold));
         for (HashMap hash : hashMaps ) {
             String tName = shopMapper.purchaseMoneyRecordsGroupConcat(Integer.valueOf(hash.get("id").toString()));
             hash.put("tName" ,tName);
         }
         //所有采购单据总金额
-        HashMap hashMap = purchaseMapper.allPurchaseOrderTatolMoney(new Paramt(bid,name ,number,startTime,endTime,mold));
+        HashMap hashMap = purchaseMapper.allPurchaseOrderTatolMoney(new Paramt(bid ,type ,name ,number,startTime,endTime,mold));
 
         //查询所有销售的到货总金额
-        Double arrival = purchaseMapper.allArrivalTatolMoney(new Paramt(bid,name,number,startTime,endTime,mold));
+        Double arrival = purchaseMapper.allArrivalTatolMoney(new Paramt(bid ,type ,name,number,startTime,endTime,mold));
 
         //查询所有销售的未到货总金额
-        Double notArrival = purchaseMapper.allNotArrivalTatolMoney(new Paramt(bid,name,number,startTime,endTime,mold));
+        Double notArrival = purchaseMapper.allNotArrivalTatolMoney(new Paramt(bid ,type ,name,number,startTime,endTime,mold));
 
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);

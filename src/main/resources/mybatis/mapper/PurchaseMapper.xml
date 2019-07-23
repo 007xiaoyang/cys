@@ -663,7 +663,9 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(p.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.create_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
-
+        <if test="type != null and type != '' ">
+            and p.type = #{type}
+        </if>
     </select>
 
     <!--所有采购单据-->
@@ -685,6 +687,9 @@
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(p.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.create_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="type != null and type != '' ">
+            and p.type = #{type}
         </if>
         order by p.audit_time  desc limit #{startIndex},#{pageSize}
     </select>
@@ -710,6 +715,9 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(p.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.create_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
+        <if test="type != null and type != '' ">
+            and p.type = #{type}
+        </if>
         )a,
         (select ifnull(sum(p.price),0)retreat_tatol
         from shengxian_purchase p
@@ -728,6 +736,9 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(p.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(p.create_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
+        <if test="type != null and type != '' ">
+            and p.type = #{type}
+        </if>
         )b
     </select>
 
@@ -745,6 +756,9 @@
         </if>
         <if test="number != null and number != ''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="type != null and type != '' ">
+            and p.type = #{type}
         </if>
     </select>
 
@@ -765,6 +779,9 @@
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and  DATE_FORMAT(p.audit_time,'%Y-%m-%d')  &lt;= #{endTime} and DATE_FORMAT(p.audit_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="type != null and type != '' ">
+            and p.type = #{type}
         </if>
     </select>
 

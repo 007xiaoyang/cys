@@ -1004,7 +1004,7 @@ public class FinanceServiceImpl implements FinanceService {
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
 
         String seetName = "用户销售明细";//sheet名
-        String[] title =new String[]{"客户", "品名","数量", "单价(元)","合计(元)","到货时间"};//标题
+        String[] title =new String[]{"客户", "品名","数量", "单价(元)","合计(元)","创建时间"};//标题
         List<HashMap> hashMaps = financeMapper.userSaleDetailDownload(new Paramt(bid ,name ,startTime,endTime ,bindindId));
 
         Double tatol = financeMapper.userSaleDetailDownloadTatolMoney(new Paramt(bid, name, startTime, endTime, bindindId));
@@ -1026,7 +1026,7 @@ public class FinanceServiceImpl implements FinanceService {
                 values[i][2] = hashMap.get("order_number").toString();
                 values[i][3] = hashMap.get("order_price").toString();
                 values[i][4] = hashMap.get("price").toString();
-                values[i][5] = hashMap.get("audit_time").toString();
+                values[i][5] = hashMap.get("create_time").toString();
             }
 
         }

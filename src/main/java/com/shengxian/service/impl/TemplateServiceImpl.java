@@ -95,7 +95,50 @@ public class TemplateServiceImpl implements TemplateService {
 
     //修改模板5
     @Override
+    @Transactional
     public Integer updateTemplateFive(Integer id, String title, String one, Integer state) {
         return shopMapper.updateTemplateFive(id , title  , one ,state);
+    }
+
+    //查询店铺模板4集合
+    @Override
+    public List<Template> selectTemplateFourList(String token, Integer role) {
+        Integer business_id = shopMapper.shopipByTokenAndRole(token, role);
+        return shopMapper.selectTemplateFourList(business_id);
+    }
+
+    //根据类型查询店铺模板4
+    @Override
+    public Template selectTemplateFour(String token, Integer role, Integer type) {
+        Integer business_id = shopMapper.shopipByTokenAndRole(token, role);
+        return shopMapper.selectTemplateFour(business_id ,type);
+    }
+
+    //修改模板4
+    @Override
+    @Transactional
+    public Integer updateTemplateFour(Integer id, String title, String one, Integer state) {
+        return shopMapper.updateTemplateFour(id ,title , one ,state);
+    }
+
+    //查询店铺模板6集合
+    @Override
+    public List<Template> selectTemplateSixList(String token, Integer role) {
+        Integer business_id = shopMapper.shopipByTokenAndRole(token, role);
+        return shopMapper.selectTemplateSixList(business_id);
+    }
+
+    //根据类型查询店铺模板6
+    @Override
+    public Template selectTemplateSix(String token, Integer role, Integer type) {
+        Integer business_id = shopMapper.shopipByTokenAndRole(token, role);
+        return shopMapper.selectTemplateSix(business_id ,type);
+    }
+
+    //修改模板6
+    @Override
+    @Transactional
+    public Integer updateTemplateSix(Integer id, String title, String one, Integer state) {
+        return shopMapper.updateTemplateSix(id ,title , one ,state);
     }
 }

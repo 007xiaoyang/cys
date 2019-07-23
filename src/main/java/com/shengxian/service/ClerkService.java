@@ -4,6 +4,7 @@ import com.shengxian.common.util.Page;
 import com.shengxian.entity.Goods;
 import com.shengxian.entity.WageSettlement;
 import com.shengxian.entity.clerkApp.Calculator;
+import com.shengxian.entity.clerkApp.CalculatorDatell;
 import com.shengxian.entity.clerkApp.ShoppingMall;
 import com.shengxian.entity.clerkApp.ShoppingMallDateil;
 import io.swagger.models.auth.In;
@@ -470,6 +471,14 @@ public interface ClerkService {
      * @param calculatorId
      * @return
      */
-    List<HashMap> selectCalculatorDateilById(Integer calculatorId);
+    List<CalculatorDatell> selectCalculatorDateilById(Integer calculatorId);
+
+    Integer deleteCalculator(Integer id);
+
+    /**
+     * 计算器打印
+     * @param calculatorId
+     */
+    void calculatorPrint(String token , Integer role ,Integer calculatorId)throws NullPointerException;
 
 }

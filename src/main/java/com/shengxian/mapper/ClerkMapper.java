@@ -5,6 +5,8 @@ import com.shengxian.entity.clerkApp.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.beans.BeanInfo;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -612,7 +614,14 @@ public interface ClerkMapper {
      * @param id
      * @return
      */
-    List<HashMap> selectWXShareGoodDetail(@Param("id") String id);
+    List<HashMap> selectWXShareGoodTimeSummary(@Param("id") String id);
+
+    /**
+     * 客户账单的微信分享商品明细
+     * @param id
+     * @return
+     */
+    List<HashMap> selectWXShareGoodDetail(@Param("id") String id ,@Param("time") String time);
 
     /**
      * 订单的微信分享
@@ -706,6 +715,14 @@ public interface ClerkMapper {
     Integer addCalculator(Calculator calculator);
 
     /**
+     * 修改总统计（重量乘以单价）
+     * @param id
+     * @param
+     * @return
+     */
+    Integer updateCalculatorTatolNum(@Param("id") Integer id ,@Param("totalNum") BigDecimal totalNum);
+
+    /**
      *添加计算器详情
      * @param calculatorDatell
      * @return
@@ -718,6 +735,19 @@ public interface ClerkMapper {
 
     HashMap selectCalculatorTotalMoney(@Param("bid") Integer businessId , @Param("name") String name,  @Param("startTime") String startTime,@Param("endTime") String endTime);
 
+    /**
+     * 查询计算器详情
+     * @param calculatorId
+     * @return
+     */
+    List<CalculatorDatell> selectCalculatorDateilById(@Param("calculatorId") Integer calculatorId);
 
-    List<HashMap> selectCalculatorDateilById(@Param("calculatorId") Integer calculatorId);
+    Integer deleteCalculator(@Param("id") Integer id);
+
+    /**
+     * 通过计算器id查询计算器信息
+     * @param id
+     * @return
+     */
+    Calculator selectCalculatorById(@Param("id") Integer id);
 }

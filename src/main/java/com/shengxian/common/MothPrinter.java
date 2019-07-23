@@ -2,6 +2,8 @@ package com.shengxian.common;
 
 import com.shengxian.common.util.DateUtil;
 import com.shengxian.entity.MothPrinterClass;
+import com.shengxian.entity.clerkApp.Calculator;
+import com.shengxian.entity.clerkApp.CalculatorDatell;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -153,16 +155,14 @@ public class MothPrinter {
                     if (moth.getType() == 1){
                         typename = "（赠送）";
                     }
-                    content += moth.getGoodsName()+typename+"<BR>";
+                    content +="<B>"+ moth.getGoodsName()+typename+"</B><BR>";
                     String values = MothPrinterClass.divisionString( String.valueOf(moth.getNum())+moth.getUnits() ,moth.getPrice() ,moth.getMoney());
                     content += values;
                 }
             }
             content += "--------------------------------<BR>";
             content += "备注："+beizhu+"<BR>";
-            content += "运费："+f+"元<BR>";
-            content += "差价："+dp+"元<BR>";
-            content += "优惠："+reduce+"元<BR>";
+            content += "运费:"+f+"元"+" 差价:"+dp+"元"+" 优惠:"+reduce+"元<BR>";
             content += "--------------------------------<BR>";
             content += "<B>总计："+tatol+"元</B><BR>";
             content += "打印时间："+ DateUtil.getTime() +"<BR>";
@@ -229,12 +229,10 @@ public class MothPrinter {
                 }
             }
             System.out.println(result);
-
-
     }
 
     /**
-     * 打印订单
+     * 采购打印订单
      * @param sns
      * @param beizhu
      * @param tatol
@@ -279,8 +277,7 @@ public class MothPrinter {
         }
         content += "--------------------------------<BR>";
         content += "备注："+beizhu+"<BR>";
-        content += "运费："+f+"<BR>";
-        content += "差价："+dp+"<BR>";
+        content += "运费："+f+"元"+" 差价："+dp+"元<BR>";
         content += "--------------------------------<BR>";
         content += "<B>总计："+tatol+"元</B><BR>";
         content += "打印时间："+ DateUtil.getTime() +"<BR>";
@@ -347,10 +344,84 @@ public class MothPrinter {
             }
         }
         System.out.println(result);
-
-
     }
 
+    /**
+     * 计算器打印
+     */
+    public static void calculatorPrint(String sns , String title, Calculator cal , List<CalculatorDatell> calculatorDatells){
+        String content;
+        content = "<CB>"+title+"</CB><BR>";
+        content += "名称："+cal.getName()+"<BR>";
+        for (CalculatorDatell cd: calculatorDatells  ) {
+            content += cd.getNum().toString()+"斤 ,";
+        }
+        content += "<BR>--------------------------------<BR>";
+        content += "总数："+cal.getTotal()+"<BR>";
+        content += "单价："+cal.getPrice()+"元  净重："+cal.getTotalNum()+"<BR>";
+        content += "<B>总计："+ cal.getTotalMoney().setScale(2,BigDecimal.ROUND_UP)+"元</B><BR>";
+        content += "创建时间："+ DateUtil.getTime(cal.getCreateTime())+"<BR>";
+        content += "打印时间："+ DateUtil.getTime() +"<BR>";
+        //通过POST请求，发送打印信息到服务器
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(30000)//读取超时
+                .setConnectTimeout(30000)//连接超时
+                .build();
+
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+
+        HttpPost post = new HttpPost(URL);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("user",USER));
+        String STIME = String.valueOf(System.currentTimeMillis()/1000);
+        nvps.add(new BasicNameValuePair("stime",STIME));
+        nvps.add(new BasicNameValuePair("sig",signature(USER,UKEY,STIME)));
+        nvps.add(new BasicNameValuePair("apiname","Open_printMsg"));//固定值,不需要修改
+        nvps.add(new BasicNameValuePair("sn",sns));
+        nvps.add(new BasicNameValuePair("content",content));
+        nvps.add(new BasicNameValuePair("times","1"));//打印联数
+
+        CloseableHttpResponse response = null;
+        String result = null;
+        try
+        {
+            post.setEntity(new UrlEncodedFormEntity(nvps,"utf-8"));
+            response = httpClient.execute(post);
+            int statecode = response.getStatusLine().getStatusCode();
+            if(statecode == 200){
+                HttpEntity httpentity = response.getEntity();
+                if (httpentity != null){
+                    //服务器返回的JSON字符串，建议要当做日志记录起来
+                    result = EntityUtils.toString(httpentity);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(response!=null){
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                post.abort();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      *  查询打印机的状态

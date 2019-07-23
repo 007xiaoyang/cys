@@ -511,6 +511,26 @@ public interface OrderMapper {
      */
     List<HashMap> notPrintedOrder(@Param("business_id") Integer bid, @Param("name") String name, @Param("number") String number, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
+    /**
+     * 未打印订单汇总总数
+     * @param paramt
+     * @return
+     */
+    Integer notPrintedOrderSummaryCount(Paramt paramt);
+
+    /**
+     * 未打印订单汇总
+     * @param paramt
+     * @return
+     */
+    List<HashMap> notPrintedOrderSummary(Paramt paramt);
+
+    /**
+     * 未打印订单汇总统计金额
+     * @param paramt
+     * @return
+     */
+    HashMap notPrintedOrderSummaryTatolMoney(Paramt paramt);
 
     /**
      * 待送货订单总数
@@ -532,6 +552,30 @@ public interface OrderMapper {
      * @return
      */
     Double stayDeliveredTotalMoney(Paramt paramt);
+
+
+    /**
+     * 待送货订单汇总总数
+     * @param paramt
+     * @return
+     */
+    Integer stayDeliveredSummaryCount(Paramt paramt);
+
+    /**
+     * 待送货订单汇总
+     * @param paramt
+     * @return
+     */
+    List<HashMap> stayDeliveredSummary(Paramt paramt);
+
+    /**
+     * 待送货订单汇总统计金额
+     * @param paramt
+     * @return
+     */
+    HashMap stayDeliveredSummaryTatolMoney(Paramt paramt);
+
+
 
     /**
      * 通过订单id查询订单信息

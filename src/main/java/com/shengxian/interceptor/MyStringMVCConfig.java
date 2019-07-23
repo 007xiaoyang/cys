@@ -88,8 +88,10 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 //查询店铺类别 ,店铺类别下的产品 ,加入购物车 ,减掉购物车 ,当前临时客户的购物车 ,结算 ,下订单
                 .excludePathPatterns("/temporary/businessCategory" , "/temporary/businessGoods","/temporary/addShoppingCart" ,"/temporary/reduceShoppingCart" ,"/temporary/temporaryShoppingcart","/temporary/settlement","/temporary/addOrdre"  )
                 .excludePathPatterns("/shopApp/version", "/shopApp/appIsLogin" ,"/shopApp/updateEquipment")
-                //采购产品汇总 ,采购产品明细
-                .excludePathPatterns("/clerk/purchaseGoodsSummary" ,"/clerk/purchaseGoodsDetails" ,"/clerk/selectCalculator" ,"/clerk/selectCalculatorDateilById");
+                //采购产品汇总 ,采购产品明细 ，查询计算器详情
+                .excludePathPatterns("/clerk/purchaseGoodsSummary" ,"/clerk/purchaseGoodsDetails" ,"/clerk/selectCalculator" ,"/clerk/selectCalculatorDateilById")
+                //计算器打印
+                .excludePathPatterns("/clerk/calculatorPrint" ,"/clerk/deleteCalculator");
         super.addInterceptors(registry);
     }
 

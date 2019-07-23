@@ -514,6 +514,74 @@
         order by o.create_time desc limit #{startIndex},#{pageSize}
     </select>
 
+    <!--未打印订单汇总总数-->
+    <select id="notPrintedOrderSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select o.id
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del=0 and o.status not in(1,5,6)
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
+            or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        group by g.id  order by o.audit_time desc )a
+    </select>
+
+    <!--未打印订单汇总-->
+    <select id="notPrintedOrderSummary" resultType="HashMap">
+        select od.id,DATE_FORMAT(o.create_time,'%Y-%m-%d')createTime,
+        g.`name`,sum(od.profit)profit,
+        sum( od.cost_price * od.order_number)costPrice,
+        sum(od.order_number * od.order_price)salePrice,
+        (select name from shengxian_warehouse where id=gi.warehouse_id)wname ,
+        sum(od.order_number)order_number
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del=0 and o.status not in(1,5,6)
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
+            or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        group by g.id  order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--未打印订单汇总统计金额-->
+    <select id="notPrintedOrderSummaryTatolMoney" resultType="HashMap">
+        select ifnull(sum(a.sale_price),0)salePrice ,ifnull(sum(a.profit),0)profit
+        ,ifnull(sum(a.cost_price),0)costPrice   , ifnull(sum(a.num), 0)num
+        from
+        (select sum(od.profit)profit,
+        sum( od.cost_price * od.order_number)cost_price,
+        sum(od.order_number * od.order_price)sale_price ,
+        sum(od.order_number)num
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del=0 and o.status not in(1,5,6)
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
+            or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        group by g.id )a
+    </select>
+
+
+
     <!--待送货订单总数-->
     <select id="stayDeliveredCount" resultType="Integer">
         select count(o.id)
@@ -569,6 +637,82 @@
         <if test="staffName != null and staffName != ''">
             and o.making = #{staffName}
         </if>
+    </select>
+
+
+    <!--待送货订单汇总总数-->
+    <select id="stayDeliveredSummaryCount" resultType="Integer">
+        select count(a.id) from
+        (select o.id
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0    and o.print_frequ = 1
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
+            or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="mold != null and mold != ''">
+            and o.mold = #{mold}
+        </if>
+        group by g.id  order by o.audit_time desc )a
+    </select>
+
+    <!--待送货订单汇总-->
+    <select id="stayDeliveredSummary" resultType="HashMap">
+        select od.id,DATE_FORMAT(o.create_time,'%Y-%m-%d')createTime,
+        g.`name`,sum(od.profit)profit,
+        sum( od.cost_price * od.order_number)costPrice,
+        sum(od.order_number * od.order_price)salePrice,
+        (select name from shengxian_warehouse where id=gi.warehouse_id)wname ,
+        sum(od.order_number)order_number
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0    and o.print_frequ = 1
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
+            or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="mold != null and mold != ''">
+            and o.mold = #{mold}
+        </if>
+        group by g.id  order by o.audit_time desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <!--待送货订单汇总统计金额-->
+    <select id="stayDeliveredSummaryTatolMoney" resultType="HashMap">
+        select ifnull(sum(a.sale_price),0)salePrice ,ifnull(sum(a.profit),0)profit
+        ,ifnull(sum(a.cost_price),0)costPrice   , ifnull(sum(a.num), 0)num
+        from
+        (select sum(od.profit)profit,
+        sum( od.cost_price * od.order_number)cost_price,
+        sum(od.order_number * od.order_price)sale_price ,
+        sum(od.order_number)num
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0    and o.print_frequ = 1
+        <if test="name != null and name != ''">
+            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
+            or o.no  LIKE CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number LIKE CONCAT('%',#{number},'%')
+        </if>
+        <if test="mold != null and mold != ''">
+            and o.mold = #{mold}
+        </if>
+        group by g.id )a
     </select>
 
 
@@ -993,6 +1137,9 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and  DATE_FORMAT(o.create_time,'%Y-%m-%d')  &lt;= #{endTime} and DATE_FORMAT(o.create_time,'%Y-%m-%d')  &gt;= #{startTime}
         </if>
+        <if test="type != null and type != '' ">
+            and o.type = #{type}
+        </if>
     </select>
 
     <!--所有销售订单-->
@@ -1018,6 +1165,9 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.create_time,'%Y-%m-%d')  &lt;= #{endTime} and DATE_FORMAT(o.create_time,'%Y-%m-%d')  &gt;= #{startTime}
         </if>
+        <if test="type != null and type != '' ">
+            and o.type = #{type}
+        </if>
         order by o.create_time desc limit #{startIndex},#{pageSize}
     </select>
 
@@ -1041,6 +1191,9 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and  DATE_FORMAT(o.create_time,'%Y-%m-%d')  &lt;= #{endTime} and DATE_FORMAT(o.create_time,'%Y-%m-%d')  &gt;= #{startTime}
         </if>
+        <if test="type != null and type != '' ">
+            and o.type = #{type}
+        </if>
         )a,
         (select ifnull(sum(o.price),0)retreat_tatol from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
@@ -1058,6 +1211,9 @@
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and  DATE_FORMAT(o.create_time,'%Y-%m-%d')  &lt;= #{endTime} and DATE_FORMAT(o.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="type != null and type != '' ">
+            and o.type = #{type}
         </if>
         )b
     </select>
@@ -1078,7 +1234,9 @@
         <if test="number != null and number != ''">
             and o.order_number LIKE CONCAT('%',#{number},'%')
         </if>
-
+        <if test="type != null and type != '' ">
+            and o.type = #{type}
+        </if>
     </select>
 
     <!--查询所有销售的到货总金额-->
@@ -1099,6 +1257,9 @@
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and  DATE_FORMAT(o.audit_time,'%Y-%m-%d')  &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="type != null and type != '' ">
+            and o.type = #{type}
         </if>
     </select>
 

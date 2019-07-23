@@ -1345,7 +1345,7 @@
     <!--用户销售明细导出-->
     <select id="userSaleDetailDownload" resultType="HashMap">
         select od.id ,bd.user_name , g.`name`,od.order_number,od.order_price ,
-        (od.order_number * od.order_price)price , o.audit_time
+        (od.order_number * od.order_price)price , o.create_time
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_binding bd on bd.id = o.binding_id

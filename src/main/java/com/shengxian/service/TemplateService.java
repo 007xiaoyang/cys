@@ -118,4 +118,60 @@ public interface TemplateService {
      * @return
      */
     Integer updateTemplateFive(Integer id,String title ,String one , Integer state );
+
+    /**
+     * 查询店铺模板4集合
+     * @param token
+     * @param role
+     * @return
+     */
+    List<Template> selectTemplateFourList(String token ,Integer role);
+
+    /**
+     * 根据类型查询店铺模板4
+     * @param token
+     * @param role
+     * @param type
+     * @return
+     */
+    Template selectTemplateFour(String token ,Integer role ,Integer type);
+
+
+    /**
+     * 修改模板4
+     * @param id
+     * @param title
+     * @param one
+     * @param state
+     * @return
+     */
+    Integer updateTemplateFour(Integer id,String title ,String one , Integer state );
+
+    /**
+     * 查询店铺模板6集合
+     * @param token
+     * @param role
+     * @return
+     */
+    List<Template> selectTemplateSixList(String token ,Integer role);
+
+    /**
+     * 根据类型查询店铺模板6
+     * @param token
+     * @param role
+     * @param type
+     * @return
+     */
+    Template selectTemplateSix(String token ,Integer role ,Integer type);
+
+
+    /**
+     * 修改模板6
+     * @param id
+     * @param title
+     * @param one
+     * @param state
+     * @return
+     */
+    Integer updateTemplateSix(Integer id,String title ,String one , Integer state );
 }

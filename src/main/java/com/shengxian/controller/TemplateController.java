@@ -36,7 +36,7 @@ public class TemplateController {
     private TemplateService templateService;
 
     /**
-     * 添加模板2
+     * 添加
      * @return
      */
     @RequestMapping("/addTemplateTwo")
@@ -294,6 +294,155 @@ public class TemplateController {
             return message.code(Message.codeSuccessed).message("修改成功");
         }catch (Exception e) {
             log.error("模板控制层（/template/updateTemplateFive）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
+
+    /**
+     * 查询店铺模板4集合
+     * @return
+     */
+    @RequestMapping("/selectTemplateFourList")
+    @ApiOperation(value = "查询店铺模板4集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+    })
+    public Message selectTemplateFourList(String token ,Integer role){
+        Message message = Message.non();
+        try {
+            List<Template> templates = templateService.selectTemplateFourList(token, role);
+            return message.code(Message.codeSuccessed).data(templates).message("添加成功");
+        }catch (Exception e) {
+            log.error("模板控制层（/template/selectTemplateFourList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
+    /**
+     * 根据类型查询店铺模板4
+     * @return
+     */
+    @RequestMapping("/selectTemplateFour")
+    @ApiOperation(value = "根据类型查询店铺模板4" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "type" ,value = "0采购订单,1采购退货订单，2销售订单，3退货销售订单" ,paramType = "query")
+    })
+    public Message selectTemplateFour(String token ,Integer role ,Integer type ){
+        Message message = Message.non();
+        try {
+            Template template = templateService.selectTemplateFour(token, role, type);
+            return message.code(Message.codeSuccessed).data(template).message("添加成功");
+        }catch (Exception e) {
+            log.error("模板控制层（/template/selectTemplateFour）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 修改模板4
+     * @return
+     */
+    @RequestMapping("/updateTemplateFour")
+    @SysLog(module = "模板管理" ,methods = "修改模板5")
+    @ApiOperation(value = "修改模板4" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
+            @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
+            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query")
+    })
+    public Message updateTemplateFour(String token ,Integer role ,Integer id ,String title ,String one , Integer state){
+        Message message = Message.non();
+        try {
+            Integer count = templateService.updateTemplateFour(id, title, one, state);
+            if (IntegerUtils.isEmpty(count)) {
+                return message.code(Message.codeFailured).message("修改失败");
+            }
+            return message.code(Message.codeSuccessed).message("修改成功");
+        }catch (Exception e) {
+            log.error("模板控制层（/template/updateTemplateFour）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
+    /**
+     * 查询店铺模板6集合
+     * @return
+     */
+    @RequestMapping("/selectTemplateSixList")
+    @ApiOperation(value = "查询店铺模板6集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+    })
+    public Message selectTemplateSixList(String token ,Integer role){
+        Message message = Message.non();
+        try {
+            List<Template> templates = templateService.selectTemplateSixList(token, role);
+            return message.code(Message.codeSuccessed).data(templates).message("添加成功");
+        }catch (Exception e) {
+            log.error("模板控制层（/template/selectTemplateSixList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
+    /**
+     * 根据类型查询店铺模板6
+     * @return
+     */
+    @RequestMapping("/selectTemplateSix")
+    @ApiOperation(value = "根据类型查询店铺模板6" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "type" ,value = "0采购订单,1采购退货订单，2销售订单，3退货销售订单" ,paramType = "query")
+    })
+    public Message selectTemplateSix(String token ,Integer role ,Integer type ){
+        Message message = Message.non();
+        try {
+            Template template = templateService.selectTemplateSix(token, role, type);
+            return message.code(Message.codeSuccessed).data(template).message("添加成功");
+        }catch (Exception e) {
+            log.error("模板控制层（/template/selectTemplateSix）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 修改模板6
+     * @return
+     */
+    @RequestMapping("/updateTemplateSix")
+    @SysLog(module = "模板管理" ,methods = "修改模板5")
+    @ApiOperation(value = "修改模板6" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
+            @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
+            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query")
+    })
+    public Message updateTemplateSix(String token ,Integer role ,Integer id ,String title ,String one , Integer state){
+        Message message = Message.non();
+        try {
+            Integer count = templateService.updateTemplateSix(id, title, one, state);
+            if (IntegerUtils.isEmpty(count)) {
+                return message.code(Message.codeFailured).message("修改失败");
+            }
+            return message.code(Message.codeSuccessed).message("修改成功");
+        }catch (Exception e) {
+            log.error("模板控制层（/template/updateTemplateSix）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }

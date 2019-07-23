@@ -5,6 +5,7 @@ import com.shengxian.common.Message;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.WageSettlement;
 import com.shengxian.entity.clerkApp.Calculator;
+import com.shengxian.entity.clerkApp.CalculatorDatell;
 import com.shengxian.entity.clerkApp.ShoppingMall;
 import com.shengxian.entity.clerkApp.ShoppingMallDateil;
 import com.shengxian.service.ClerkService;
@@ -949,6 +950,7 @@ public class ClerkController {
 
 
 
+
     /**
      * 提成分类
      * @param token
@@ -1269,7 +1271,7 @@ public class ClerkController {
             if (IntegerUtils.isEmpty(count)){
                 return message.code(Message.codeFailured).message("添加失败");
             }
-            return message.code(Message.codeSuccessed).message("添加成功");
+            return message.code(Message.codeSuccessed).data(count).message("添加成功");
         }catch (Exception e){
             System.out.println(e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -1322,9 +1324,58 @@ public class ClerkController {
     })
     public Message selectCalculatorDateilById(Integer calculatorId){
         Message message = Message.non();
-        List<HashMap> hashMaps = clerkService. selectCalculatorDateilById( calculatorId);
+        List<CalculatorDatell> hashMaps = clerkService. selectCalculatorDateilById( calculatorId);
         return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
     }
+
+    /**
+     * 删除计算器
+     * @param id
+     * @return
+     */
+    @RequestMapping("/deleteCalculator")
+    @ApiOperation(value = "删除计算器" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id" ,value = "计算器id" ,paramType = "query")
+    })
+    public Message deleteCalculator(Integer id){
+        Message message = Message.non();
+        Integer count = clerkService.deleteCalculator(id);
+        if (IntegerUtils.isEmpty(count)){
+            return message.code(Message.codeFailured).message("删除失败");
+        }
+        return message.code(Message.codeSuccessed).message("删除成功");
+    }
+
+    /**
+     * 计算器打印
+     * @param token
+     * @param role
+     * @param calculatorId
+     * @return
+     */
+    @RequestMapping("/calculatorPrint")
+    @ApiOperation(value = "计算器打印" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "calculatorId" ,value = "计算器id" ,paramType = "query")
+    })
+    public Message calculatorPrint(String token , Integer role ,Integer calculatorId  ){
+        Message message = Message.non();
+        try {
+            clerkService.calculatorPrint(token , role ,calculatorId);
+            return message.code(Message.codeSuccessed).message("正在打印");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
+
+
 
 
     /**

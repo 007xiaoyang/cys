@@ -944,6 +944,25 @@ public class OrderServiceImpl implements OrderService {
         return page;
     }
 
+    //未打印订单汇总
+    @Override
+    public Page notPrintedOrderSummary(String token, Integer role, Integer pageNo, String name, String number) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
+        int pageNum=1;
+        if (IntegerUtils.isNotEmpty(pageNo)){
+            pageNum=pageNo;
+        }
+        Integer tatolCount = orderMapper.notPrintedOrderSummaryCount(new Paramt(bid,name ,number ));
+        Page page = new Page(pageNum,tatolCount);
+        List<HashMap> hashMaps = orderMapper.notPrintedOrderSummary(new Paramt(bid, name, number, page.getStartIndex(), page.getPageSize()));
+        HashMap hashMap = orderMapper.notPrintedOrderSummaryTatolMoney(new Paramt(bid, name,number));
+        page.setHashMap(hashMap);
+        page.setRecords(hashMaps);
+        return page;
+    }
+
     ///待送货订单总数
     @Override
     public Integer stayDeliveredCount(String token ,Integer role) throws NullPointerException{
@@ -980,6 +999,24 @@ public class OrderServiceImpl implements OrderService {
         return page;
     }
 
+    //待送货订单汇总
+    @Override
+    public Page stayDeliveredSummary(String token, Integer role, Integer pageNo, String name, String number, Integer mold) throws NullPointerException, Exception {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
+        int pageNum=1;
+        if (IntegerUtils.isNotEmpty(pageNo)){
+            pageNum=pageNo;
+        }
+        Integer tatolCount = orderMapper.stayDeliveredSummaryCount(new Paramt( bid,name ,number ,mold ));
+        Page page = new Page(pageNum,tatolCount);
+        List<HashMap> hashMaps = orderMapper.stayDeliveredSummary(new Paramt(bid, name, number ,mold , page.getStartIndex(), page.getPageSize()));
+        HashMap hashMap = orderMapper.stayDeliveredSummaryTatolMoney(new Paramt(bid, name,number ,mold ));
+        page.setHashMap(hashMap);
+        page.setRecords(hashMaps);
+        return page;
+    }
 
     //确认到货或取消订单状态（4 确认已送达）（6 取消订单）
     @Override
@@ -1742,7 +1779,7 @@ public class OrderServiceImpl implements OrderService {
 
     //所有销售订单
     @Override
-    public Page allSaleOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime , Integer mold) throws NullPointerException,Exception {
+    public Page allSaleOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime , Integer mold ,Integer type) throws NullPointerException,Exception {
 
         int pageNum =1;
         if (IntegerUtils.isNotEmpty(pageNo)){
@@ -1753,21 +1790,21 @@ public class OrderServiceImpl implements OrderService {
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
 
         //所有销售订单总数
-        Integer totalCount = orderMapper.allSaleOrderCount(new Paramt(bid,name,number,startTime,endTime,mold));
+        Integer totalCount = orderMapper.allSaleOrderCount(new Paramt(bid ,type ,name,number,startTime,endTime,mold ));
         Page page = new Page(pageNum,totalCount);
         //所有销售订单
-        List<HashMap> hashMaps = orderMapper.allSaleOrder(new Paramt(bid,name,number,startTime,endTime,page.getStartIndex(),page.getPageSize(),mold));
+        List<HashMap> hashMaps = orderMapper.allSaleOrder(new Paramt(bid , type ,name,number,startTime,endTime,page.getStartIndex(),page.getPageSize(),mold ));
         for (HashMap hash : hashMaps ) {
             String tName = shopMapper.salesMoneyRecordsGroupConcat(Integer.valueOf(hash.get("id").toString()));
             hash.put("tName" ,tName);
         }
         //所有销售订单总金额
-        HashMap hashMap = orderMapper.allSaleOrderTatolMoney(new Paramt(bid,name,number,startTime,endTime,mold));
+        HashMap hashMap = orderMapper.allSaleOrderTatolMoney(new Paramt(bid , type,name,number,startTime,endTime,mold));
 
         //查询所有销售的未到货总金额
-        Double notArrival = orderMapper.allNotArrivalTatolMoney(new Paramt(bid,name,number,startTime,endTime,mold));
+        Double notArrival = orderMapper.allNotArrivalTatolMoney(new Paramt(bid , type,name,number,startTime,endTime,mold ));
         //查询所有销售的到货总金额
-        Double arrival = orderMapper.allArrivalTatolMoney(new Paramt(bid,name,number,startTime,endTime,mold));
+        Double arrival = orderMapper.allArrivalTatolMoney(new Paramt(bid , type,name,number,startTime,endTime,mold ));
         hashMap.put("notArrival",notArrival);
         hashMap.put("arrival" ,arrival);
 

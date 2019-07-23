@@ -939,6 +939,33 @@ public class OrderController {
     }
 
     /**
+     * 未打印的订单汇总
+     * @param token
+     * @return
+     */
+    @RequestMapping("/notPrintedOrderSummary")
+    @ApiOperation(value = "未打印的订单" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query")
+    })
+    public Message notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number ){
+        Message message = Message.non();
+        try {
+            Page page = orderService.notPrintedOrderSummary(token ,role ,pageNo,name ,number);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("订单控制层（/order/notPrintedOrderSummary）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
      * 待送货订单总数
      * @param token
      * @return
@@ -989,6 +1016,37 @@ public class OrderController {
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
             log.error("订单控制层（/order/stayDelivered）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 待送货订单汇总
+     * @param token
+     * @param pageNo
+     * @param name 用户名称或用户编号或二维码标识号
+     * @param number 订单编号
+     * @return
+     */
+    @RequestMapping("/stayDeliveredSummary")
+    @ApiOperation(value = "待送货订单" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query"),
+            @ApiImplicitParam(name = "mold" ,value = "0销售，1退货" ,paramType = "query")
+    })
+    public Message stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold  ){
+        Message message = Message.non();
+        try {
+            Page page = orderService.stayDeliveredSummary(token ,role ,pageNo,name,number ,mold);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("订单控制层（/order/stayDeliveredSummary）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
@@ -1338,9 +1396,10 @@ public class OrderController {
             @ApiImplicitParam(name = "number" ,value = "订单编号" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
-            @ApiImplicitParam(name = "mold" ,value = "销售单，退货单" ,paramType = "query")
+            @ApiImplicitParam(name = "mold" ,value = "销售单，退货单" ,paramType = "query"),
+            @ApiImplicitParam(name = "type" ,value = "" ,paramType = "query")
     })
-    public Message allSaleOrder(String token ,Integer role,  Integer pageNo, String name, String number, String startTime, String endTime, Integer mold){
+    public Message allSaleOrder(String token ,Integer role,  Integer pageNo, String name, String number, String startTime, String endTime, Integer mold ,Integer type){
         Message message = Message.non();
         String start =startTime ,end=endTime;
         try {
@@ -1352,7 +1411,7 @@ public class OrderController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 end = endTime; start = startTime;
             }
-            Page page = orderService.allSaleOrder(token ,role ,pageNo,name,number,start,end,mold);
+            Page page = orderService.allSaleOrder(token ,role ,pageNo,name,number,start,end,mold ,type);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());

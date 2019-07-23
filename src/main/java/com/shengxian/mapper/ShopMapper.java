@@ -1444,6 +1444,17 @@ public interface ShopMapper {
      */
     Integer updateTemplateThree(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two );
 
+    /**
+     * 添加模板5
+     * @param business_id
+     * @param title
+     * @param type
+     * @param one
+     * @param two
+     * @return
+     */
+    Integer addTemplateFive( @Param("business_id") Integer business_id,@Param("title") String title ,@Param("type") Integer type ,@Param("one") String one , @Param("two") String two);
+
 
     /**
      * 查询店铺模板5集合
@@ -1469,6 +1480,79 @@ public interface ShopMapper {
      * @return
      */
     Integer updateTemplateFive(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state );
+
+    /**
+     * 添加模板4
+     * @param business_id
+     * @param title
+     * @param type
+     * @param one
+     * @param two
+     * @return
+     */
+    Integer addTemplateFour( @Param("business_id") Integer business_id,@Param("title") String title ,@Param("type") Integer type ,@Param("one") String one , @Param("two") String two);
+
+    /**
+     * 查询店铺模板4集合
+     * @param business_id
+     * @return
+     */
+    List<Template> selectTemplateFourList(@Param("business_id") Integer business_id);
+
+    /**
+     * 根据店铺和类型查询店铺模板4
+     * @param business_id
+     * @param type
+     * @return
+     */
+    Template selectTemplateFour(@Param("business_id") Integer business_id ,@Param("type") Integer type);
+
+    /**
+     * 修改模板4
+     * @param id
+     * @param title
+     * @param one
+     * @param state
+     * @return
+     */
+    Integer updateTemplateFour(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state );
+
+    /**
+     * 添加模板2
+     * @param business_id
+     * @param title
+     * @param type
+     * @param one
+     * @param two
+     * @return
+     */
+    Integer addTemplateSix( @Param("business_id") Integer business_id,@Param("title") String title ,@Param("type") Integer type ,@Param("one") String one , @Param("two") String two);
+
+    /**
+     * 查询店铺模板6集合
+     * @param business_id
+     * @return
+     */
+    List<Template> selectTemplateSixList(@Param("business_id") Integer business_id);
+
+    /**
+     * 根据店铺和类型查询店铺模板6
+     * @param business_id
+     * @param type
+     * @return
+     */
+    Template selectTemplateSix(@Param("business_id") Integer business_id ,@Param("type") Integer type);
+
+    /**
+     * 修改模板6
+     * @param id
+     * @param title
+     * @param one
+     * @param state
+     * @return
+     */
+    Integer updateTemplateSix(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state );
+
 
     /**
      * 通过绑定用户id查询方案id

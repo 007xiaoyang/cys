@@ -995,17 +995,33 @@
         where wx.id = #{id}
     </select>
 
+    <!--客户账单的微信分享商品时间汇总-->
+    <select id="selectWXShareGoodTimeSummary" resultType="HashMap">
+        select  DATE_FORMAT(o.create_time,'%Y-%m-%d')createTime,
+        sum(( od.cost_price * od.order_number ))costPrice,
+        sum((od.order_number * od.order_price))salePrice,
+        sum(od.order_number)orderNumber ,
+		sum(od.order_price)orderPrice
+        from shengxian_order_details od
+        inner join shengxian_WXShareUserRecord wx on FIND_IN_SET(od.id ,wx.share_id)
+		inner join shengxian_order o on o.id = od.order_id
+        inner join shengxian_goods g on g.id = od.goods_id
+        where wx.id = #{id} GROUP BY DATE_FORMAT(o.create_time,'%Y-%m-%d') order by od.id desc
+
+    </select>
+
+
     <!--客户账单的微信分享商品明细-->
     <select id="selectWXShareGoodDetail" resultType="HashMap">
-        select od.id , g.`name` , DATE_FORMAT(o.audit_time,'%Y-%m-%d')audit_time,
-        ( od.cost_price * od.order_number)cost_price,
+        select od.id , g.`name` ,
+        ( od.cost_price * od.order_number )cost_price,
         (od.order_number * od.order_price)sale_price,
         od.order_number ,od.order_price
         from shengxian_order_details od
         inner join shengxian_WXShareUserRecord wx on FIND_IN_SET(od.id ,wx.share_id)
 		inner join shengxian_order o on o.id = od.order_id
         left join shengxian_goods g on g.id = od.goods_id
-        where wx.id = #{id}  order by od.id desc
+        where wx.id = #{id} and DATE_FORMAT(o.create_time,'%Y-%m-%d') = #{time} order by od.id desc
     </select>
 
 
@@ -1172,8 +1188,8 @@
 
     <!--添加计算器-->
     <insert id="addCalculator" keyProperty="id" useGeneratedKeys="true">
-        insert into shengxian_calculator (business_id , name ,price , tatol ,create_time )
-        values (#{businessId} , #{name} , #{price} , #{tatol} , #{createTime});
+        insert into shengxian_calculator (business_id , name ,price , total  ,create_time )
+        values (#{businessId} , #{name} , #{price} , #{total}  , #{createTime});
     </insert>
 
     <!--添加计算器详情-->
@@ -1182,10 +1198,15 @@
         values (#{calculatorId} , #{num});
     </insert>
 
+    <!--修改总统计（重量乘以单价）-->
+    <update id="updateCalculatorTatolNum">
+        update shengxian_calculator set total_num = #{totalNum} where id = #{id}
+    </update>
+
     <!---->
     <select id="selectCalculatorCount" resultType="Integer">
         select count(id)
-        from shengxian_calculator where business_id = #{bid}
+        from shengxian_calculator where business_id = #{bid} and is_del = 0
         <if test="name != null and name != ''">
           and  name LIKE CONCAT('%',#{name},'%')
         </if>
@@ -1196,8 +1217,8 @@
 
     <!---->
     <select id="selectCalculator" resultType="HashMap">
-        select id , name , price , tatol , create_time
-        from shengxian_calculator where business_id = #{bid}
+        select id , name , price , total ,total_num  ,price * total_num as money , create_time
+        from shengxian_calculator where business_id = #{bid} and is_del = 0
         <if test="name != null and name != ''">
             and  name LIKE CONCAT('%',#{name},'%')
         </if>
@@ -1209,8 +1230,8 @@
 
     <!---->
     <select id="selectCalculatorTotalMoney" resultType="HashMap">
-        select ifnull(sum(price) , 0 )price , ifnull(sum(tatol) , 0)tatol
-        from shengxian_calculator where business_id = #{bid}
+        select ifnull(sum(price) , 0 )price , ifnull(sum(total) , 0)total  ,ifnull(sum(total_num)  , 0)totalNum , ifnull(sum(total_num * price) , 0) totalMoney
+        from shengxian_calculator where business_id = #{bid} and is_del = 0
         <if test="name != null and name != ''">
             and  name LIKE CONCAT('%',#{name},'%')
         </if>
@@ -1220,10 +1241,21 @@
     </select>
 
 
-    <!---->
-    <select id="selectCalculatorDateilById" resultType="HashMap">
+    <!--查询计算器详情-->
+    <select id="selectCalculatorDateilById" resultType="com.shengxian.entity.clerkApp.CalculatorDatell">
         select id , num
         from shengxian_calculator_dateil where calculator_id = #{calculatorId};
+    </select>
+
+    <update id="deleteCalculator">
+       update shengxian_calculator set is_del = 1 where id = #{id}
+    </update>
+
+
+    <!--通过计算器id查询计算器信息-->
+    <select id="selectCalculatorById" resultType="com.shengxian.entity.clerkApp.Calculator">
+        select  name , price , total , total_num as totalNum , price * total_num  as totalMoney , create_time as createTime
+        from shengxian_calculator where id = #{id} ;
     </select>
 
 </mapper>

@@ -956,9 +956,10 @@ public class PurchaseController {
             @ApiImplicitParam(name = "number" ,value = "" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "" ,paramType = "query"),
-            @ApiImplicitParam(name = "mold" ,value = "" ,paramType = "query")
+            @ApiImplicitParam(name = "mold" ,value = "" ,paramType = "query"),
+            @ApiImplicitParam(name = "type" ,value = "" ,paramType = "query")
     })
-    public Message allPurchaseOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime, Integer mold){
+    public Message allPurchaseOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime, Integer mold ,Integer type){
         Message message = Message.non();
         try {
             String start = startTime , end = endTime;
@@ -969,7 +970,7 @@ public class PurchaseController {
                 start = startTime; end = endTime;
             }
 
-            Page page = purchaseService.allPurchaseOrder(token ,role ,pageNo,name,number,start ,end,mold);
+            Page page = purchaseService.allPurchaseOrder(token ,role ,pageNo,name,number,start ,end,mold ,type);
             return message.code(Message.codeSuccessed).data(page).message("搜索成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());

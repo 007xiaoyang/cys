@@ -1018,9 +1018,14 @@ public class ClerkServiceImpl implements ClerkService {
 
         HashMap hashMap = clerkMapper.selectUserWXShareRecord(shareID);
         if (hashMap != null ){
-            //客户账单的微信分享商品明细
-            List<HashMap> wxShareDetail = clerkMapper.selectWXShareGoodDetail(shareID);
-            hashMap.put("shareDetail" , wxShareDetail);
+
+            List<HashMap> hashMaps = clerkMapper.selectWXShareGoodTimeSummary(shareID);
+            for (HashMap hash: hashMaps ) {
+                //客户账单的微信分享商品明细
+                List<HashMap> wxShareDetail = clerkMapper.selectWXShareGoodDetail(shareID ,hash.get("createTime").toString());
+                hash.put("shareDetail" , wxShareDetail);
+            }
+            hashMap.put("share" , hashMaps);
         }
         return hashMap;
     }
@@ -1038,6 +1043,7 @@ public class ClerkServiceImpl implements ClerkService {
         return hashMap;
     }
 
+    //员工APP提成标题提醒
     @Override
     public List ritleReminder(String token, Integer role) {
 
@@ -1087,12 +1093,15 @@ public class ClerkServiceImpl implements ClerkService {
         calculator.setBusinessId(bid);
         calculator.setCreateTime(new Date());
         Integer count = clerkMapper.addCalculator(calculator);
+        BigDecimal tatolNum = BigDecimal.ZERO;
         CalculatorDatell[] calculatorDatell = calculator.getCalculatorDatell();
         for (CalculatorDatell c:calculatorDatell) {
+            tatolNum = tatolNum.add(c.getNum());
             c.setCalculatorId(calculator.getId());
             clerkMapper.addCalculatorDateil(c);
         }
-        return count;
+        clerkMapper.updateCalculatorTatolNum(calculator.getId() , tatolNum);
+        return calculator.getId();
     }
 
     //查询计算器
@@ -1112,8 +1121,36 @@ public class ClerkServiceImpl implements ClerkService {
         return page;
     }
 
+    //查询计算器详情
     @Override
-    public List<HashMap> selectCalculatorDateilById(Integer calculatorId) {
+    public List<CalculatorDatell> selectCalculatorDateilById(Integer calculatorId) {
         return clerkMapper.selectCalculatorDateilById(calculatorId);
+    }
+
+    @Override
+    @Transactional
+    public Integer deleteCalculator(Integer id) {
+        return clerkMapper.deleteCalculator(id);
+    }
+
+    //计算器打印
+    @Override
+    public void calculatorPrint(String token , Integer role ,Integer calculatorId) throws NullPointerException{
+        //APP点打印只能调用飞蛾打印
+        List<Printer> printers = null;
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+        printers = menuMapper.queryPrinter(bid , 0);
+        if (printers.size() <=  0 ){
+            throw new NullPointerException("飞蛾打印机未启用或未添加");
+        }
+        //通过计算器id查询计算器信息
+        Calculator calculator = clerkMapper.selectCalculatorById(calculatorId);
+        List<CalculatorDatell> cld = clerkMapper.selectCalculatorDateilById(calculatorId);
+        for (int i = 0 ; i < printers.size() ; i ++){
+
+            for (int j = 1 ; j <= printers.get(i).getNum() ; j ++ ){
+                MothPrinter.calculatorPrint(printers.get(i).getSn1() ,"计算器打印" ,calculator , cld);
+            }
+        }
     }
 }

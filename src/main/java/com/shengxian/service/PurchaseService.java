@@ -276,7 +276,7 @@ public interface PurchaseService {
      * @param endTime
      * @return
      */
-    Page allPurchaseOrder(String token  ,Integer role , Integer pageNo, String name, String number, String startTime, String endTime, Integer mold);
+    Page allPurchaseOrder(String token  ,Integer role , Integer pageNo, String name, String number, String startTime, String endTime, Integer mold ,Integer type);
 
 
     /**

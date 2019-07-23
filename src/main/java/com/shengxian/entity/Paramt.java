@@ -30,6 +30,8 @@ public class Paramt {
 
     private Integer type;
 
+    private String type2;
+
 
     public Paramt() {
     }
@@ -226,6 +228,31 @@ public class Paramt {
         this.part = part;
         this.mold = mold;
     }
+
+    //总销售搜索条件
+    public Paramt(Integer business_id ,Integer type, String name, String number, String startTime, String endTime, Integer mold ) {
+        this.business_id = business_id;
+        this.type = type;
+        this.name = name;
+        this.number = number;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.mold = mold;
+    }
+    //总销售搜索条件
+    public Paramt(Integer business_id ,Integer type, String name, String number, String startTime, String endTime, Integer startIndex, Integer pageSize, Integer mold ) {
+        this.business_id = business_id;
+        this.type = type;
+        this.name = name;
+        this.number = number;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startIndex = startIndex;
+        this.pageSize = pageSize;
+        this.mold = mold;
+        this.type2 = type2;
+    }
+
     //
     public Paramt(Integer business_id, String name, String number, String startTime, String endTime, Integer mold) {
         this.business_id = business_id;
@@ -322,6 +349,24 @@ public class Paramt {
         this.startIndex = startIndex;
         this.pageSize = pageSize;
         this.is = is;
+    }
+
+    //待送货订单汇总参数
+    public Paramt(Integer business_id, String name, String number ,Integer mold ) {
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
+        this.mold = mold;
+    }
+
+    //待送货订单汇总参数
+    public Paramt(Integer business_id, String name, String number  ,Integer mold , Integer startIndex, Integer pageSize) {
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
+        this.mold = mold;
+        this.startIndex = startIndex;
+        this.pageSize = pageSize;
     }
 
     public Paramt(Integer business_id, String name, String number ) {
@@ -499,6 +544,14 @@ public class Paramt {
 
     public void setStaffName(String staffName) {
         this.staffName = staffName;
+    }
+
+    public String getType2() {
+        return type2;
+    }
+
+    public void setType2(String type2) {
+        this.type2 = type2;
     }
 
     @Override

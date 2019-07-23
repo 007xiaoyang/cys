@@ -468,7 +468,7 @@
     <select id="queryPurchaseOrderDateil" resultMap="puchasesOrderDateilMap">
         select pd.id ,pd.purchase_number , pd.purchase_price  , pd.type , g.name , pd.purchase_number * pd.purchase_price as money ,g.units
         from shengxian_purchase_detail pd
-        inner join shengxian_goods g on  g.id = pd.purchase_id
+        inner join shengxian_goods g on  g.id = pd.goods_id
         where g.is_del = 0 and pd.purchase_id = #{purchase_id}
     </select>
 

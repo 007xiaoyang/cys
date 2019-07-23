@@ -254,6 +254,17 @@ public interface OrderService {
     Page notPrintedOrder(String token ,Integer role, Integer pageNo, String name, String number)throws NullPointerException ,Exception;
 
     /**
+     * 未打印订单汇总
+     * @param token
+     * @param role
+     * @param pageNo
+     * @param name
+     * @param number
+     * @return
+     */
+    Page notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number );
+
+    /**
      * 待送货订单总数
      * @param token
      * @return
@@ -268,6 +279,15 @@ public interface OrderService {
      * @return
      */
     Page stayDelivered(String token ,Integer role, Integer pageNo, String name, String number ,String staffName)throws NullPointerException ,Exception;
+
+    /**
+     * 待送货订单汇总
+     * @param token
+     * @param pageNo
+     * @param name
+     * @return
+     */
+    Page stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold)throws NullPointerException ,Exception;
 
     /**
      * 确认到货或取消订单状态（4 确认已送达）（6 取消订单）
@@ -382,7 +402,7 @@ public interface OrderService {
      * @param number
      * @return
      */
-    Page allSaleOrder(String token ,Integer role , Integer pageNo, String name, String number, String startTime, String endTime, Integer mold)throws NullPointerException,Exception;
+    Page allSaleOrder(String token ,Integer role , Integer pageNo, String name, String number, String startTime, String endTime, Integer mold  ,Integer type)throws NullPointerException,Exception;
 
     /**
      * 计算这一年总销售金额

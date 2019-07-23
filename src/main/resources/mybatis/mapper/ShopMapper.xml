@@ -1361,6 +1361,12 @@
         where id = #{id};
     </update>
 
+    <!--添加模板5(小票)-->
+    <insert id="addTemplateFive">
+        insert into shengxian_template_five (business_id ,title ,type ,one )
+        values ( #{business_id} , #{title} , #{type} ,#{one} );
+    </insert>
+
     <!--查询店铺模板5集合-->
     <select id="selectTemplateFiveList" resultMap="TemplateTwoMap">
       select id , title , type , one ,state
@@ -1378,8 +1384,56 @@
         update shengxian_template_five set title = #{title} ,one = #{one} , state = #{state}
         where id = #{id};
     </update>
-    
-    
+
+    <!--添加模板4-->
+    <insert id="addTemplateFour">
+        insert into shengxian_template_four (business_id ,title ,type ,one )
+        values ( #{business_id} , #{title} , #{type} ,#{one} );
+    </insert>
+
+    <!--查询店铺模板4集合-->
+    <select id="selectTemplateFourList" resultMap="TemplateTwoMap">
+      select id , title , type , one ,state
+      from shengxian_template_four where business_id = #{business_id};
+    </select>
+
+    <!--根据店铺和类型查询店铺模板4-->
+    <select id="selectTemplateFour" resultMap="TemplateTwoMap">
+      select id , title , type , one ,state
+      from shengxian_template_four where business_id = #{business_id} and type = #{type};
+    </select>
+
+    <!--修改模板4-->
+    <update id="updateTemplateFour">
+        update shengxian_template_four set title = #{title} ,one = #{one}
+        where id = #{id};
+    </update>
+
+    <!--添加模板6-->
+    <insert id="addTemplateSix">
+        insert into shengxian_template_six (business_id ,title ,type ,one )
+        values ( #{business_id} , #{title} , #{type} ,#{one} );
+    </insert>
+
+    <!--查询店铺模板6集合-->
+    <select id="selectTemplateSixList" resultMap="TemplateTwoMap">
+      select id , title , type , one ,state
+      from shengxian_template_six where business_id = #{business_id};
+    </select>
+
+    <!--根据店铺和类型查询店铺模板6-->
+    <select id="selectTemplateSix" resultMap="TemplateTwoMap">
+      select id , title , type , one ,state
+      from shengxian_template_six where business_id = #{business_id} and type = #{type};
+    </select>
+
+    <!--修改模板6-->
+    <update id="updateTemplateSix">
+        update shengxian_template_six set title = #{title} ,one = #{one}
+        where id = #{id};
+    </update>
+
+
     <!--通过绑定用户id查询方案id-->
     <select id="selectBindingSchemeId" resultType="Integer">
         select scheme_id from shengxian_binding where is_del = 0 and id = #{id};

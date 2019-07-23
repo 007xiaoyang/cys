@@ -101,6 +101,24 @@ public class ShopServiceImpl implements ShopService {
             shopMapper.addTemplateThree(business.getId() , "销售单" ,2 ,null  ,null);
             shopMapper.addTemplateThree(business.getId() , "销售退货单" ,3 ,null  ,null);
 
+            ////添加店铺模板4
+            shopMapper.addTemplateFour(business.getId() , "采购单" ,0 ,null  ,null);
+            shopMapper.addTemplateFour(business.getId() , "采购退货单" ,1 ,null  ,null);
+            shopMapper.addTemplateFour(business.getId() , "销售单" ,2 ,null  ,null);
+            shopMapper.addTemplateFour(business.getId() , "销售退货单" ,3 ,null  ,null);
+
+            ////添加店铺模板5（小票）
+            shopMapper.addTemplateFive(business.getId() , "采购单" ,0 ,null  ,null);
+            shopMapper.addTemplateFive(business.getId() , "采购退货单" ,1 ,null  ,null);
+            shopMapper.addTemplateFive(business.getId() , "销售单" ,2 ,null  ,null);
+            shopMapper.addTemplateFive(business.getId() , "销售退货单" ,3 ,null  ,null);
+
+            ////添加店铺模板6
+            shopMapper.addTemplateSix(business.getId() , "采购单" ,0 ,null  ,null);
+            shopMapper.addTemplateSix(business.getId() , "采购退货单" ,1 ,null  ,null);
+            shopMapper.addTemplateSix(business.getId() , "销售单" ,2 ,null  ,null);
+            shopMapper.addTemplateSix(business.getId() , "销售退货单" ,3 ,null  ,null);
+
             //注册商家默认添加15种方案名称
             for (int i = 1;i <16 ; i++){
                 //添加商家菜单方案
