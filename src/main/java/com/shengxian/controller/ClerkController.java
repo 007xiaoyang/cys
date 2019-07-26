@@ -1209,7 +1209,7 @@ public class ClerkController {
             Page page = clerkService.purchaseGoodsSummary(token, role, pageNo, suppliersName, goodsName, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
-            return message.code(Message.codeSuccessed).message(Global.ERROR);
+            return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
 
@@ -1245,7 +1245,7 @@ public class ClerkController {
             Page page = clerkService.purchaseGoodsDetails(token, role, pageNo, suppliersName, goodsName, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
-            return message.code(Message.codeSuccessed).message(Global.ERROR);
+            return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
 

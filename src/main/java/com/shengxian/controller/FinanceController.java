@@ -192,9 +192,10 @@ public class FinanceController {
             @ApiImplicitParam(name = "name" ,value = "用户名称或编号或标识号" ,paramType = "query"),
             @ApiImplicitParam(name = "number" ,value = "订单编号" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
-            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
+            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "type" ,value = "" ,paramType = "query")
     })
-    public Message tatolSaleMoney(String token  ,Integer role , Integer pageNo, Integer staff_id , String name, String number, String startTime, String endTime){
+    public Message tatolSaleMoney(String token  ,Integer role , Integer pageNo, Integer staff_id , String name, String number, String startTime, String endTime ,Integer type){
         Message message = Message.non();
         try {
             String start = DateUtil.getDay() ,end = DateUtil.getDay();
@@ -203,7 +204,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.tatolSaleMoney(token ,role ,pageNo,staff_id,name,number,start,end);
+            Page page = financeService.tatolSaleMoney(token ,role ,pageNo,staff_id,name,number,start,end ,type);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());

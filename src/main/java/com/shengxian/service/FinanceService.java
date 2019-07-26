@@ -60,7 +60,7 @@ public interface FinanceService {
      * @param endTime
      * @return
      */
-    Page tatolSaleMoney(String token ,Integer role , Integer pageNo, Integer staff_id, String name, String number, String startTime, String endTime)throws NullPointerException;
+    Page tatolSaleMoney(String token ,Integer role , Integer pageNo, Integer staff_id, String name, String number, String startTime, String endTime ,Integer type)throws NullPointerException;
 
     /**
      * 销售财务结算

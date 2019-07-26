@@ -522,13 +522,9 @@
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         inner join shengxian_goods g on g.id = od.goods_id
-        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del=0 and o.status not in(1,5,6)
+        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0  and o.status not in(1,5,6)
         <if test="name != null and name != ''">
-            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
-            or o.no  LIKE CONCAT('%',#{name},'%') )
-        </if>
-        <if test="number != null and number != ''">
-            and o.order_number LIKE CONCAT('%',#{number},'%')
+            and (g.name  LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%') )
         </if>
         group by g.id  order by o.audit_time desc )a
     </select>
@@ -545,13 +541,9 @@
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         inner join shengxian_goods g on g.id = od.goods_id
-        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del=0 and o.status not in(1,5,6)
+        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and o.status not in(1,5,6)
         <if test="name != null and name != ''">
-            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
-            or o.no  LIKE CONCAT('%',#{name},'%') )
-        </if>
-        <if test="number != null and number != ''">
-            and o.order_number LIKE CONCAT('%',#{number},'%')
+            and (g.name  LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%') )
         </if>
         group by g.id  order by o.audit_time desc limit #{startIndex},#{pageSize}
     </select>
@@ -569,13 +561,9 @@
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         inner join shengxian_goods g on g.id = od.goods_id
-        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del=0 and o.status not in(1,5,6)
+        where o.print_frequ = 0  and o.business_id = #{business_id} and o.is_del = 0 and o.status not in(1,5,6)
         <if test="name != null and name != ''">
-            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
-            or o.no  LIKE CONCAT('%',#{name},'%') )
-        </if>
-        <if test="number != null and number != ''">
-            and o.order_number LIKE CONCAT('%',#{number},'%')
+            and (g.name  LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%') )
         </if>
         group by g.id )a
     </select>
@@ -648,13 +636,9 @@
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         inner join shengxian_goods g on g.id = od.goods_id
-        where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0    and o.print_frequ = 1
+        where o.status in (2,3)  and o.business_id = #{business_id}   and o.print_frequ = 1 and o.is_del = 0
         <if test="name != null and name != ''">
-            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
-            or o.no  LIKE CONCAT('%',#{name},'%') )
-        </if>
-        <if test="number != null and number != ''">
-            and o.order_number LIKE CONCAT('%',#{number},'%')
+            and (g.name  LIKE CONCAT('%',#{name},'%') or g.number  LIKE CONCAT('%',#{name},'%') )
         </if>
         <if test="mold != null and mold != ''">
             and o.mold = #{mold}
@@ -674,13 +658,9 @@
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         inner join shengxian_goods g on g.id = od.goods_id
-        where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0    and o.print_frequ = 1
+        where o.status in (2,3)  and o.business_id = #{business_id}   and o.print_frequ = 1 and o.is_del = 0
         <if test="name != null and name != ''">
-            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
-            or o.no  LIKE CONCAT('%',#{name},'%') )
-        </if>
-        <if test="number != null and number != ''">
-            and o.order_number LIKE CONCAT('%',#{number},'%')
+            and (g.name  LIKE CONCAT('%',#{name},'%') or g.number  LIKE CONCAT('%',#{name},'%') )
         </if>
         <if test="mold != null and mold != ''">
             and o.mold = #{mold}
@@ -701,13 +681,9 @@
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_goods_inventory gi on gi.goods_id = od.goods_id
         inner join shengxian_goods g on g.id = od.goods_id
-        where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0    and o.print_frequ = 1
+        where o.status in (2,3)  and o.business_id = #{business_id}   and o.print_frequ = 1 and o.is_del = 0
         <if test="name != null and name != ''">
-            and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%')
-            or o.no  LIKE CONCAT('%',#{name},'%') )
-        </if>
-        <if test="number != null and number != ''">
-            and o.order_number LIKE CONCAT('%',#{number},'%')
+            and (g.name  LIKE CONCAT('%',#{name},'%') or g.number  LIKE CONCAT('%',#{name},'%') )
         </if>
         <if test="mold != null and mold != ''">
             and o.mold = #{mold}

@@ -196,7 +196,7 @@ public class FinanceServiceImpl implements FinanceService {
 
     //总销售订单
     @Override
-    public Page tatolSaleMoney(String token ,Integer role , Integer pageNo, Integer staff_id , String name, String number, String startTime, String endTime) throws NullPointerException {
+    public Page tatolSaleMoney(String token ,Integer role , Integer pageNo, Integer staff_id , String name, String number, String startTime, String endTime ,Integer type) throws NullPointerException {
 
         int pageNum=1;
         if (IntegerUtils.isNotEmpty(pageNo)){
@@ -208,22 +208,16 @@ public class FinanceServiceImpl implements FinanceService {
 
       //查询商家最后结算时间
         String time = financeMapper.lastSettlementTime(bid,0);
-       /*   if (IntegerUtils.isEmpty(time)){
-            int i = startTime.compareTo(time);
-            if (i <= 0){
-                throw new NullPointerException("开始时间不能小于结算时间哟");
-            }
-        }*/
 
         //总销售订单总数
-        Integer totalCount = financeMapper.tatolSaleMoneyCount(new Paramt( bid,name,number,startTime,endTime));
+        Integer totalCount = financeMapper.tatolSaleMoneyCount(new Paramt( bid ,name,number  ,startTime,endTime ));
         Page page = new Page(pageNum,totalCount);
 
         //总销售订单
-        List<HashMap> hashMaps = financeMapper.tatolSaleMoney(new Paramt(bid,name,number,startTime,endTime,page.getStartIndex(),page.getPageSize()));
+        List<HashMap> hashMaps = financeMapper.tatolSaleMoney(new Paramt(bid,name,number ,startTime,endTime,page.getStartIndex(),page.getPageSize()));
         for (HashMap hash : hashMaps ) {
             String tName = shopMapper.salesMoneyRecordsGroupConcat(Integer.valueOf(hash.get("id").toString()));
-            hash.put("tName" ,tName);
+            hash.put("tName" , tName);
         }
         HashMap hashMap = new HashMap();
 

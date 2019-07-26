@@ -1057,7 +1057,7 @@
 
 
     <!--采购产品汇总总数-->
-    <select id="userSaleProfitSummaryCount" resultType="Integer">
+    <select id="purchaseGoodsSummaryCount" resultType="Integer">
         select count(a.id) from
         (select s.id
         from shengxian_purchase p
@@ -1066,7 +1066,7 @@
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
         <if test="suppliersName != null and suppliersName != ''">
-            and (s.name LIKE CONCAT('%',#{name},'%'))
+            and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
         <if test="goodsName != null and goodsName != ''">
             and g.name LIKE CONCAT('%',#{goodsName},'%')
@@ -1078,8 +1078,8 @@
     </select>
 
     <!--采购产品汇总-->
-    <select id="userSaleProfitSummary" resultType="HashMap">
-        select p.id,s.name , g.name ,DATE_FORMAT(p.audit_time,'%Y-%m-%d')audit_time,
+    <select id="purchaseGoodsSummary" resultType="HashMap">
+        select p.id, g.name as goodsName ,DATE_FORMAT(p.audit_time,'%Y-%m-%d')auditTime,
         sum(pd.purchase_number * pd.purchase_price)price,
         sum(pd.purchase_number)number
         from shengxian_purchase p
@@ -1088,7 +1088,7 @@
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
         <if test="suppliersName != null and suppliersName != ''">
-            and (s.name LIKE CONCAT('%',#{name},'%'))
+            and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
         <if test="goodsName != null and goodsName != ''">
             and g.name LIKE CONCAT('%',#{goodsName},'%')
@@ -1100,7 +1100,7 @@
     </select>
 
     <!--采购产品汇总总金额-->
-    <select id="userSaleProfitSummaryTatolMoney" resultType="HashMap">
+    <select id="purchaseGoodsSummaryTotalMoney" resultType="HashMap">
         select ifnull(sum(a.price),0)price ,ifnull(sum(a.number) , 0)number
         from
         (select  sum(pd.purchase_number * pd.purchase_price)price,
@@ -1111,7 +1111,7 @@
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
         <if test="suppliersName != null and suppliersName != ''">
-            and (s.name LIKE CONCAT('%',#{name},'%'))
+            and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
         <if test="goodsName != null and goodsName != ''">
             and g.name LIKE CONCAT('%',#{goodsName},'%')
@@ -1133,7 +1133,7 @@
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
         <if test="suppliersName != null and suppliersName != ''">
-            and (s.name LIKE CONCAT('%',#{name},'%'))
+            and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
         <if test="goodsName != null and goodsName != ''">
             and g.name LIKE CONCAT('%',#{goodsName},'%')
@@ -1145,7 +1145,7 @@
 
     <!--采购产品明细-->
     <select id="purchaseGoodsDetails" resultType="HashMap">
-        select p.id,s.name , g.name ,DATE_FORMAT(p.audit_time,'%Y-%m-%d')audit_time,
+        select p.id,s.name as suppliersName , g.name as goodsName ,DATE_FORMAT(p.audit_time,'%Y-%m-%d')auditTime,
         (pd.purchase_number * pd.purchase_price)price,
         (pd.purchase_number)number
         from shengxian_purchase p
@@ -1154,7 +1154,7 @@
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
         <if test="suppliersName != null and suppliersName != ''">
-            and (s.name LIKE CONCAT('%',#{name},'%'))
+            and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
         <if test="goodsName != null and goodsName != ''">
             and g.name LIKE CONCAT('%',#{goodsName},'%')
@@ -1175,7 +1175,7 @@
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
         <if test="suppliersName != null and suppliersName != ''">
-            and (s.name LIKE CONCAT('%',#{name},'%'))
+            and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
         <if test="goodsName != null and goodsName != ''">
             and g.name LIKE CONCAT('%',#{goodsName},'%')

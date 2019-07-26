@@ -188,8 +188,46 @@ public class Paramt {
         this.pageSize = pageSize;
     }
 
+    /**
+     * 财务总销售订单
+     * @param business_id
+     * @param name
+     * @param number
+     * @param startTime
+     * @param endTime
+     */
+    public Paramt(Integer business_id, String name, String number ,Integer type,  String startTime, String endTime) {
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
+        this.type = type;
+        this.startTime = startTime;
+        this.endTime = endTime;
 
-    public Paramt(Integer business_id, String name, String number, String startTime, String endTime) {
+    }
+
+    /**
+     * 财务总销售订单
+     * @param business_id
+     * @param name
+     * @param number
+     * @param startTime
+     * @param endTime
+     * @param startIndex
+     * @param pageSize
+     */
+    public Paramt(Integer business_id,  String name, String number ,Integer type, String startTime, String endTime, Integer startIndex, Integer pageSize) {
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
+        this.type = type;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startIndex = startIndex;
+        this.pageSize = pageSize;
+    }
+
+    public Paramt(Integer business_id, String name, String number ,String startTime, String endTime) {
         this.business_id = business_id;
         this.name = name;
         this.number = number;

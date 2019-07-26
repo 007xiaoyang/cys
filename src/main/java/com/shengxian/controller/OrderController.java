@@ -944,7 +944,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping("/notPrintedOrderSummary")
-    @ApiOperation(value = "未打印的订单" ,httpMethod = "POST")
+    @ApiOperation(value = "未打印的订单汇总" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
@@ -1029,7 +1029,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping("/stayDeliveredSummary")
-    @ApiOperation(value = "待送货订单" ,httpMethod = "POST")
+    @ApiOperation(value = "待送货订单汇总" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
