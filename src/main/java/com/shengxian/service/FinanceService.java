@@ -326,6 +326,18 @@ public interface FinanceService {
      * @param bindindId
      * @return
      */
-    HSSFWorkbook userSaleDetailDownload(String token ,Integer role ,   String name , String startTime, String endTime ,Integer bindindId );
+    HSSFWorkbook userSaleDetailDownload(String token ,Integer role ,   String name  ,String goodsName, String startTime, String endTime ,Integer bindindId );
+
+    /**
+     * 用户销售汇总导出
+     * @param token
+     * @param role
+     * @param name
+     * @param startTime
+     * @param endTime
+     * @param bindindId
+     * @return
+     */
+    HSSFWorkbook userSaleSummaryDownload(String token ,Integer role ,   String name  ,String goodsName , String startTime, String endTime ,Integer bindindId );
 
 }

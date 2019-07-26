@@ -1036,11 +1036,12 @@ public class FinanceController {
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "用户名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
             @ApiImplicitParam(name = "bindindId" ,value = "用户id" ,paramType = "query")
     })
-    public void userSaleDetailDownload(String token ,Integer role ,   String name , String startTime, String endTime ,Integer bindindId , HttpServletResponse response){
+    public void userSaleDetailDownload(String token ,Integer role ,   String name ,String goodsName, String startTime, String endTime ,Integer bindindId , HttpServletResponse response){
         Message message = Message.non();
         String start = DateUtil.getDay()  ,end = DateUtil.getDay();
 
@@ -1048,7 +1049,37 @@ public class FinanceController {
             //当没有传开始时间和结束时间，默认查询当天的订单
             start = startTime; end = endTime;
         }
-        HSSFWorkbook workbook = financeService.userSaleDetailDownload(token , role ,name , start ,end ,bindindId);
+        HSSFWorkbook workbook = financeService.userSaleDetailDownload(token , role ,name ,goodsName , start ,end ,bindindId);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fileName =dateFormat.format(new Date())+"用户销售明细导出"; //文件名
+        excelService.excelDownload(response,fileName,workbook);
+    }
+
+    /**
+     * 用户销售汇总导出
+     * @param token
+     * @return
+     */
+    @RequestMapping("/userSaleSummaryDownload")
+    @ApiOperation(value = "用户销售汇总导出" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "用户名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "bindindId" ,value = "用户id" ,paramType = "query")
+    })
+    public void userSaleSummaryDownload(String token ,Integer role ,   String name ,String goodsName , String startTime, String endTime ,Integer bindindId , HttpServletResponse response){
+        Message message = Message.non();
+        String start = DateUtil.getDay()  ,end = DateUtil.getDay();
+
+        if ( IntegerUtils.isEmpty(startTime ,endTime )){
+            //当没有传开始时间和结束时间，默认查询当天的订单
+            start = startTime; end = endTime;
+        }
+        HSSFWorkbook workbook = financeService.userSaleSummaryDownload(token , role ,name ,goodsName , start ,end ,bindindId);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fileName =dateFormat.format(new Date())+"用户销售明细导出"; //文件名
         excelService.excelDownload(response,fileName,workbook);

@@ -647,6 +647,20 @@ public interface FinanceMapper {
      */
     Double userSaleDetailDownloadTatolMoney(Paramt paramt);
 
+    /**
+     * 用户销售明细导出
+     * @param paramt
+     * @return
+     */
+    List<HashMap> userSaleSummaryDownload(Paramt paramt);
+
+    /**
+     * 用户销售明细导出总金额
+     * @param paramt
+     * @return
+     */
+    Double userSaleSummaryDownloadTatolMoney(Paramt paramt);
+
 }
 
 
