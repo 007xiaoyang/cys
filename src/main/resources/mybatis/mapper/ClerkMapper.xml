@@ -1041,7 +1041,7 @@
     <select id="otherRitleReminder" resultType="Integer">
             select a.type from (
             (select type  from shengxian_staff_percentage
-            where staff_id = #{staffId}
+            where staff_id = #{staffId} and type not in (11)
             and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '')
             UNION ALL
             (select 1 as type  from shengxian_goods_percentage
