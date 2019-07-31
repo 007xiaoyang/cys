@@ -355,7 +355,7 @@ public class MothPrinter {
         content = "<CB>"+title+"</CB><BR>";
         content += "名称："+cal.getName()+"<BR>";
         for (CalculatorDatell cd: calculatorDatells  ) {
-            content += calculatorPrintUtils(cd.toString() , size);
+            content += calculatorPrintUtils(cd.getNum().toString() , size);
         }
         content += "<BR>--------------------------------<BR>";
         content += "总数:"+cal.getTotal()+ "   单价:"+cal.getPrice()+"元<BR>";
