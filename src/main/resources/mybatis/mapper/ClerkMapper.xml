@@ -703,11 +703,11 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{id} and os.type = #{type}  group by o.order_number , os.type
+            where os.staff_id = #{id} and os.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
-            )a
+            group by o.order_number , os.type )a
         </if>
         <if test="type == 4">
             select  count(op.id)
@@ -725,11 +725,11 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
-            ) a
+            group by o.order_number , f.type ) a
         </if>
         <if test="type > 7  and type lt 11">
             select count(id) from (
@@ -737,11 +737,11 @@
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{id} and f.type = #{type}  group by p.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
-            ) a
+            group by p.order_number , f.type ) a
         </if>
 
     </select>
@@ -754,11 +754,11 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{id} and os.type = #{type} group by o.order_number , os.type
+            where os.staff_id = #{id} and os.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
-            order by os.create_time desc limit #{startIndex},#{pageSize}
+            group by o.order_number , os.type  order by os.create_time desc limit #{startIndex},#{pageSize}
         </if>
         <if test="type == 4">
             select op.id ,1 as statis ,op.create_time , bd.user_name , o.order_number ,o.no
@@ -776,22 +776,22 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
-            order by f.create_time desc limit #{startIndex},#{pageSize}
+            group by o.order_number , f.type order by f.create_time desc limit #{startIndex},#{pageSize}
         </if>
         <if test="type > 7  and type lt 11">
             select f.id , f.statis ,f.create_time , s.name as user_name , p.order_number ,p.no
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{id} and f.type = #{type} group by p.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
             </if>
-            order by f.create_time desc limit #{startIndex},#{pageSize}
+            group by p.order_number , f.type order by f.create_time desc limit #{startIndex},#{pageSize}
         </if>
     </select>
 
@@ -804,11 +804,11 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{id} and os.type = #{type} group by o.order_number , os.type
+            where os.staff_id = #{id} and os.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d')  &gt;= #{startTime}
             </if>
-            ) a
+            group by o.order_number , os.type ) a
         </if>
         <if test="type == 4">
             select  count(op.id)
@@ -826,11 +826,11 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{id} and f.type = #{type} group by o.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')  &gt;= #{startTime}
             </if>
-            ) a
+            group by o.order_number , f.type ) a
         </if>
         <if test="type > 7  and type lt 11">
             select ifnull(sum(statis) , 0) from (
@@ -838,11 +838,11 @@
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{id} and f.type = #{type} group by p.order_number , f.type
+            where f.staff_id = #{id} and f.type = #{type}
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')  &gt;= #{startTime}
             </if>
-            ) a
+            group by p.order_number , f.type ) a
         </if>
     </select>
 
@@ -1044,14 +1044,15 @@
             where staff_id = #{staffId} and type not in (11)
             and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '')
             UNION ALL
-            (select 1 as type  from shengxian_goods_percentage
-            where staff_id = #{staffId}
-            and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '' limit 1)
+            (select 1 as type  from shengxian_goods_percentage gp
+            inner join shengxian_goods g on g.id = gp.goods_id and g.is_del = 0
+            where gp.staff_id = #{staffId}
+            and SUBSTRING_INDEX(gp.proportion,'/',1) != '' and  SUBSTRING_INDEX(gp.proportion,'/',-1)  != '' limit 1)
             UNION ALL
-            (select 2 as type  from shengxian_user_percentage
-            where staff_id = #{staffId}
-            and SUBSTRING_INDEX(proportion,'/',1) != '' and  SUBSTRING_INDEX(proportion,'/',-1)  != '' limit 1 ))a ORDER BY a.type asc
-    </select>
+            (select 2 as type  from shengxian_user_percentage up
+            inner join shengxian_binding bd on bd.id = up.binding_id and bd.is_del = 0
+            where up.staff_id  = #{staffId}
+            and SUBSTRING_INDEX(up.proportion,'/',1) != '' and  SUBSTRING_INDEX(up.proportion,'/',-1)  != '' limit 1 ))a ORDER BY a.type asc    </select>
 
 
 

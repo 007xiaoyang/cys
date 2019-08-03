@@ -128,7 +128,7 @@ public interface DistributeService {
      * @return
      * @throws Exception
      */
-    Page staffDayDetail(Integer pageNo, Integer staff_id, String time,String name ,Integer type)throws Exception;
+    Page staffDayDetail(Integer pageNo, Integer staff_id, String time,String name ,Integer type ,String startTime ,String endTime)throws Exception;
 
     /**
      * 员工订单

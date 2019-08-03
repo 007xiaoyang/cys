@@ -477,7 +477,7 @@
         where o.is_del=0 and o.status=4 and os.staff_id = #{staff_id}
         group by month order by month desc )
         UNION ALL
-        (select DATE_FORMAT(ts.create_time,'%Y-%m') as month,sum(ts.statis)statis
+        (select ts.create_time  as month,sum(ts.statis)statis
         from shengxian_staff_timing_statis ts where ts.staff_id = #{staff_id}
         group by month order by month desc ))a
         where a.month=#{time}
@@ -544,7 +544,7 @@
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del= 0  and sf.staff_id = #{staff_id}  group by o.order_number , sf.type
+        where o.is_del= 0  and sf.staff_id = #{staff_id} and sf.type in(3 , 5 ,6 , 7)  group by o.order_number , sf.type
 
         union ALL
         select p.id, p.order_number ,s.name as user_name ,
@@ -575,6 +575,73 @@
             and a.type = #{type}
         </if>
         order by a.audit_time desc   limit #{startIndex} ,#{pageSize}
+
+    </select>
+
+
+    <!--员工提成订单明细-->
+    <select id="staffDayDetailTotalMoney" resultType="Double">
+
+
+        <if test="type > 2 and type != 4 and type lt 8">
+            select ifnull(sum(statis) , 0) from (
+            select f.statis
+            from shengxian_staff_frequency f
+            left join shengxian_order o on o.id = f.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where f.staff_id = #{id} and f.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+            </if>
+            group by o.order_number , f.type  ) a
+        </if>
+        <if test="type > 7  and type lt 11">
+            select ifnull(sum(statis) , 0) from (
+            select f.statis
+            from shengxian_staff_frequency f
+            left join shengxian_purchase p on p.id = f.order_id
+            left join shengxian_suppliers s on s.id = p.suppliers_id
+            where f.staff_id = #{id} and f.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            group by p.order_number , f.type ) a
+        </if>
+
+        <if test="type lt 3">
+            select ifnull(sum(statis) , 0) from (
+            select os.statis
+            from shengxian_staff_order_statis os
+            left join shengxian_order o on o.id = os.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where os.staff_id = #{id} and os.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            group by o.order_number , os.type )a
+        </if>
+        <if test="type == 4">
+            select  count(op.id)
+            from shengxian_staff_once_percentage op
+            left join shengxian_order o on o.id = op.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where op.staff_id = #{id} and op.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+        </if>
 
     </select>
 
