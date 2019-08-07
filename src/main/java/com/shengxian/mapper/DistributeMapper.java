@@ -261,7 +261,7 @@ public interface DistributeMapper {
      * @param time
      * @return
      */
-    String staffMonthStatis(@Param("staff_id") Integer staff_id, @Param("time") String time);
+    Double staffMonthStatis(@Param("staff_id") Integer staff_id, @Param("time") String time);
 
     /**
      * 根据月查询员工结算金额

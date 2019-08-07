@@ -910,6 +910,8 @@ public class ClerkServiceImpl implements ClerkService {
         Iterator<WageSettlement> it = wageSettlements.iterator();
         while (it.hasNext()){
             WageSettlement wage = it.next();
+            Double statis = distributeMapper.staffMonthStatis(staffId, wage.getTime());
+            wage.setStatis(statis);
             if (wage.getMoney() != null ){
                 if (ym.compareTo(wage.getTime()) > 0 ){
                     it.remove();

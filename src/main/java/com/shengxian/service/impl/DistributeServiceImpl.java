@@ -301,7 +301,7 @@ public class DistributeServiceImpl implements DistributeService {
             for (HashMap hashMap: hashMaps  ) {
 
                 //统计员工每月提成
-                String statis = distributeMapper.staffMonthStatis(staff_id, hashMap.get("month").toString());
+                Double statis = distributeMapper.staffMonthStatis(staff_id, hashMap.get("month").toString());
                 hashMap.put("statis",statis);
 
                 //根据月查询员工结算金额
