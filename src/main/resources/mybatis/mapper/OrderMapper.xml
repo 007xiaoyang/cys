@@ -233,8 +233,9 @@
          select count(bd.id)
         from shengxian_binding bd
         inner join shengxian_binding_category bc on bc.id = bd.category_id
-        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time ,a.id as orderId ,a.overdue
-        from (select binding_id,MAX(create_time)create_time ,id ,overdue from shengxian_order where is_del = 0 and business_id = #{business_id} group by binding_id  )a
+        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle, MAX(a.create_time) as create_time ,a.id as orderId ,a.overdue
+        from (select binding_id, create_time , id ,overdue
+        from shengxian_order where is_del = 0 and  business_id = #{business_id}  order by id desc  )a group by a.binding_id
         ) o  on o.binding_id = bd.id
         where o.overdue = 0 and  bd.cycle &lt;= o.cycle  and bd.is_del = 0  and bd.cycle !=''
     </select>
@@ -244,8 +245,9 @@
         select count(bd.id)
         from shengxian_binding bd
         inner join shengxian_binding_category bc on bc.id = bd.category_id
-        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time ,a.id as orderId ,a.overdue
-        from (select binding_id,MAX(create_time)create_time ,id ,overdue from shengxian_order where is_del = 0 and business_id = #{business_id} group by binding_id  )a
+        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle, MAX(a.create_time) as create_time ,a.id as orderId ,a.overdue
+        from (select binding_id, create_time , id ,overdue
+        from shengxian_order where is_del = 0 and  business_id = #{business_id}  order by id desc  )a group by a.binding_id
         ) o  on o.binding_id = bd.id
         where bd.cycle &lt;= o.cycle  and bd.is_del = 0  and bd.cycle !=''
         <if test="name != null and name != ''">
@@ -264,8 +266,9 @@
         bd.cycle ,bd.illustrated1,(select s.name from shengxian_staff s where bd.staff_id = s.id)staff_name,o.create_time,bd.number , o.orderId , o.overdue
         from shengxian_binding bd
         inner join shengxian_binding_category bc on bc.id = bd.category_id
-        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle,a.create_time ,a.id as orderId ,a.overdue
-        from (select binding_id,MAX(create_time)create_time , id ,overdue from shengxian_order where is_del = 0 and  business_id = #{business_id} group by binding_id  )a
+        inner join  ( select  a.binding_id ,DATEDIFF(CURDATE(),a.create_time)cycle, MAX(a.create_time) as create_time ,a.id as orderId ,a.overdue
+        from (select binding_id, create_time , id ,overdue
+        from shengxian_order where is_del = 0 and  business_id = #{business_id}  order by id desc  )a group by a.binding_id
         ) o  on o.binding_id = bd.id
         where bd.cycle &lt;= o.cycle and bd.is_del = 0  and bd.cycle !=''
         <if test="name != null and name != ''">
