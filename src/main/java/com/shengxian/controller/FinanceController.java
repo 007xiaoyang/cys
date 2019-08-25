@@ -2,10 +2,7 @@ package com.shengxian.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
-import com.shengxian.common.util.DateUtil;
-import com.shengxian.common.util.Global;
-import com.shengxian.common.util.IntegerUtils;
-import com.shengxian.common.util.Page;
+import com.shengxian.common.util.*;
 import com.shengxian.entity.Lous;
 import com.shengxian.entity.Settlement;
 import com.shengxian.service.ExcelService;
@@ -73,6 +70,7 @@ public class FinanceController {
     })
     public Message mallMoney(String token ,Integer role , Integer pageNo, String name, String number, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() , end = DateUtil.getDay();
 
@@ -80,7 +78,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.mallMoney(token ,role ,pageNo,name,number,start,end);
+            Page page = financeService.mallMoney(token ,role ,pageNo,names,number,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -114,6 +112,7 @@ public class FinanceController {
     })
     public Message underLineMoney(String token  ,Integer role , Integer pageNo, Integer staff_id , String name, String number, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,end = DateUtil.getDay();
 
@@ -121,7 +120,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.underLineMoney(token ,role ,pageNo,staff_id,name,number,start,end);
+            Page page = financeService.underLineMoney(token ,role ,pageNo,staff_id,names,number,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -155,6 +154,7 @@ public class FinanceController {
     })
     public Message returnMoney(String token  ,Integer role , Integer pageNo, Integer staff_if , String name, String number, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,end = DateUtil.getDay();
 
@@ -162,7 +162,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.returnMoney(token ,role ,pageNo,staff_if,name,number,start,end);
+            Page page = financeService.returnMoney(token ,role ,pageNo,staff_if,names,number,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -197,6 +197,7 @@ public class FinanceController {
     })
     public Message tatolSaleMoney(String token  ,Integer role , Integer pageNo, Integer staff_id , String name, String number, String startTime, String endTime ,Integer type){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,end = DateUtil.getDay();
 
@@ -204,7 +205,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.tatolSaleMoney(token ,role ,pageNo,staff_id,name,number,start,end ,type);
+            Page page = financeService.tatolSaleMoney(token ,role ,pageNo,staff_id,names,number,start,end ,type);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -273,6 +274,7 @@ public class FinanceController {
     })
     public Message purchaseMoney(String token  ,Integer role , Integer pageNo, Integer staff_if , String name, String number, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,end = DateUtil.getDay();
 
@@ -280,7 +282,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.purchaseMoney(token ,role ,pageNo,staff_if,name,number,start,end);
+            Page page = financeService.purchaseMoney(token ,role ,pageNo,staff_if,names,number,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -313,8 +315,9 @@ public class FinanceController {
     })
     public Message expenseMoney(String token  ,Integer role , Integer pageNo , Integer staff_id, String name, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = financeService.expenseMoney(token ,role ,pageNo,staff_id ,name,startTime,endTime);
+            Page page = financeService.expenseMoney(token ,role ,pageNo,staff_id ,names,startTime,endTime);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -347,6 +350,7 @@ public class FinanceController {
     })
     public Message purchaseReturnMoney(String token  ,Integer role , Integer pageNo , String name, String number, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,end = DateUtil.getDay();
 
@@ -354,7 +358,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.purchaseReturnMoney(token ,role ,pageNo,name,number,start,end);
+            Page page = financeService.purchaseReturnMoney(token ,role ,pageNo,names,number,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -387,6 +391,7 @@ public class FinanceController {
     })
     public Message tatolPurchaseOrder(String token  ,Integer role , Integer pageNo , String name, String number, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() , end = DateUtil.getDay();
 
@@ -394,7 +399,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.tatolPurchaseOrder(token ,role ,pageNo,name,number,start,end);
+            Page page = financeService.tatolPurchaseOrder(token ,role ,pageNo,names,number,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -452,7 +457,14 @@ public class FinanceController {
     public Message settlementInfo(String token ,Integer role , Integer pageNo, String startTime, String endTime, Integer type){
         Message message = Message.non();
         try {
-            Page page = financeService.settlementInfo(token ,role ,pageNo,startTime,endTime,type);
+            String start = DateUtil.thisMonthOneNum();
+            String end = DateUtil.getDay();
+            if ( IntegerUtils.isEmpty(startTime ,endTime)){
+                //当没有传开始时间和结束时间，默认查询当月的
+                start = startTime; end = endTime;
+            }
+
+            Page page = financeService.settlementInfo(token ,role ,pageNo,start,end,type);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -514,6 +526,7 @@ public class FinanceController {
     })
     public Message userSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name ,String goodsName, String startTime, String endTime ,Integer bindindId ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         Page page = null;
         try {
             String start = DateUtil.getDay()  ,end = DateUtil.getDay();
@@ -524,10 +537,10 @@ public class FinanceController {
             }
             if (type == 1){
                 //用户销售汇总
-                page = financeService.userSaleProfitSummary(token ,role ,pageNo,name ,goodsName ,start,end ,bindindId);
+                page = financeService.userSaleProfitSummary(token ,role ,pageNo,names ,goodsName ,start,end ,bindindId);
             }else if (type == 2){
                 //用户销售明细
-                page = financeService.userSaleProfitDetails(token ,role ,pageNo,name ,goodsName ,start,end ,bindindId);
+                page = financeService.userSaleProfitDetails(token ,role ,pageNo,names ,goodsName ,start,end ,bindindId);
             }
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
@@ -557,6 +570,7 @@ public class FinanceController {
     })
     public Message goodsSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name , String startTime, String endTime, Integer is ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         Page page = null;
         System.out.println(type);
         try {
@@ -567,9 +581,9 @@ public class FinanceController {
                 start = startTime; end = endTime;
             }
             if (type == 1){
-                page = financeService.goodsSaleProfitSummary(token ,role ,pageNo,name,start,end,is);
+                page = financeService.goodsSaleProfitSummary(token ,role ,pageNo,names ,start,end,is);
             }else if (type == 2){
-                page = financeService.goodsSaleProfitDetails(token ,role ,pageNo,name,start,end,is);
+                page = financeService.goodsSaleProfitDetails(token ,role ,pageNo,names ,start,end,is);
             }
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
@@ -684,7 +698,7 @@ public class FinanceController {
     })
     public Message riskOrder(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() , end = DateUtil.getDay();
 
@@ -692,7 +706,7 @@ public class FinanceController {
                 start = startTime ; end = endTime;
             }
 
-            Page page = financeService.riskOrder(token ,role ,pageNo,name,start,end);
+            Page page = financeService.riskOrder(token ,role ,pageNo,names,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -752,7 +766,7 @@ public class FinanceController {
     })
     public Message purchaseRiskOrder(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() , end = DateUtil.getDay();
 
@@ -760,7 +774,7 @@ public class FinanceController {
                 start = startTime ; end = endTime;
             }
 
-            Page page = financeService.purchaseRiskOrder(token ,role ,pageNo,name,start,end);
+            Page page = financeService.purchaseRiskOrder(token ,role ,pageNo,names,start,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -949,6 +963,7 @@ public class FinanceController {
     })
     public Message dayGoodsInventorySituation(String token ,Integer role ,Integer pageNo ,String name ,String startTime ,String endTime ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,  end = DateUtil.getDay();
 
@@ -956,7 +971,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.dayGoodsInventorySituation(token ,role ,pageNo, name ,start ,end);
+            Page page = financeService.dayGoodsInventorySituation(token ,role ,pageNo, names ,start ,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("财务控制层（/finance/dayGoodsInventorySituation）接口报错---------"+e.getMessage());
@@ -1009,6 +1024,7 @@ public class FinanceController {
     })
     public Message goodsWindControl(String token ,Integer role ,Integer pageNo ,String name ,String startTime ,String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() ,  end = DateUtil.getDay();
 
@@ -1016,7 +1032,7 @@ public class FinanceController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = financeService.goodsWindControl(token ,role ,pageNo, name  ,start ,end);
+            Page page = financeService.goodsWindControl(token ,role ,pageNo, names  ,start ,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("财务控制层（/finance/goodsWindControl）接口报错---------"+e.getMessage());
@@ -1044,12 +1060,14 @@ public class FinanceController {
     public void userSaleDetailDownload(String token ,Integer role ,   String name ,String goodsName, String startTime, String endTime ,Integer bindindId , HttpServletResponse response){
         Message message = Message.non();
         String start = DateUtil.getDay()  ,end = DateUtil.getDay();
+        String names = StringUtil.StringFilter(name);
+        String gName = StringUtil.StringFilter(goodsName);
 
         if ( IntegerUtils.isEmpty(startTime ,endTime )){
             //当没有传开始时间和结束时间，默认查询当天的订单
             start = startTime; end = endTime;
         }
-        HSSFWorkbook workbook = financeService.userSaleDetailDownload(token , role ,name ,goodsName , start ,end ,bindindId);
+        HSSFWorkbook workbook = financeService.userSaleDetailDownload(token , role ,names ,gName , start ,end ,bindindId);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fileName =dateFormat.format(new Date())+"用户销售明细导出"; //文件名
         excelService.excelDownload(response,fileName,workbook);
@@ -1073,13 +1091,15 @@ public class FinanceController {
     })
     public void userSaleSummaryDownload(String token ,Integer role ,   String name ,String goodsName , String startTime, String endTime ,Integer bindindId , HttpServletResponse response){
         Message message = Message.non();
-        String start = DateUtil.getDay()  ,end = DateUtil.getDay();
+        String names = StringUtil.StringFilter(name);
+        String gName = StringUtil.StringFilter(goodsName);
 
+        String start = DateUtil.getDay()  ,end = DateUtil.getDay();
         if ( IntegerUtils.isEmpty(startTime ,endTime )){
             //当没有传开始时间和结束时间，默认查询当天的订单
             start = startTime; end = endTime;
         }
-        HSSFWorkbook workbook = financeService.userSaleSummaryDownload(token , role ,name ,goodsName , start ,end ,bindindId);
+        HSSFWorkbook workbook = financeService.userSaleSummaryDownload(token , role ,names ,gName , start ,end ,bindindId);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fileName =dateFormat.format(new Date())+"用户销售明细导出"; //文件名
         excelService.excelDownload(response,fileName,workbook);

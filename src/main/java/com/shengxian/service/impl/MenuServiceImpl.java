@@ -449,7 +449,8 @@ public class MenuServiceImpl implements MenuService {
             for (int j = 1 ; j <= printers.get(i).getNum() ; j ++ ){
 
                 MothPrinter.salePrint(printers.get(i).getSn1() ,titile,order.getBeizhu(), new BigDecimal(order.getPrice().toString()),order.getAddress(),
-                        order.getPhone(),order.getName(),order.getOrder_number(),order.getNo() ,order.getFreight() ,order.getDifference_price(),order.getReduce() ,mothPrinters);
+                        order.getPhone(),order.getName(),order.getOrder_number(),order.getNo() ,order.getFreight()
+                        ,order.getDifference_price(),order.getReduce() ,order.getCreateTime() ,mothPrinters);
 
             }
 
@@ -479,7 +480,8 @@ public class MenuServiceImpl implements MenuService {
 
                 MothPrinter.puchasePrint(printers.get(i).getSn1() ,titile,purchaseOrder.getBeizhu(), new BigDecimal(purchaseOrder.getPrice().toString())
                         ,purchaseOrder.getAddress(),purchaseOrder.getPhone(),purchaseOrder.getName(),purchaseOrder.getOrder_number()
-                        ,purchaseOrder.getNo(),purchaseOrder.getFreight() ,purchaseOrder.getDifference_price(),mothPrinters);
+                        ,purchaseOrder.getNo(),purchaseOrder.getFreight() ,purchaseOrder.getDifference_price()
+                        ,purchaseOrder.getCreateTime(),mothPrinters);
             }
 
         }
@@ -507,7 +509,9 @@ public class MenuServiceImpl implements MenuService {
 
             for (int j = 1 ; j <= printers.get(i).getNum() ; j ++ ){
 
-                MothPrinter.salePrint(printers.get(i).getSn1() ,titile,order.getBeizhu(), new BigDecimal(order.getPrice().toString()),order.getAddress(),order.getPhone(),order.getName(),order.getOrder_number(),order.getNo() ,order.getFreight() ,order.getDifference_price() ,order.getReduce() ,mothPrinters);
+                MothPrinter.salePrint(printers.get(i).getSn1() ,titile,order.getBeizhu(), new BigDecimal(order.getPrice().toString()),order.getAddress(),order.getPhone(),order.getName(),
+                        order.getOrder_number(),order.getNo() ,order.getFreight() ,order.getDifference_price()
+                        ,order.getReduce() , order.getCreateTime()  ,mothPrinters);
 
             }
 

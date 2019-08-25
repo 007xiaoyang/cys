@@ -2,10 +2,7 @@ package com.shengxian.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
-import com.shengxian.common.util.DateUtil;
-import com.shengxian.common.util.Global;
-import com.shengxian.common.util.IntegerUtils;
-import com.shengxian.common.util.Page;
+import com.shengxian.common.util.*;
 import com.shengxian.entity.Exp;
 import com.shengxian.entity.Order;
 import com.shengxian.service.ExcelService;
@@ -88,8 +85,9 @@ public class OrderController {
     })
     public Message selectBindingUser(String token ,Integer role , String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = orderService.selectBindingUser(token ,role ,name);
+            List<HashMap> hashMaps = orderService.selectBindingUser(token ,role ,names);
             return message.code(Message.codeSuccessed).data(hashMaps).message("搜索成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -107,7 +105,7 @@ public class OrderController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "name" ,value = "用户名称或编号" ,paramType = "query")
+            @ApiImplicitParam(name = "id" ,value = "用户id" ,paramType = "query")
     })
     public Message selectUserInfoById(String token ,Integer role , Integer id){
         Message message = Message.non();
@@ -139,8 +137,9 @@ public class OrderController {
     })
     public Message selectBandingUserGoodsCollection(String token ,Integer role , Integer binding_id, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = orderService.selectBandingUserGoodsCollection(token ,role , binding_id,name);
+            List<HashMap> hashMaps = orderService.selectBandingUserGoodsCollection(token ,role , binding_id,names);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -567,8 +566,9 @@ public class OrderController {
     })
     public Message overduePurchaseUser(String token ,Integer role, Integer pageNo, String name, Integer cycle){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.overduePurchaseUser(token ,role ,pageNo,name,cycle);
+            Page page = orderService.overduePurchaseUser(token ,role ,pageNo,names ,cycle);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -629,8 +629,9 @@ public class OrderController {
     })
     public Message noSalesUser(String token ,Integer role, Integer pageNo, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.noSalesUser(token ,role ,pageNo,name);
+            Page page = orderService.noSalesUser(token ,role ,pageNo,names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -927,8 +928,9 @@ public class OrderController {
     })
     public Message notPrintedOrder(String token ,Integer role, Integer pageNo, String name, String number ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.notPrintedOrder(token ,role ,pageNo,name ,number);
+            Page page = orderService.notPrintedOrder(token ,role ,pageNo,names ,number);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -954,8 +956,9 @@ public class OrderController {
     })
     public Message notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.notPrintedOrderSummary(token ,role ,pageNo,name ,number);
+            Page page = orderService.notPrintedOrderSummary(token ,role ,pageNo,names ,number);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1009,8 +1012,9 @@ public class OrderController {
     })
     public Message stayDelivered(String token ,Integer role, Integer pageNo, String name, String number ,String staffName ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.stayDelivered(token ,role ,pageNo,name,number ,staffName);
+            Page page = orderService.stayDelivered(token ,role ,pageNo,names ,number ,staffName);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1040,8 +1044,9 @@ public class OrderController {
     })
     public Message stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold  ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.stayDeliveredSummary(token ,role ,pageNo,name,number ,mold);
+            Page page = orderService.stayDeliveredSummary(token ,role ,pageNo,names ,number ,mold);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1220,8 +1225,9 @@ public class OrderController {
     })
     public Message unpaidOrder(String token ,Integer role, Integer pageNo, String name, String number , String startTime, String endTime ,String staffName ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-           Page page = orderService.unpaidOrder(token ,role ,pageNo,name,number,startTime,endTime ,staffName);
+           Page page = orderService.unpaidOrder(token ,role ,pageNo,names ,number,startTime,endTime ,staffName);
            return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1255,8 +1261,9 @@ public class OrderController {
     })
     public Message arrearsOrder(String token ,Integer role, Integer pageNo, String name, String number , String startTime, String endTime,String staffName ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.arrearsOrder(token ,role ,pageNo,name,number,startTime,endTime ,staffName);
+            Page page = orderService.arrearsOrder(token ,role ,pageNo,names ,number,startTime,endTime ,staffName);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1293,7 +1300,7 @@ public class OrderController {
     })
     public Message arrivalOrder(String token ,Integer role, Integer pageNo, String name, String number , String startTime, String endTime,String staffName ){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         try {
             String start =startTime ,end=endTime;
             start = DateUtil.getDay();  end = DateUtil.getDay();
@@ -1301,7 +1308,7 @@ public class OrderController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = orderService.arrivalOrder(token ,role ,pageNo,name,number,start,end ,staffName);
+            Page page = orderService.arrivalOrder(token ,role ,pageNo ,names ,number,start,end ,staffName);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1401,6 +1408,7 @@ public class OrderController {
     })
     public Message allSaleOrder(String token ,Integer role,  Integer pageNo, String name, String number, String startTime, String endTime, Integer mold ,Integer type){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         String start =startTime ,end=endTime;
         try {
             end = DateUtil.getDay();
@@ -1411,7 +1419,7 @@ public class OrderController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 end = endTime; start = startTime;
             }
-            Page page = orderService.allSaleOrder(token ,role ,pageNo,name,number,start,end,mold ,type);
+            Page page = orderService.allSaleOrder(token ,role ,pageNo ,names ,number,start,end,mold ,type);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1940,12 +1948,13 @@ public class OrderController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "id" ,value = "订单id" ,paramType = "query")
+            @ApiImplicitParam(name = "id" ,value = "订单id" ,paramType = "query"),
+            @ApiImplicitParam(name = "mold" ,value = "0销售单，1销售退货单" ,paramType = "query")
     })
-    public Message updateOrderStatus(String token ,Integer role, Integer id){
+    public Message updateOrderStatus(String token ,Integer role, Integer id , Integer mold){
         Message message = Message.non();
         try {
-            Integer count = orderService.updateOrderStatus(id);
+            Integer count = orderService.updateOrderStatus(id ,mold);
             if (count == null || count == 0){
                 return message.code(Message.codeFailured).message("回退失败");
             }

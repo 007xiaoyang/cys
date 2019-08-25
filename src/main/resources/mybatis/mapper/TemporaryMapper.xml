@@ -102,16 +102,21 @@
             update shengxian_temporary_shoppingcart_detail set num = #{num} where id =#{id}
         </if>
     </update>
+    
+    <!--通过产品id查询临时售价-->
+    <select id="selectTemporaryPriceByGoodsId" resultType="Double">
+        select temporary_price from shengxian_goods where id = #{id};
+    </select>
 
     <!--添加临时客户购物车详情的产品数量-->
     <insert id="addTShoppingcartDetailNum" keyProperty="id" useGeneratedKeys="true">
-        insert into shengxian_temporary_shoppingcart_detail(tsc_id ,goods_id ,num ,create_time)
-        values(#{tsc_id} ,#{goods_id} ,#{num} ,#{create_time})
+        insert into shengxian_temporary_shoppingcart_detail(tsc_id ,goods_id ,num , price ,create_time)
+        values( #{tsc_id} ,#{goods_id} ,#{num} ,#{price} ,#{create_time})
     </insert>
 
     <!--计算临时客户购物车所有产品的总金额-->
     <select id="calculationTScAllGoodsTotalMoney" resultType="Double">
-        select sum(tsd.num * (select g.temporary_price from shengxian_goods g where g.id = tsd.goods_id and  g.is_del = 0  ) ) money
+        select  ifnull(sum(tsd.num * tsd.price  )  , 0 )money
         from shengxian_temporary_shoppingcart_detail tsd where tsd.tsc_id = #{tscId}
     </select>
 
@@ -147,8 +152,8 @@
     </delete>
 
     <!--通过店铺id查询店铺的起送价和店铺名称-->
-    <select id="findStartingPriceAndStoreName" resultType="com.shengxian.entity.ShoppingHashMap">
-        select store_name as storeName
+    <select id="findStartingPriceAndStoreName" resultType="String">
+        select store_name
         from shengxian_business where is_del=0 and id = #{id}
     </select>
 
@@ -163,15 +168,20 @@
     </select>
 
 
+    <!--根据购物车id和客户识别码查询总金额-->
+    <select id="selectShoppingcartMoney" resultType="Double">
+        select ifnull(money , 0) money from shengxian_temporary_shoppingcart
+        where id = #{id} and tic = #{tic};
+    </select>
 
     <!-- 通过临时客户购物车id查询购物车下的产品信息-->
     <select id="selectTShoppingcartGoodsDetail" resultType="HashMap">
-        select tsd.id, g.name ,g.units ,tsd.num ,g.id as goods_id ,g.temporary_price as price,
-        (select img from shengxian_goods_img where goods_id = g.id order by id asc limit 1)img
+        select tsd.id, g.name ,g.units ,tsd.num ,tsd.price ,g.id as goodsId
         from shengxian_temporary_shoppingcart_detail tsd
-        inner join shengxian_goods g on g.id = tsd.goods_id
-        where g.is_del = 0 and tsd.tsc_id = #{tscId}  and g.business_id = #{business_id}
+        inner join shengxian_goods g on g.id = tsd.goods_id and g.is_del = 0
+        where  tsd.tsc_id = #{tscId}  and g.business_id = #{business_id}
     </select>
+
 
     <!--结算-->
     <select id="settlement" resultType="HashMap">

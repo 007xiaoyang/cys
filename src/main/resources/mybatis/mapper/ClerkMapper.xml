@@ -54,8 +54,9 @@
 
     <!--通过订单ID查询订单信息-->
     <select id="orderInfo" resultType="HashMap">
-        select o.binding_id, bd.user_name,bd.number ,o.price,o.difference_price,o.freight,o.beizhu ,
-        if(coupon_id = 0 ,0,(select reduce from shengxian_binding_coupon where id = o.coupon_id ))coupon
+        select o.binding_id, bd.user_name,bd.number ,o.price,o.difference_price,o.freight,o.beizhu ,o.order_number , o.money
+        , if( o.coupon_id is null ,0 ,if( o.coupon_id = 0 , (select reduce from shengxian_full_reduction where id = o.activity )
+        ,(select reduce from shengxian_binding_coupon where id = o.coupon_id ) ) )coupon
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del = 0 and  o.id = #{id}
@@ -65,7 +66,7 @@
     <select id="orderDateilGoods" resultType="HashMap">
         select g.`name`,g.units, od.order_number ,od.order_price ,(od.order_number *od.order_price )total,od.type
         from shengxian_order_details od
-        inner join (select id ,name ,units,is_del  from shengxian_goods )g on g.id = od.goods_id and g.is_del =0
+        inner join shengxian_goods g on g.id = od.goods_id and g.is_del =0
         where od.order_id = #{order_id}
     </select>
 

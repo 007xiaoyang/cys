@@ -83,6 +83,13 @@ public interface TemporaryMapper {
     Integer updateTShoppingcartDetailNum(@Param("id") Integer id, @Param("num") Double num, @Param("type") Integer type);
 
     /**
+     * 通过产品id查询临时售价
+     * @param goodsId
+     * @return
+     */
+    Double selectTemporaryPriceByGoodsId(@Param("id") Integer goodsId);
+
+    /**
      * 添加临时客户购物车详情的产品数量
      * @return
      */
@@ -139,11 +146,11 @@ public interface TemporaryMapper {
     Integer deleteTShoppingcart(@Param("id") Integer id);
 
     /**
-     * 通过店铺id查询店铺的起送价和店铺名称
+     * 通过店铺id查询店铺名称
      * @param business_id
      * @return
      */
-    ShoppingHashMap findStartingPriceAndStoreName(@Param("id") Integer business_id);
+    String findStartingPriceAndStoreName(@Param("id") Integer business_id);
 
     /**
      * 通过临时客户识别码查询购物车id
@@ -159,12 +166,22 @@ public interface TemporaryMapper {
      */
     Integer selectTShoppingcartGoodsDetailGoodsCount(@Param("tscId") Integer tscId);
 
+    /**\
+     * 根据购物车id和客户识别码查询总金额
+     * @param tscId
+     * @param tic
+     * @return
+     */
+    Double selectShoppingcartMoney(@Param("id") Integer tscId ,@Param("tic") String tic);
+
     /**
      * 通过临时客户购物车id查询购物车下的产品信息
      * @param tscId
      * @return
      */
     List<HashMap> selectTShoppingcartGoodsDetail(@Param("tscId") Integer tscId ,@Param("business_id") Integer business_id);
+
+
 
 
     /**

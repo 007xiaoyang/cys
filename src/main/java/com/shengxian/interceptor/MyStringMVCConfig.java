@@ -6,6 +6,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.annotation.Resource;
+
 /**
  * Description: 继承WebMvcConfigurerAdapter类并重写addInterceptors方法；
  *
@@ -17,7 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SpringBootConfiguration
 public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
 
-    @Autowired
+    @Resource
     private InterceptorConfig loginInterceptor;
 
     @Override
@@ -85,8 +87,8 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 //客户账单 ,查看分享到微信的信息 ,员工APP提成标题提醒
                 .excludePathPatterns("/clerk/shareWXRecord" ,"/clerk/selectWXShareRecord" ,"/clerk/orderWXShareRecord" ,"/clerk/ritleReminder")
                 //临时用户
-                //查询店铺类别 ,店铺类别下的产品 ,加入购物车 ,减掉购物车 ,当前临时客户的购物车 ,结算 ,下订单
-                .excludePathPatterns("/temporary/businessCategory" , "/temporary/businessGoods","/temporary/addShoppingCart" ,"/temporary/reduceShoppingCart" ,"/temporary/temporaryShoppingcart","/temporary/settlement","/temporary/addOrdre"  )
+                //查询店铺类别 ,店铺类别下的产品 ,加入购物车 ,减掉购物车 ,当前临时客户的购物车 ,获取购物车总数 ,下订单,删除购物车产品
+                .excludePathPatterns("/temporary/businessCategory" , "/temporary/businessGoods",   "/temporary/addShoppingCart" ,"/temporary/reduceShoppingCart" ,"/temporary/temporaryShoppingcart","/temporary/temporaryShoppingcartMoneyAndCount","/temporary/addOrdre" ,"/temporary/deleteShoppingcartDateil" )
                 .excludePathPatterns("/shopApp/version", "/shopApp/appIsLogin" ,"/shopApp/updateEquipment")
                 //采购产品汇总 ,采购产品明细 ，查询计算器详情
                 .excludePathPatterns("/clerk/purchaseGoodsSummary" ,"/clerk/purchaseGoodsDetails" ,"/clerk/selectCalculator" ,"/clerk/selectCalculatorDateilById")

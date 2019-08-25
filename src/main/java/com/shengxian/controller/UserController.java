@@ -5,6 +5,7 @@ import com.shengxian.common.Message;
 import com.shengxian.common.util.Global;
 import com.shengxian.common.util.IntegerUtils;
 import com.shengxian.common.util.Page;
+import com.shengxian.common.util.StringUtil;
 import com.shengxian.entity.BindUser;
 import com.shengxian.entity.Parameter;
 import com.shengxian.service.ExcelService;
@@ -270,9 +271,9 @@ public class UserController {
     })
     public Message findGoods(String token ,Integer role , String name){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMap = userService.findGoods(token ,role , name);
+            List<HashMap> hashMap = userService.findGoods(token ,role , names);
             return message.code(Message.codeSuccessed).data(hashMap).message("操作成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -294,8 +295,9 @@ public class UserController {
     })
     public Message findStaff(String token ,Integer role , String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMap = userService.findStaff(token ,role , name);
+            List<HashMap> hashMap = userService.findStaff(token ,role , names);
             return message.code(Message.codeSuccessed).data(hashMap).message("操作成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -319,6 +321,7 @@ public class UserController {
     })
     public Message findCustomerInfoList(String token ,Integer role , Parameter parameter){
         Message message = Message.non();
+        parameter.setName(  StringUtil.StringFilter(parameter.getName()));
         try {
             Page page = userService.findCustomerInfoList(token ,role , parameter);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");

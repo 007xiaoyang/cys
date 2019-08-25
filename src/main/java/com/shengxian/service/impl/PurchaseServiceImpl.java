@@ -869,7 +869,10 @@ public class PurchaseServiceImpl implements PurchaseService {
         }
 
         for (PurchaseOrderDetail detail:purchaseOrderDetail  ) {
-            if (detail.getType() == 0){ //采购产品
+
+            //******采购单并且是采购产品***********
+            if (purchaseOrder.getMold() == 0 && detail.getType() == 0){
+
                 //判断是新增的还是修改的
                 if (detail.getId() == null){
                     detail.setPurchase_id(purchaseOrder.getId());
@@ -910,7 +913,10 @@ public class PurchaseServiceImpl implements PurchaseService {
                 //统计总采购金额
                 price += detail.getPurchase_number()*detail.getPurchase_price();
 
-            }else { //赠送产品
+
+                //******采购单并且是赠送的产品*******
+            }else if (purchaseOrder.getMold() == 0 && detail.getType() == 1 ){
+
                 //判断是新增的赠送还是修改赠送的
                 if (detail.getId() == null){ //新增的
                     //采购时的赠送产品只添加数据，等到确认到货时在加库存
@@ -960,8 +966,53 @@ public class PurchaseServiceImpl implements PurchaseService {
                     purchaseMapper.updateGiveNum(detail.getId(),detail.getPurchase_number(),new Date());
                     purchaseMapper.updatePurchaseOrderDetail(detail.getId(),detail.getPurchase_number(),detail.getPurchase_price());
                 }
+
+
+                //******退货单并且是退货产品***********
+            }else if (purchaseOrder.getMold() == 1 && detail.getType() == 0 ){
+                //判断是新增的还是修改的
+                if (detail.getId() == null){
+                    detail.setPurchase_id(purchaseOrder.getId());
+                    purchaseMapper.addPurchaseOrderDetail(detail);
+
+                    //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
+                    shopMapper.reduceGoodsFictitiousInventory(detail.getGoods_id(),detail.getPurchase_number());
+
+                }else {
+                    //通过采购订单详情id查询原来的采购数量
+                    HashMap hashMap = purchaseMapper.purchaseGoodsNum(detail.getId());
+                    if (hashMap == null ){
+                        throw new NullPointerException("订单不存在");
+                    }
+
+                    //判断开单时采购数量和修改后的采购数量是否一致
+
+                    //原来的采购数量小于修改后的数量
+                    if (Double.valueOf(hashMap.get("purchase_number").toString()) < detail.getPurchase_number()){
+
+                        //用修改的数量 - 原来的数量 = 还剩多少库存
+                        double order_number = detail.getPurchase_number() - Double.valueOf(hashMap.get("purchase_number").toString());
+                        //减少产品虚拟库存
+                        shopMapper.reduceGoodsFictitiousInventory(detail.getGoods_id(),order_number);
+
+                        //原来的销售数量大于修改后的数量
+                    }else if (Double.valueOf(hashMap.get("purchase_number").toString()) > detail.getPurchase_number()){
+
+                        //用原来的数量 - 修改后的数量 = 还需要补回多少库存
+                        double order_number = Double.valueOf(hashMap.get("purchase_number").toString()) - detail.getPurchase_number() ;
+                        //增加产品虚拟库存
+                        shopMapper.increaseGoodsFictitiousInventory(detail.getGoods_id(),order_number);
+                    }
+
+                    //修改采购订单的数量和产品价格
+                    purchaseMapper.updatePurchaseOrderDetail(detail.getId(),detail.getPurchase_number(),detail.getPurchase_price());
+                }
+                //统计总采购金额
+                price += detail.getPurchase_number()*detail.getPurchase_price();
+
             }
         }
+
         //总金额 = 采购所以产品价格+运费+差价
         double money = price +purchaseOrder.getFreight() + purchaseOrder.getDifference_price();
         return purchaseMapper.updatePurchaseOrderPriceid(purchaseOrder.getId(),money ,purchaseOrder.getFreight(),purchaseOrder.getDifference_price());
@@ -1197,15 +1248,19 @@ public class PurchaseServiceImpl implements PurchaseService {
     //回退取消订单
     @Override
     @Transactional
-    public Integer updatePurchaseStatus(Integer id) {
+    public Integer updatePurchaseStatus(Integer id , Integer mold) {
 
         List<PurchaseOrderDetail> orderDetail = purchaseMapper.orderDetail(id);
 
         for (PurchaseOrderDetail dateil: orderDetail ) {
-            //增加产品虚拟库存
-            shopMapper.increaseGoodsFictitiousInventory(dateil.getGoods_id()  ,dateil.getPurchase_number() );
+            if (mold == 0 ){
+                //增加产品虚拟库存
+                shopMapper.increaseGoodsFictitiousInventory(dateil.getGoods_id()  ,dateil.getPurchase_number() );
+            }else if (mold == 1 ){
+                //减少产品虚拟库存
+                shopMapper.reduceGoodsFictitiousInventory(dateil.getGoods_id() , dateil.getPurchase_number());
+            }
         }
-
         return purchaseMapper.updatePurchaseStatus(id);
     }
 

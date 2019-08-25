@@ -128,7 +128,7 @@ public class MothPrinter {
      * @param no
      * @param mothPrinterClasses
      */
-    public static void salePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp,Double reduce ,List<MothPrinterClass> mothPrinterClasses){
+    public static void salePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp,Double reduce , String createTime ,List<MothPrinterClass> mothPrinterClasses){
         //标签说明：
         //单标签:
         //"<BR>"为换行,"<CUT>"为切刀指令(主动切纸,仅限切刀打印机使用才有效果)
@@ -166,6 +166,7 @@ public class MothPrinter {
             content += "--------------------------------<BR>";
             content += "<B>总计："+tatol+"元</B><BR>";
             content += "打印时间："+ DateUtil.getTime() +"<BR>";
+            content += "创建时间："+ createTime +"<BR>";
             content += "订单号："+ orderNumber+"<BR>";
             content += "标识码："+ no+"<BR>";
 
@@ -243,7 +244,7 @@ public class MothPrinter {
      * @param no
      * @param mothPrinterClasses
      */
-    public static void puchasePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp ,List<MothPrinterClass> mothPrinterClasses){
+    public static void puchasePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp , String createTime ,List<MothPrinterClass> mothPrinterClasses){
         //标签说明：
         //单标签:
         //"<BR>"为换行,"<CUT>"为切刀指令(主动切纸,仅限切刀打印机使用才有效果)
@@ -281,6 +282,7 @@ public class MothPrinter {
         content += "--------------------------------<BR>";
         content += "<B>总计："+tatol+"元</B><BR>";
         content += "打印时间："+ DateUtil.getTime() +"<BR>";
+        content += "创建时间："+  createTime +"<BR>";
         content += "订单号："+ orderNumber+"<BR>";
         content += "标识码："+ no+"<BR>";
 

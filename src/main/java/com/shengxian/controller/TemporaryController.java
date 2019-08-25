@@ -6,6 +6,7 @@ import com.shengxian.common.WebSocketUtil;
 import com.shengxian.common.util.Global;
 import com.shengxian.common.util.IntegerUtils;
 import com.shengxian.common.util.Page;
+import com.shengxian.common.util.StringUtil;
 import com.shengxian.entity.GoodsCategory;
 import com.shengxian.entity.Order;
 import com.shengxian.entity.ShoppingHashMap;
@@ -14,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -95,8 +97,9 @@ public class TemporaryController {
         if (IntegerUtils.isEmpty(business_id)){
             return message.code(Message.codeFailured).message("店铺id不能为空");
         }
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = temporaryService.businessGoods(pageNo, business_id, category_id, name);
+            Page page = temporaryService.businessGoods(pageNo, business_id, category_id, names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("temporary/businessGoods"+e.getMessage());
@@ -113,7 +116,7 @@ public class TemporaryController {
     @RequestMapping("/addShoppingCart")
     @ApiOperation(value = "加入购物车" ,httpMethod = "POST")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "tic" ,value = "临时客户识别码(生成唯一的传到后台)" ,paramType = "query"),
+            @ApiImplicitParam(name = "tic" ,value = "临时客户识别码(前端生成唯一的传到后台)" ,paramType = "query"),
             @ApiImplicitParam(name = "goods_id" ,value = "产品id" ,paramType = "query"),
             @ApiImplicitParam(name = "num" ,value = "数量" ,paramType = "query"),
             @ApiImplicitParam(name = "type" ,value = "1挑数量，2加数量" ,paramType = "query")
@@ -138,7 +141,7 @@ public class TemporaryController {
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
-            log.error("order/addShoppingCart"+e.getMessage());
+            log.error("temporary/addShoppingCart"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
@@ -166,10 +169,34 @@ public class TemporaryController {
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
-            log.error("order/reduceShoppingCart"+e.getMessage());
+            log.error("temporary/reduceShoppingCart"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
+
+    /**
+     * 获取购物车总数
+     * @param tic
+     * @return
+     */
+    @RequestMapping("/temporaryShoppingcartMoneyAndCount")
+    @ApiOperation(value = "获取购物车总数" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "tic" ,value = "临时客户识别码" ,paramType = "query")
+    })
+    public Message temporaryShoppingcartMoneyAndCount(String tic){
+        Message message = Message.non();
+        try {
+            Integer count = temporaryService.temporaryShoppingcartMoneyAndCount(  tic);
+            return message.code(Message.codeSuccessed).data(count).message("获取成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("temporary/temporaryShoppingcartMoneyAndCount"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
 
     /**
      * 当前临时客户的购物车
@@ -177,7 +204,7 @@ public class TemporaryController {
      * @return
      */
   @RequestMapping("/temporaryShoppingcart")
-  @ApiOperation(value = "当前临时客户的购物车" ,httpMethod = "POST")
+  @ApiOperation(value = "当前临时客户的购物车(结算)" ,httpMethod = "POST")
   @ApiImplicitParams({
           @ApiImplicitParam(name = "business_id" ,value = "店铺id" ,paramType = "query"),
           @ApiImplicitParam(name = "tic" ,value = "临时客户识别码" ,paramType = "query")
@@ -185,48 +212,44 @@ public class TemporaryController {
     public synchronized Message temporaryShoppingcart(Integer business_id ,String tic ){
         Message message = Message.non();
         try {
-            ShoppingHashMap hashMap = temporaryService.temporaryShoppingcart( business_id , tic);
+            HashMap hashMap = temporaryService.temporaryShoppingcart( business_id , tic);
             return message.code(Message.codeSuccessed).data(hashMap).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
-            log.error("order/bindingShoppingcart"+e.getMessage());
+            log.error("temporary/bindingShoppingcart"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
 
+
     /**
-     * 结算
-     * @param tic
-     * @param tscdId 购物车详情id
-     * @param business_id 店铺id
+     * 删除购物车产品
+     * @param
      * @return
      */
-    @RequestMapping("/settlement")
-    @ApiOperation(value = "结算" ,httpMethod = "POST")
+    @RequestMapping("/deleteShoppingcartDateil")
+    @ApiOperation(value = "删除购物车产品" ,httpMethod = "POST")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "tic" ,value = "临时客户识别码" ,paramType = "query"),
-            @ApiImplicitParam(name = "tscdId" ,value = "购物车详情id" ,paramType = "query"),
-            @ApiImplicitParam(name = "business_id" ,value = "店铺id" ,paramType = "query"),
-
+            @ApiImplicitParam(name = "tscId" ,value = "购物车id" ,paramType = "query"),
+            @ApiImplicitParam(name = "tscdId" ,value = "购物车详情id" ,paramType = "query")
     })
-    public Message settlement(String tic , String tscdId , Integer business_id){
+    public Message deleteShoppingcartDateil(Integer tscId ,Integer tscdId){
         Message message = Message.non();
-        try{
-            HashMap hashMap = temporaryService.settlement(tic ,tscdId ,business_id);
-            return message.code(Message.codeSuccessed).data(hashMap).message("结算成功");
+        try {
+            Integer count = temporaryService.deleteShoppingcartDateil(tscId , tscdId);
+            return message.code(Message.codeSuccessed).message("删除成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
-            log.error("order/settlement"+e.getMessage());
+            log.error("temporary/deleteShoppingcartDateil"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
 
-
     /**
      * 下订单
-     * @param json
+     * @param
      * @return
      */
     @RequestMapping("/addOrdre")
@@ -234,16 +257,15 @@ public class TemporaryController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "tic" ,value = "临时客户识别码" ,paramType = "query"),
             @ApiImplicitParam(name = "business_id" ,value = "店铺id" ,paramType = "query"),
-            @ApiImplicitParam(name = "json" ,value = "{'price':100 ,'beizhu':'测试','orderDetails':[{'goods_id':'756','order_number':'1','order_price':'18'},{'goods_id':'757','order_number':'1','order_price':'19'}]}" ,paramType = "query")
+            @ApiImplicitParam(name = "tscId" ,value = "购物车id" ,paramType = "query")
     })
-    public synchronized Message addOrder(String tic , Integer business_id , String json){
+    public synchronized Message addOrder(String tic , Integer business_id , Integer tscId){
         Message message = Message.non();
         if (IntegerUtils.isEmpty(business_id)){
             return message.code(Message.codeFailured).message("店铺id不能为空");
         }
         try {
-            Order order = JSONObject.parseObject(json, Order.class);
-            Integer count = temporaryService.addOrder(tic , business_id ,order);
+            Integer count = temporaryService.addOrder(tic , business_id ,tscId);
             if (IntegerUtils.isEmpty(count)){
                 return message.code(Message.codeFailured).message("下单失败");
             }

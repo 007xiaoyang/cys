@@ -88,8 +88,9 @@ public class PurchaseController {
     })
     public Message selectBusinessGoods(String token ,Integer role, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
        try {
-           List<HashMap> hashMaps = purchaseService.selectBusinessGoods(token ,role ,name);
+           List<HashMap> hashMaps = purchaseService.selectBusinessGoods(token ,role ,names );
            return message.code(Message.codeSuccessed).data(hashMaps).message("搜索成功");
        }catch (NullPointerException e){
            return message.code(Message.codeFailured).message(e.getMessage());
@@ -116,8 +117,9 @@ public class PurchaseController {
     })
     public Message findBusinessGoodsCollection(String token ,Integer role, Integer suppliers_id, String name , String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
        try {
-           List<HashMap> hashMap= purchaseService.findBusinessGoodsCollection(token ,role ,suppliers_id,name,startTime,endTime);
+           List<HashMap> hashMap= purchaseService.findBusinessGoodsCollection(token ,role ,suppliers_id ,names ,startTime,endTime);
            return message.code(Message.codeSuccessed).data(hashMap).message("搜索成功");
        }catch (NullPointerException e){
            return message.code(Message.codeFailured).message(e.getMessage());
@@ -423,8 +425,9 @@ public class PurchaseController {
     })
     public Message stayAudited(String token ,Integer role, Integer  pageNo, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = purchaseService.stayAudited(token ,role ,pageNo,name);
+            Page page = purchaseService.stayAudited(token ,role ,pageNo ,names);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -561,9 +564,9 @@ public class PurchaseController {
     })
     public Message purchaseUnpaidOrder(String token ,Integer role, Integer pageNo, String name ,String number ,String staffName){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = purchaseService.purchaseUnpaidOrder(token ,role ,pageNo ,name,number , staffName);
+            Page page = purchaseService.purchaseUnpaidOrder(token ,role ,pageNo ,names ,number , staffName);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -590,9 +593,9 @@ public class PurchaseController {
     })
     public Message purchaseArrearsOrder(String token ,Integer role, Integer pageNo, String name ,String number ,String staffName){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = purchaseService.purchaseArrearsOrder(token ,role ,pageNo ,name ,number , staffName);
+            Page page = purchaseService.purchaseArrearsOrder(token ,role ,pageNo ,names ,number , staffName);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -622,14 +625,14 @@ public class PurchaseController {
     })
     public Message findPurchaseOrder(String token ,Integer role, Integer pageNo,String name ,String number , String startTime, String endTime ,String staffName){
         Message message = Message.non();
-
+        String names = StringUtil.StringFilter(name);
         String start = DateUtil.getDay(),   end = DateUtil.getDay();
         if ( IntegerUtils.isEmpty(startTime ,endTime )){
             //当没有传开始时间和结束时间，默认查询当天的订单
             start = startTime; end = endTime;
         }
         try {
-            Page page = purchaseService.findPurchaseOrder(token ,role ,pageNo ,name ,number ,start,end ,staffName);
+            Page page = purchaseService.findPurchaseOrder(token ,role ,pageNo ,names ,number ,start,end ,staffName);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -824,8 +827,9 @@ public class PurchaseController {
     })
     public Message findBusinessSupplies(String token ,Integer role, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = purchaseService.findBusinessSupplies(token ,role , name);
+            List<HashMap> hashMaps = purchaseService.findBusinessSupplies(token ,role , names );
             return message.code(Message.codeSuccessed).data(hashMaps).message("搜索成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -961,6 +965,7 @@ public class PurchaseController {
     })
     public Message allPurchaseOrder(String token ,Integer role, Integer pageNo, String name, String number, String startTime, String endTime, Integer mold ,Integer type){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = startTime , end = endTime;
 
@@ -970,7 +975,7 @@ public class PurchaseController {
                 start = startTime; end = endTime;
             }
 
-            Page page = purchaseService.allPurchaseOrder(token ,role ,pageNo,name,number,start ,end,mold ,type);
+            Page page = purchaseService.allPurchaseOrder(token ,role ,pageNo,names ,number,start ,end,mold ,type);
             return message.code(Message.codeSuccessed).data(page).message("搜索成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1247,12 +1252,13 @@ public class PurchaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "id" ,value = "页数" ,paramType = "订单id")
+            @ApiImplicitParam(name = "id" ,value = "订单id" ,paramType = "query"),
+            @ApiImplicitParam(name = "mold" ,value = "" ,paramType = "query")
     })
-    public Message updatePurchaseStatus(String token ,Integer role, Integer id){
+    public Message updatePurchaseStatus(String token ,Integer role, Integer id , Integer mold ){
         Message message = Message.non();
         try {
-            Integer count = purchaseService.updatePurchaseStatus(id);
+            Integer count = purchaseService.updatePurchaseStatus(id ,mold);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("回退失败");
             }

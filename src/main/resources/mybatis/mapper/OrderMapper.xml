@@ -331,9 +331,10 @@
 
     <!--通过订单id查询订单运费差价和用户会员方案-->
     <select id="freightAndDifferencePrice" resultType="HashMap">
-        select o.freight,o.difference_price,o.binding_id ,
-        (select b.scheme_id from shengxian_binding b where b.id = o.binding_id) scheme_id
-        from shengxian_order o where  o.is_del = 0 and  o.id = #{id}
+        select o.freight,o.difference_price,o.binding_id ,o.order_number , bd.scheme_id , bd.number , bd.user_name as userName
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        where  o.is_del = 0 and  o.id = #{id}
     </select>
 
     <!--订单详情-->
@@ -471,7 +472,10 @@
             push_state = 0 ,staff_id = #{staffId} ,
             <if test="status != null "> status=#{status,jdbcType=INTEGER}, </if>
             <if test="status == 2">
-                <if test="accept_time != null "> accept_time=#{accept_time,jdbcType=DATE},</if>
+                accept_time=#{accept_time,jdbcType=DATE},
+            </if>
+            <if test="status == 5">
+                accept_time=#{accept_time,jdbcType=DATE},
             </if>
             <if test="reason != null "> reason=#{reason,jdbcType=VARCHAR},</if>
         </trim>
@@ -1416,8 +1420,8 @@
     <!--(打印)通过销售订单id查询订单信息-->
     <select id="orderPrintInfo" resultType="HashMap">
         select o.id ,bd.user_name,bd.number,bd.best_time,ifnull((select u.phone from user u where bd.user_id = u.id), bd.telephone)phone
-        ,(select s.name from shengxian_staff s where s.id = bd.staff_id )staff_name, o.print_frequ
-        ,o.order_number,o.no,o.price,o.freight,o.difference_price,o.making,bd.address,o.beizhu
+        ,(select s.name from shengxian_staff s where s.id = bd.staff_id )staff_name , o.create_time as createTime
+        ,o.order_number,o.no,o.price,o.freight,o.difference_price,o.making,bd.address,o.beizhu  , o.print_frequ
          ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , b.address as bAddress , b.telephone
         from shengxian_order o
@@ -1444,7 +1448,7 @@
     <!--(打印)打印临时订单-->
     <select id="printTemporaryOrder" resultType="HashMap">
         select ot.id ,bd.user_name,bd.number,bd.best_time,ifnull((select u.phone from user u where bd.user_id = u.id),bd.telephone)phone
-        ,(select s.name from shengxian_staff s where s.id = bd.staff_id )staff_name  , ot.print_frequ, bd.address
+        ,(select s.name from shengxian_staff s where s.id = bd.staff_id )staff_name  , ot.print_frequ, bd.address , ot.create_time
         ,ot.order_number,ot.no,ot.price, ot.freight, ot.difference_price,ot.making,ot.beizhu , b.address as bAddress , b.telephone
         from shengxian_order_temporary ot
         inner join shengxian_binding bd on bd.id = ot.binding_id

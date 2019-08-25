@@ -1242,7 +1242,7 @@
         where p.is_del = 0  and p.`status`=1 and p.state=1  and p.mold = #{mold} and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or  p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')

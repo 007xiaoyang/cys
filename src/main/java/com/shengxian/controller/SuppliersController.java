@@ -1,10 +1,7 @@
 package com.shengxian.controller;
 
 import com.shengxian.common.Message;
-import com.shengxian.common.util.Global;
-import com.shengxian.common.util.IntegerUtils;
-import com.shengxian.common.util.Page;
-import com.shengxian.common.util.ToolUTtil;
+import com.shengxian.common.util.*;
 import com.shengxian.entity.Parameter;
 import com.shengxian.entity.Suppliers;
 import com.shengxian.service.ExcelService;
@@ -246,8 +243,9 @@ public class SuppliersController {
     })
     public Message findSuppliersInfoList(String token ,Integer role , Integer pageNo , Integer categoryId, String number, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = suppliersService.findSuppliersInfoList(token, role, pageNo, categoryId, number, name);
+            Page page = suppliersService.findSuppliersInfoList(token, role, pageNo, categoryId, number , names );
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -265,13 +263,11 @@ public class SuppliersController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
-            @ApiImplicitParam(name = "categoryId" ,value = "类别id" ,paramType = "query"),
-            @ApiImplicitParam(name = "number" ,value = "供应商编号" ,paramType = "query"),
-            @ApiImplicitParam(name = "name" ,value = "供应商名称" ,paramType = "query")
+            @ApiImplicitParam(name = "id" ,value = "供应商id" ,paramType = "query")
     })
     public Message findSuppliersInfoById(String token ,Integer role , Integer id){
         Message message = Message.non();
+
         if (IntegerUtils.isEmpty(id)){
             return message.code(Message.codeFailured).message("请输入供应商id");
         }

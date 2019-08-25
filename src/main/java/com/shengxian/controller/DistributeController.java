@@ -85,8 +85,9 @@ public class DistributeController {
     })
     public Message notDistributeOrder(String token ,Integer role , String name, String number){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = distributeService.notDistributeOrder(token ,role ,name,number);
+            List<HashMap> hashMaps = distributeService.notDistributeOrder(token ,role ,names,number);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -366,9 +367,10 @@ public class DistributeController {
     })
     public Message staffDayDetail(String token ,Integer role , Integer pageNo, Integer staff_id , String time,String name ,Integer type ,String startTime ,String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
 
-            Page page = distributeService.staffDayDetail(pageNo,staff_id,time ,name ,type ,startTime , endTime);
+            Page page = distributeService.staffDayDetail(pageNo,staff_id,time ,names ,type ,startTime , endTime);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("配送管理控制层（/distribute/staffDayDetail）接口报错---------"+e.getMessage());
@@ -397,8 +399,9 @@ public class DistributeController {
     })
     public Message salePurchaseOrder(String token ,Integer role , Integer pageNo, Integer staff_id , String time ,String name ,Integer type){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = distributeService.salePurchaseOrder(pageNo,staff_id,time ,name ,type );
+            Page page = distributeService.salePurchaseOrder(pageNo,staff_id,time ,names ,type );
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("配送管理控制层（/distribute/salePurchaseOrder）接口报错---------"+e.getMessage());

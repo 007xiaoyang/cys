@@ -333,8 +333,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //员工的开单提成不包括销售退货
-        //总金额 = 销售所有产品价格 + 运费 + 差价
-        double money = price + order.getFreight() + order.getDifference_price();
+        //总金额 = 销售所有产品价格 - 运费 - 差价
+        double money = price - order.getFreight() - order.getDifference_price();
 
         //修改订单的总金额
         orderMapper.updateOrderPrice(order.getId(),new BigDecimal(money).setScale(2,BigDecimal.ROUND_HALF_UP));
@@ -673,19 +673,21 @@ public class OrderServiceImpl implements OrderService {
         }
 
         OrderDetail[] orderDetails = order.getOrderDetails();
+        //判断订单是否还有产品存在，没有则删除该订单
         if (orderDetails.length <= 0 ){
             //删除订单
            return orderMapper.deleteOrder(order.getId());
         }
+
         for (OrderDetail detail:orderDetails  ) {
 
             //根据产品id查询产品进价
             double costPrice = shopMapper.findGoodsCostPrice(detail.getGoods_id());
 
-            //通过订单详情id查询原来的销售数量
+            //判断是销售单还是销售退货单
 
-            //type == 0 销售单
-            if (detail.getType() == 0){
+            //*******销售单并且是销售产品***********
+            if (order.getMold() == 0  && detail.getType() == 0 ){
 
                 //判断是否是新增的产品
                 if (detail.getId()== null){ //新增的产品
@@ -718,7 +720,7 @@ public class OrderServiceImpl implements OrderService {
                         //减少产品虚拟库存
                         shopMapper.reduceGoodsFictitiousInventory(detail.getGoods_id(),order_number);
 
-                    //原来的销售数量大于修改后的数量
+                        //原来的销售数量大于修改后的数量
                     }else if (Double.valueOf(hashMap.get("order_number").toString()) > detail.getOrder_number()){
 
                         //用原来的数量 - 修改后的数量 = 还需要补回多少库存
@@ -733,14 +735,12 @@ public class OrderServiceImpl implements OrderService {
                     //通过订单详情id修改产品数量和价格
                     orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),profit ,costPrice );
                 }
-                    //统计每一条产品的销售金额
-                    price += detail.getOrder_number() * detail.getOrder_price();
+                //统计每一条产品的销售金额
+                price += detail.getOrder_number() * detail.getOrder_price();
 
 
-
-            //报损产品
-            }else if (detail.getType() == 1){
-
+             //******销售单并且是赠送给客户的产品 ***********
+            }else if (order.getMold() == 0 && detail.getType() == 1 ){
 
                 double profit = 0 - (  costPrice * detail.getOrder_number()) ;
 
@@ -805,15 +805,71 @@ public class OrderServiceImpl implements OrderService {
                     orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),profit ,costPrice);
                 }
 
-            } //报损产品
+             //********销售退货单并且是退货产品************
+            }else if (order.getMold() == 1 && detail.getType() == 0 ){
+
+                //判断是否是新增的产品
+                if (detail.getId()== null){ //新增的产品
+
+                    //销售先增加产品的虚拟库存，到货时根据订单id增加实际库存
+                    shopMapper.increaseGoodsFictitiousInventory(detail.getGoods_id(),detail.getOrder_number());
+
+                    detail.setOrder_id(order.getId());//订单id
+                    detail.setCost_price(costPrice);
+                    orderMapper.addOrderDetail(detail);
+
+                }else { //修改的产品信息
+
+                    //通过订单详情id查询原来的退货数量
+                    HashMap hashMap = orderMapper.orderDetailNum(detail.getId());
+                    if (hashMap == null ){
+                        throw new NullPointerException("订单详情id不存在");
+                    }
+
+                    //判断开单时退货数量和修改后的退货数量是否一致
+
+                    //原来的销售数量小于修改后的数量
+                    if (Double.valueOf(hashMap.get("order_number").toString()) < detail.getOrder_number()){
+
+                        //用修改的数量 - 原来的数量 = 还增多少库存
+                        double order_number = detail.getOrder_number() - Double.valueOf(hashMap.get("order_number").toString());
+                        //增加产品虚拟库存
+                        shopMapper.increaseGoodsFictitiousInventory(detail.getGoods_id(),order_number);
+
+                        //原来的退货数量大于修改后的退货数量
+                    }else if (Double.valueOf(hashMap.get("order_number").toString()) > detail.getOrder_number()){
+
+                        //用原来的数量 - 修改后的数量 = 还需要补回多少库存
+                        double order_number = Double.valueOf(hashMap.get("order_number").toString()) -detail.getOrder_number() ;
+                        //减少产品虚拟库存
+                        shopMapper.reduceGoodsFictitiousInventory(detail.getGoods_id(),order_number);
+                    }
+
+
+                    //通过订单详情id修改产品数量和价格
+                    orderMapper.updateOrderDetailPrice(detail.getId(),detail.getOrder_number(),detail.getOrder_price(),0.0 ,costPrice );
+                }
+                //统计每一条产品的销售金额
+                price += detail.getOrder_number() * detail.getOrder_price();
+
+            }
 
         }//遍历
-        Double couponMoney = orderMapper.selectConponMoney(order.getId());
 
-        //总金额 = 销售所有产品价格 + 运费 +差价
-        double money = ( price +order.getFreight() + order.getDifference_price() ) - couponMoney ;
+        double money = 0 ;
 
-        //查询订单是否使用了优惠券
+        if (order.getMold() == 0 ){
+            //查询订单是否使用了优惠券
+            Double couponMoney = orderMapper.selectConponMoney(order.getId());
+
+            //总金额 = 销售所有产品价格 + 运费 +差价
+            money = ( price + order.getFreight() + order.getDifference_price() ) - couponMoney ;
+
+        }else if (order.getMold() == 1 ){
+
+            //总金额 = 退货所有产品价格 - 运费 - 差价
+            money = ( price - order.getFreight() - order.getDifference_price() )  ;
+        }
 
         //通过订单id修改订单运费和差价
         return orderMapper.updatePurchaseOrderPriceid(order.getId(),money ,order.getFreight(),order.getDifference_price());
@@ -876,6 +932,9 @@ public class OrderServiceImpl implements OrderService {
         //修改订单状态（接受或拒绝）print_frequ
         return orderMapper.updateAcceptOrRejectionStatus(id,staff_id ,status,new Date(),reason);
     }
+
+
+
 
     //一键接单
     @Override
@@ -1054,6 +1113,7 @@ public class OrderServiceImpl implements OrderService {
         //订单详情
         List<HashMap> hashMaps = orderMapper.detail(id);
 
+        //产品详情
         orderDetailTraversal(hashMaps ,id , bid , status , mold ,set);
 
 
@@ -1204,6 +1264,7 @@ public class OrderServiceImpl implements OrderService {
      * @param set 库存判断
      */
     public synchronized void orderDetailTraversal(List<HashMap> detailTraversal ,Integer orderId ,Integer businessId ,Integer status ,Integer mold ,Integer set  ){
+
         for (HashMap detail:detailTraversal ) {
 
             if( status == 4 && mold == 0 ){ //销售单确认到货
@@ -2129,48 +2190,59 @@ public class OrderServiceImpl implements OrderService {
         return workbook;
     }
 
-    //取消订单
+    //回退取消订单
     @Override
     @Transactional
-    public Integer updateOrderStatus(Integer id)throws NullPointerException {
+    public Integer updateOrderStatus(Integer id ,Integer mold)throws NullPointerException {
 
         //通过订单id查询订单是否使用了个人优惠券
         HashMap order = orderMapper.selectOrderCoupon(id);
         if (order == null){
             throw new NullPointerException("订单不存在");
         }
-        //判断此订单是否使用个人优惠券
-        if (order.get("coupon_id") != null && !order.get("coupon_id").toString().equals("0")){
-            //通过优惠券id查询这张用户优惠券是否在别的订单使用了
-            Coupon coupon = orderMapper.selectUserCouponState(Integer.valueOf(order.get("coupon_id").toString()));
 
-            if (coupon.getState() == 1){ //state== 1 说明此优惠券已经在别的订单中使用了
+        if (mold == 0 ){
+            //判断此订单是否使用个人优惠券
+            if (order.get("coupon_id") != null && !order.get("coupon_id").toString().equals("0")){
+                //通过优惠券id查询这张用户优惠券是否在别的订单使用了
+                Coupon coupon = orderMapper.selectUserCouponState(Integer.valueOf(order.get("coupon_id").toString()));
 
-                //使用了，在回退之前得要加订单的总金额
-                orderMapper.plusOrderTotalPrice(id , coupon.getReduce());
+                if (coupon.getState() == 1){ //state== 1 说明此优惠券已经在别的订单中使用了
 
-            }else {
-                orderMapper.updateUserCouponState(Integer.valueOf(order.get("coupon_id").toString()) , 1);
+                    //使用了，在回退之前得要加订单的总金额
+                    orderMapper.plusOrderTotalPrice(id , coupon.getReduce());
+
+                }else {
+                    orderMapper.updateUserCouponState(Integer.valueOf(order.get("coupon_id").toString()) , 1);
+                }
+
+            }else if (order.get("coupon_id") != null && order.get("coupon_id").toString().equals("0")){
+
+                //通过店铺优惠券id查询订单使用店铺满减优惠券是否过期了
+                Coupon reduce = orderMapper.selectFullReduct(Integer.valueOf(order.get("activity").toString()));
+                String day = DateUtil.getDay();
+                if ( !(reduce.getStartTime().compareTo(day) <= 0 && reduce.getEndTime().compareTo(day) >= 0 ) ){
+                    //店铺满减过期了，在回退之前得要加订单的总金额
+                    orderMapper.plusOrderTotalPrice(id , reduce.getReduce());
+                }
+
             }
-
-        }else if (order.get("coupon_id") != null && order.get("coupon_id").toString().equals("0")){
-
-            //通过店铺优惠券id查询订单使用店铺满减优惠券是否过期了
-            Coupon reduce = orderMapper.selectFullReduct(Integer.valueOf(order.get("activity").toString()));
-            String day = DateUtil.getDay();
-            if ( !(reduce.getStartTime().compareTo(day) <= 0 && reduce.getEndTime().compareTo(day) >= 0 ) ){
-                //店铺满减过期了，在回退之前得要加订单的总金额
-                orderMapper.plusOrderTotalPrice(id , reduce.getReduce());
-            }
-
         }
 
         //订单详情
         List<OrderDetail> orderDetails = orderMapper.orderDetailInfo(id);
 
         for (OrderDetail dateil: orderDetails ) {
-            //减少产品虚拟库存
-            shopMapper.reduceGoodsFictitiousInventory(dateil.getGoods_id()  ,dateil.getOrder_number() );
+
+            if (mold == 0 ){
+                //减少产品虚拟库存
+                shopMapper.reduceGoodsFictitiousInventory(dateil.getGoods_id()  ,dateil.getOrder_number() );
+
+            }else if (mold == 1 ){
+                //增加产品虚拟库存
+                shopMapper.increaseGoodsFictitiousInventory(dateil.getGoods_id() , dateil.getOrder_number() );
+            }
+
         }
         return orderMapper.updateOrderStatus(id);
     }

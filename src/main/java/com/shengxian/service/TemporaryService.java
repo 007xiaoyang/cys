@@ -57,6 +57,17 @@ public interface TemporaryService {
     Integer reduceShoppingCart( Integer tscdId)throws NullPointerException ,Exception;
 
     /**
+     * 获取购物车总数
+     * @param tic
+     * @return
+     * @throws NullPointerException
+     * @throws Exception
+     */
+    Integer temporaryShoppingcartMoneyAndCount( String tic)throws NullPointerException ,Exception;
+
+
+
+    /**
      * 当前临时客户的购物车
      * @param business_id 店铺id
      * @param tic 临时客户识别码
@@ -64,7 +75,14 @@ public interface TemporaryService {
      * @throws NullPointerException
      * @throws Exception
      */
-    ShoppingHashMap temporaryShoppingcart(Integer business_id , String tic)throws NullPointerException ,Exception;
+    HashMap temporaryShoppingcart(Integer business_id , String tic)throws NullPointerException ,Exception;
+
+    /**
+     * 删除购物车产品
+     * @param tscdId
+     * @return
+     */
+    Integer deleteShoppingcartDateil( Integer tscId ,Integer tscdId);
 
     /**
      * 结算
@@ -79,11 +97,11 @@ public interface TemporaryService {
 
     /**
      * 下订单
-     * @param order
+     * @param
      * @return
      * @throws NullPointerException
      * @throws Exception
      */
-    Integer addOrder(String tic , Integer business_id , Order order)throws NullPointerException ,Exception;
+    Integer addOrder(String tic , Integer business_id , Integer tscId)throws NullPointerException ,Exception;
 
 }

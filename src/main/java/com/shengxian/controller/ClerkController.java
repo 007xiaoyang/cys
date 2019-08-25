@@ -143,8 +143,9 @@ public class ClerkController {
     })
     public Message sharingOrder(String token ,Integer role ,Integer pageNo ,String name , String number){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page  = clerkService.sharingOrder(token ,role ,pageNo , name , number);
+            Page page  = clerkService.sharingOrder(token ,role ,pageNo , names , number);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -200,8 +201,9 @@ public class ClerkController {
     })
     public Message noArrivedOrder(String token  ,Integer role ,Integer pageNo,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.noArrivedOrder(token ,role ,pageNo ,name);
+            Page page = clerkService.noArrivedOrder(token ,role ,pageNo ,names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/noArrivedOrder）接口报错---------"+e.getMessage());
@@ -227,8 +229,9 @@ public class ClerkController {
     })
     public Message uncollectedOrderList(String token , Integer role ,Integer pageNo,String name ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.uncollectedOrderList(token ,role , pageNo,name);
+            Page page = clerkService.uncollectedOrderList(token ,role , pageNo ,names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/uncollectedOrderList）接口报错---------"+e.getMessage());
@@ -253,8 +256,9 @@ public class ClerkController {
     })
     public Message arrearsOrderList(String token , Integer role ,Integer pageNo,String name ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.arrearsOrderList(token ,role , pageNo,name);
+            Page page = clerkService.arrearsOrderList(token ,role , pageNo , names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/arrearsOrderList）接口报错---------"+e.getMessage());
@@ -283,12 +287,13 @@ public class ClerkController {
     })
     public Message completeOrderList(String token ,Integer role ,Integer pageNo,String name,String startTime ,String endTime ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay() , end = DateUtil.getDay();
             if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")){
                 start = startTime ; end = endTime;
             }
-            Page page = clerkService.completeOrderList(token ,role , pageNo,name ,start , end);
+            Page page = clerkService.completeOrderList(token ,role , pageNo ,names  ,start , end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/completeOrderList）接口报错---------"+e.getMessage());
@@ -338,8 +343,9 @@ public class ClerkController {
     })
     public Message bindingUserList(String token ,Integer role ,Integer pageNo,Integer category_id ,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.bindingUserList(token ,role , pageNo ,category_id,name);
+            Page page = clerkService.bindingUserList(token ,role , pageNo ,category_id ,names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/bindingUserList）接口报错---------"+e.getMessage());
@@ -366,8 +372,9 @@ public class ClerkController {
     })
     public Message suppliersList(String token ,Integer role ,Integer pageNo,Integer category_id ,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.suppliersList(token ,role , pageNo ,category_id,name);
+            Page page = clerkService.suppliersList(token ,role , pageNo ,category_id ,names );
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/suppliersList）接口报错---------"+e.getMessage());
@@ -477,8 +484,9 @@ public class ClerkController {
     })
     public Message businessGoodsList(String token ,Integer role ,Integer pageNo ,Integer binding_id,Integer category_id,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.businessGoodsList(token ,role ,pageNo, binding_id, category_id, name);
+            Page page = clerkService.businessGoodsList(token ,role ,pageNo, binding_id, category_id, names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -509,8 +517,9 @@ public class ClerkController {
     })
     public Message businessGoodsListSuppliers(String token ,Integer role ,Integer pageNo ,Integer suppliersId,Integer categoryId,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.businessGoodsListSuppliers(token ,role ,pageNo, suppliersId , categoryId, name);
+            Page page = clerkService.businessGoodsListSuppliers(token ,role ,pageNo, suppliersId , categoryId, names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -763,11 +772,12 @@ public class ClerkController {
     })
     public Message bindingCollectionBindingGoodsList(String token ,Integer role  ,Integer pageNo,Integer bindingId,String name ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         if (IntegerUtils.isEmpty(bindingId)){
             return message.code(Message.codeFailured).message("请输入客户ID");
         }
         try {
-            Page page = clerkService.bindingCollectionBindingGoodsList(token ,role ,pageNo,bindingId ,name);
+            Page page = clerkService.bindingCollectionBindingGoodsList(token ,role ,pageNo,bindingId ,names );
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/bindingCollectionSuppliersGoodsList）接口报错---------"+e.getMessage());
@@ -795,11 +805,12 @@ public class ClerkController {
     })
     public Message bindingCollectionSuppliersGoodsList(String token ,Integer role  ,Integer pageNo,Integer suppliersId,String name ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         if (IntegerUtils.isEmpty(suppliersId)){
             return message.code(Message.codeFailured).message("请输入供应商ID");
         }
         try {
-            Page page = clerkService.bindingCollectionSuppliersGoodsList(token ,role ,pageNo,suppliersId ,name);
+            Page page = clerkService.bindingCollectionSuppliersGoodsList(token ,role ,pageNo,suppliersId ,names);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/bindingCollectionSuppliersGoodsList）接口报错---------"+e.getMessage());
@@ -866,8 +877,9 @@ public class ClerkController {
     })
     public Message saleReceivables(String token ,Integer role  ,Integer pageNo ,String name ,String number){
         Message message= Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.saleReceivables(token ,role ,pageNo ,name ,number);
+            Page page = clerkService.saleReceivables(token ,role ,pageNo ,names ,number);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/saleReceivables）接口报错---------"+e.getMessage());
@@ -1064,13 +1076,15 @@ public class ClerkController {
     })
     public Message shareUserOrder(String token , Integer role ,Integer pageNo,Integer type ,Integer bindingID ,String name ,String goodsName ,String startTime , String endTime ){
         Message message= Message.non();
+        String names = StringUtil.StringFilter(name);
+        String gName = StringUtil.StringFilter(goodsName);
         String start = DateUtil.getDay();  String end = DateUtil.getDay();
         try {
             if ( IntegerUtils.isEmpty(startTime ,endTime)){
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = clerkService.shareUserOrder(token ,role ,pageNo ,type ,bindingID ,name ,goodsName ,start  ,end);
+            Page page = clerkService.shareUserOrder(token ,role ,pageNo ,type ,bindingID ,names ,gName ,start  ,end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1100,11 +1114,13 @@ public class ClerkController {
     })
     public Message shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String goodsName,String startTime , String endTime ){
         Message message= Message.non();
+        String names = StringUtil.StringFilter(name);
+        String gName = StringUtil.StringFilter(goodsName);
         if (IntegerUtils.isEmpty(bindingID)){
             return message.code(Message.codeFailured).message("要指定客户才能分享～");
         }
         try {
-            String count = clerkService.shareWXRecord(token ,role ,type ,bindingID ,name ,goodsName,startTime  ,endTime);
+            String count = clerkService.shareWXRecord(token ,role ,type ,bindingID ,names ,gName,startTime  ,endTime);
             return message.code(Message.codeSuccessed).data(count).message("分享成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1199,6 +1215,8 @@ public class ClerkController {
     })
     public Message purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName,String goodsName ,String startTime ,String endTime){
         Message message =Message.non();
+        String sName = StringUtil.StringFilter(suppliersName);
+        String gName = StringUtil.StringFilter(goodsName);
         String start = DateUtil.getDay();  String end = DateUtil.getDay();
         try {
             if ( IntegerUtils.isEmpty(startTime ,endTime)){
@@ -1206,7 +1224,7 @@ public class ClerkController {
                 start = startTime; end = endTime;
             }
 
-            Page page = clerkService.purchaseGoodsSummary(token, role, pageNo, suppliersName, goodsName, start, end);
+            Page page = clerkService.purchaseGoodsSummary(token, role, pageNo, sName, gName, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -1236,13 +1254,15 @@ public class ClerkController {
     })
     public Message purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName,String goodsName ,String startTime ,String endTime){
         Message message =Message.non();
+        String sName = StringUtil.StringFilter(suppliersName);
+        String gName = StringUtil.StringFilter(goodsName);
         String start = DateUtil.getDay();  String end = DateUtil.getDay();
         try {
             if ( IntegerUtils.isEmpty(startTime ,endTime)){
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = clerkService.purchaseGoodsDetails(token, role, pageNo, suppliersName, goodsName, start, end);
+            Page page = clerkService.purchaseGoodsDetails(token, role, pageNo, sName, gName, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -1299,13 +1319,15 @@ public class ClerkController {
     })
     public Message selectCalculator(String token , Integer role ,Integer pageNo ,String name , String startTime ,String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
+
         String start = DateUtil.getDay();  String end = DateUtil.getDay();
         try {
             if (IntegerUtils.isEmpty(startTime, endTime)) {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = clerkService.selectCalculator(token , role, pageNo, name, start, end);
+            Page page = clerkService.selectCalculator(token , role, pageNo, names, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             return message.code(Message.codeSuccessed).message(Global.ERROR);

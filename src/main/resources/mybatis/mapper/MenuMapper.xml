@@ -398,12 +398,13 @@
         <result column="difference_price" jdbcType="DOUBLE" property="difference_price"/>
         <result column="freight" jdbcType="DOUBLE" property="freight"/>
         <result column="reduce" jdbcType="DOUBLE" property="reduce"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
     </resultMap>
 
     <!--通过订单id查询飞蛾打印机需要打印的信息-->
     <select id="queryOrder" resultMap="salesMap">
         select o.id , o.order_number ,o.no, o.price ,o.beizhu ,bd.user_name ,bd.address ,o.freight ,o.difference_price ,
-        ifnull( (select phone from user where id = bd.user_id and is_del = 0 ) ,bd.telephone  )phone
+        ifnull( (select phone from user where id = bd.user_id and is_del = 0 ) ,bd.telephone  )phone ,o.create_time
          ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
@@ -446,10 +447,12 @@
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
         <result column="difference_price" jdbcType="DOUBLE" property="difference_price"/>
         <result column="freight" jdbcType="DOUBLE" property="freight"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
     </resultMap>
 
     <select id="queryPurchaseOrder" resultMap="puchasesMap">
-        select  p.id , p.order_number ,p.no , p.price ,p.beizhu ,s.name ,s.address ,s.phone ,p.freight ,p.difference_price
+        select  p.id , p.order_number ,p.no , p.price ,p.beizhu ,s.name ,s.address ,s.phone ,p.freight
+        ,p.difference_price , p.create_time
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id and s.is_del = 0
         where p.id = #{id} and p.is_del = 0
@@ -476,7 +479,7 @@
     <!--通过临时订单id查询飞蛾打印机需要打印的信息-->
     <select id="queryTemporaryOrder" resultMap="salesMap">
         select o.id , o.order_number ,o.no, o.price ,o.beizhu ,bd.user_name ,bd.address ,o.freight ,o.difference_price ,
-        ifnull( (select phone from user where id = bd.user_id and is_del = 0 ) ,bd.telephone  )phone
+        ifnull( (select phone from user where id = bd.user_id and is_del = 0 ) ,bd.telephone  )phone , o.create_time
          ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order_temporary o

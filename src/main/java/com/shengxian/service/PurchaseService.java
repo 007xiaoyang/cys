@@ -367,7 +367,7 @@ public interface PurchaseService {
      * @param id
      * @return
      */
-    Integer updatePurchaseStatus(@Param("id") Integer id);
+    Integer updatePurchaseStatus(Integer id , Integer mold);
 
     /**
      * 收款记录
