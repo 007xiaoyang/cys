@@ -629,7 +629,8 @@
         where o.is_del = 0 and bd.is_del =0 and o.status =4   and o.business_id = #{business_id}
         and o.state in (0,2)
         <if test="name != null and name != ''">
-            and (o.no like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
+            and (o.no like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')
+            or bd.number like CONCAT('%',#{name},'%') )
         </if>
         <if test="number != null and number != ''">
             and o.order_number like CONCAT('%',#{number},'%')
@@ -644,7 +645,8 @@
         where o.is_del = 0 and bd.is_del =0 and o.status =4   and o.business_id = #{business_id}
         and o.state in (0,2)
         <if test="name != null and name != ''">
-            and (o.no like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
+            and (o.no like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')
+            or bd.number like CONCAT('%',#{name},'%') )
         </if>
         <if test="number != null and number != ''">
             and o.order_number like CONCAT('%',#{number},'%')
