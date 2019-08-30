@@ -165,8 +165,8 @@ public class MothPrinter {
             content += "运费:"+f+"元"+" 差价:"+dp+"元"+" 优惠:"+reduce+"元<BR>";
             content += "--------------------------------<BR>";
             content += "<B>总计："+tatol+"元</B><BR>";
-            content += "打印时间："+ DateUtil.getTime() +"<BR>";
-            content += "创建时间："+ createTime +"<BR>";
+            content += "打印："+ DateUtil.getTime() +"<BR>";
+            content += "创单："+ createTime +"<BR>";
             content += "订单号："+ orderNumber+"<BR>";
             content += "标识码："+ no+"<BR>";
 
@@ -281,8 +281,8 @@ public class MothPrinter {
         content += "运费："+f+"元"+" 差价："+dp+"元<BR>";
         content += "--------------------------------<BR>";
         content += "<B>总计："+tatol+"元</B><BR>";
-        content += "打印时间："+ DateUtil.getTime() +"<BR>";
-        content += "创建时间："+  createTime +"<BR>";
+        content += "打印："+ DateUtil.getTime() +"<BR>";
+        content += "创单："+  createTime +"<BR>";
         content += "订单号："+ orderNumber+"<BR>";
         content += "标识码："+ no+"<BR>";
 
