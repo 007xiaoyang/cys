@@ -1174,7 +1174,29 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
 
-            }//判断订单是否有员工接单..
+            }else if (order.get("staff_id") != null && order.get("staff_id").toString().equals("0")){
+                //进入这里说明该订单没有任何人接单
+
+                //获取当前登录的账号id
+                Integer staffId = shopMapper.registerIdByTokenAndRole(token, role);
+                if(staffId != null){
+                    //5到达提成
+                    //通过员工id查询员工是否有到货提成比例
+                    HashMap staffArrive = distributeMapper.findStaffPercentage(staffId, 6);
+                    if (staffArrive != null ){
+                        if (staffArrive.get("a") != null && staffArrive.get("b") != null && !staffArrive.get("a").equals("")  && !staffArrive.get("b").equals("")){
+
+                            //添加员工到货提成次数 type=5送达
+                            orderMapper.addStaffFrequency(staffId ,id,5 ,price , new Date());
+
+                            //重新指派订单给当前员工
+                            orderMapper.updateStaffIdByOrderId(id , staffId);
+                        }
+                    }
+                }
+
+
+            }
         }else if ( status == 6 ){
 
             // 店铺取消订单了，判断此订单是否使用个人优惠券

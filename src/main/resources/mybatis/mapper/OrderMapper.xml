@@ -455,6 +455,10 @@
         select state ,reduce from shengxian_binding_coupon where id = #{id}
     </select>
 
+    <!--重新指派订单给当前员工-->
+    <update id="updateStaffIdByOrderId">
+         update shengxian_order set staff_id = #{staffId} where id = #{id}
+    </update>
 
     <!--修改用户优惠券使用的状态-->
     <update id="updateUserCouponState">

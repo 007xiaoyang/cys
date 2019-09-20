@@ -470,6 +470,14 @@ public interface OrderMapper {
     Coupon selectUserCouponState(@Param("id") Integer coupon_id );
 
 
+    /**
+     * 重新指派订单给当前员工
+     * @param id
+     * @param staffId
+     * @return
+     */
+    Integer updateStaffIdByOrderId(Integer id ,@Param("staffId") Integer staffId);
+
 
     /**
      * 修改用户优惠券使用的状态
