@@ -40,6 +40,8 @@ public class PurchaseOrder {
     private String bAddress ;
     private String telephone ;
 
+    private String createTime;
+
     private PurchaseOrderDetail[] purchaseOrderDetail;
 
     public Integer getId() {
@@ -256,5 +258,13 @@ public class PurchaseOrder {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

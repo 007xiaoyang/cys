@@ -621,7 +621,7 @@
     <!--通过订单id查询订单信息和供应商名称电话-->
     <select id="findPurchaseInfoById" resultType="com.shengxian.entity.PurchaseOrder">
         select p.id,p.order_number,s.phone,s.`name`,s.address,p.beizhu ,p.price,p.no,p.freight
-        ,p.difference_price ,p.making,p.print_frequ,s.number  , b.address as bAddress , b.telephone
+        ,p.difference_price ,p.making,p.print_frequ,s.number  , b.address as bAddress , b.telephone  , p.create_time as createTime
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         inner join shengxian_business b on b.id = p.business_id and b.id = s.business_id and b.is_del = 0

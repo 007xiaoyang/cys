@@ -476,7 +476,7 @@ public interface OrderMapper {
      * @param staffId
      * @return
      */
-    Integer updateStaffIdByOrderId(Integer id ,@Param("staffId") Integer staffId);
+    Integer updateStaffIdByOrderId(@Param("id") Integer id ,@Param("staffId") Integer staffId);
 
 
     /**

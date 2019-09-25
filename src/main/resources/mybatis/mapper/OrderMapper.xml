@@ -1420,7 +1420,7 @@
         ,(select s.name from shengxian_staff s where s.id = bd.staff_id )staff_name, o.print_frequ
         ,o.order_number,o.no,o.price,o.freight,o.difference_price,o.making,bd.address,o.beizhu
          ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
-        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , b.address as bAddress , b.telephone
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , b.address as bAddress , b.telephone , o.create_time as createTime
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         inner join shengxian_business b on b.id = o.business_id and b.id = bd.business_id and b.is_del = 0
