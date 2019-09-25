@@ -1,7 +1,14 @@
+import com.shengxian.common.MothPrinter;
+import com.shengxian.common.util.DateUtil;
+
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Description:
@@ -63,14 +70,43 @@ public class Test {
         System.out.println("上月第一天: "+sdf.format(calendar6.getTime()));*/
 
     }
+  public static String StringFilter(String str) throws PatternSyntaxException {
+        // 只允许字母和数字、中文
+        // String regEx="[^a-zA-Z0-9]";
+      // 清除掉[]中所有特殊字符
+      String regEx = "[`~☆★!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]";
+      Pattern p = Pattern.compile(regEx);
+      Matcher m = p.matcher(str);
+      return m.replaceAll("").trim().replace(" ", "").replace("\\", "");
+    }
 
+
+    public static long test(long a){
+            return a;
+    }
 
     public static void main(String[] args) {
 
+        long a = test(1);
+
+        System.out.println(a);
+
+        String str = "";
+        System.out.println(str);
+        System.out.println(StringFilter(str));
+     /*       String[] a = {"10.00" ,"12.00" ,"35.00" ,"20.00","10.00" ,"2.00" ,"35.00" ,"2.00" };
+        StringBuffer size = new StringBuffer();
+        String s = "";
+        for (String c :a){
+             s += MothPrinter.calculatorPrintUtils(c ,size);
+        }
+        System.out.print(s);
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
         //addDay(sdf,10);
         //getWeekDay(sdf);
-        getMonth(sdf);
+        getMonth(sdf);*/
+       /* String s = DateUtil.thisMonthOneNum();
+        System.out.println(s);*/
     }
 
 }

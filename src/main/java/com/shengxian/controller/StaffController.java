@@ -247,11 +247,12 @@ public class StaffController {
     })
     public Message findBindingInfoByUser(String token, Integer categoryId, String number, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             if (IntegerUtils.isEmpty(categoryId)) {
                 return message.code(Message.codeFailured).message("请输入用户类别ID");
             }
-            List<HashMap> hashMap = staffService.findBindingInfoByUser(categoryId, number, name);
+            List<HashMap> hashMap = staffService.findBindingInfoByUser(categoryId, number, names );
             return message.code(Message.codeSuccessed).data(hashMap).message("获取成功");
         }catch (Exception e) {
             log.error("员工控制层（/staff/findBindingInfoByUser）接口报错---------"+e.getMessage());
@@ -278,11 +279,12 @@ public class StaffController {
     })
     public Message findGoodsInfoByCid(String token ,Integer role , Integer categoryId, String number, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         if ( IntegerUtils.isEmpty(categoryId)){
             return message.code(Message.codeFailured).message("请输入产品类别ID");
         }
         try {
-            List<HashMap> hashMap = staffService.findGoodsInfoByCid(categoryId, number, name);
+            List<HashMap> hashMap = staffService.findGoodsInfoByCid(categoryId, number, names );
             return message.code(Message.codeFailured).data(hashMap).message("获取成功");
         }catch (Exception e) {
             log.error("员工控制层（/staff/findGoodsInfoByCid）接口报错---------"+e.getMessage());
@@ -307,8 +309,9 @@ public class StaffController {
     })
     public Message findBusinessUser(String token ,Integer role  , String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = staffService.findBusinessUser(token ,role , name);
+            List<HashMap> hashMaps = staffService.findBusinessUser(token ,role , names );
             return message.code(Message.codeSuccessed).data(hashMaps).message("操作成功");
         }catch (Exception e) {
             log.error("员工控制层（/staff/findBusinessUser）接口报错---------"+e.getMessage());
@@ -367,8 +370,9 @@ public class StaffController {
     })
     public Message findStaffInfoList(String token ,Integer role , Integer pageNo, Integer id, String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = staffService.findStaffInfoList(token , role ,pageNo,id,name);
+            Page page = staffService.findStaffInfoList(token , role ,pageNo ,id ,names );
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -709,7 +713,8 @@ public class StaffController {
             @ApiImplicitParam(name = "name" ,value = "员工名称" ,paramType = "query")
     })
     public void excelDownload(String token ,Integer role , HttpServletResponse response, Integer id, String phone, String number, String name){
-        HSSFWorkbook workbook = staffService.excelDownload(token ,role , id,phone,number,name);
+        String names = StringUtil.StringFilter(name);
+        HSSFWorkbook workbook = staffService.excelDownload(token ,role , id,phone,number ,names );
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fileName =dateFormat.format(new Date())+"客户资料"; //文件名
         excelService.excelDownload(response,fileName,workbook);

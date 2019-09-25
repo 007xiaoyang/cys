@@ -992,16 +992,16 @@ public class FinanceServiceImpl implements FinanceService {
 
     //用户销售明细导出
     @Override
-    public HSSFWorkbook userSaleDetailDownload(String token, Integer role, String name, String startTime, String endTime, Integer bindindId) {
+    public HSSFWorkbook userSaleDetailDownload(String token, Integer role, String name ,String goodsName, String startTime, String endTime, Integer bindindId) {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
 
         String seetName = "用户销售明细";//sheet名
-        String[] title =new String[]{"客户", "品名","数量", "单价(元)","合计(元)","创建时间"};//标题
-        List<HashMap> hashMaps = financeMapper.userSaleDetailDownload(new Paramt(bid ,name ,startTime,endTime ,bindindId));
+        String[] title =new String[]{"客户", "品名","数量", "销售单价(元)","合计(元)","创建时间"};//标题
+        List<HashMap> hashMaps = financeMapper.userSaleDetailDownload(new Paramt(name ,goodsName ,startTime,endTime ,bid ,bindindId));
 
-        Double tatol = financeMapper.userSaleDetailDownloadTatolMoney(new Paramt(bid, name, startTime, endTime, bindindId));
+        Double tatol = financeMapper.userSaleDetailDownloadTatolMoney(new Paramt(name ,goodsName ,startTime,endTime ,bid ,bindindId));
 
         String[][] values = new String[hashMaps.size()+1][];
         for (int i =0;i<= hashMaps.size();i++){
@@ -1015,12 +1015,51 @@ public class FinanceServiceImpl implements FinanceService {
                 values[i][4] = startTime+" — "+endTime;
             }else {
                 HashMap hashMap = hashMaps.get(i);
-                values[i][0] = hashMap.get("user_name").toString();
+                values[i][0] = hashMap.get("userName").toString();
                 values[i][1] = hashMap.get("name").toString();
-                values[i][2] = hashMap.get("order_number").toString();
-                values[i][3] = hashMap.get("order_price").toString();
-                values[i][4] = hashMap.get("price").toString();
-                values[i][5] = hashMap.get("create_time").toString();
+                values[i][2] = hashMap.get("orderNumber").toString();
+                values[i][3] = hashMap.get("orderPrice").toString();
+                values[i][4] = hashMap.get("salePrice").toString();
+                values[i][5] = hashMap.get("createTime").toString();
+            }
+
+        }
+        HSSFWorkbook workbook = ExcelUtil.getHSSWorkbook(seetName, title, values, null);
+        return workbook;
+    }
+
+
+    //用户销售汇总导出
+    @Override
+    public HSSFWorkbook userSaleSummaryDownload(String token, Integer role, String name  ,String goodsName , String startTime, String endTime, Integer bindindId) {
+
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
+        String seetName = "用户销售汇总";//sheet名
+        String[] title =new String[]{"客户", "品名","数量", "平均单价(元)","合计(元)","创建时间"};//标题
+        List<HashMap> hashMaps = financeMapper.userSaleSummaryDownload(new Paramt(name ,goodsName ,startTime,endTime ,bid ,bindindId));
+
+        Double tatol = financeMapper.userSaleSummaryDownloadTatolMoney(new Paramt(name ,goodsName ,startTime,endTime ,bid ,bindindId));
+
+        String[][] values = new String[hashMaps.size()+1][];
+        for (int i =0;i<= hashMaps.size();i++){
+            //标签长度和数据长度要一致
+            values[i] = new String[title.length];
+
+            if (hashMaps.size() == i){
+                values[i][0] = "合计：";
+                values[i][1] = String.valueOf(tatol);
+                values[i][3] = "导出时间段";
+                values[i][4] = startTime+" — "+endTime;
+            }else {
+                HashMap hashMap = hashMaps.get(i);
+                    values[i][0] = hashMap.get("userName").toString();
+                values[i][1] = hashMap.get("name").toString();
+                values[i][2] = hashMap.get("orderNumber").toString();
+                values[i][3] = hashMap.get("orderPrice").toString();
+                values[i][4] = hashMap.get("salePrice").toString();
+                values[i][5] = hashMap.get("createTime").toString();
             }
 
         }

@@ -1,10 +1,7 @@
 package com.shengxian.controller;
 
 import com.shengxian.common.Message;
-import com.shengxian.common.util.DateUtil;
-import com.shengxian.common.util.Global;
-import com.shengxian.common.util.IntegerUtils;
-import com.shengxian.common.util.Page;
+import com.shengxian.common.util.*;
 import com.shengxian.service.DistributeService;
 import com.shengxian.sysLog.SysLog;
 import io.swagger.annotations.Api;
@@ -88,8 +85,9 @@ public class DistributeController {
     })
     public Message notDistributeOrder(String token ,Integer role , String name, String number){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = distributeService.notDistributeOrder(token ,role ,name,number);
+            List<HashMap> hashMaps = distributeService.notDistributeOrder(token ,role ,names,number);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -363,12 +361,16 @@ public class DistributeController {
             @ApiImplicitParam(name = "staff_id" ,value = "员工id" ,paramType = "query"),
             @ApiImplicitParam(name = "time" ,value = "时间" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "客户名称" ,paramType = "query"),
-            @ApiImplicitParam(name = "type" ,value = "1产品，2客户,3重量,4车次,5送达，6店总销售，7开单,8采购数量提成，9采购重量提成，10月总采购提成" ,paramType = "query")
+            @ApiImplicitParam(name = "type" ,value = "1产品，2客户,3重量,4车次,5送达，6店总销售，7开单,8采购数量提成，9采购重量提成，10月总采购提成" ,paramType = "query"),
+            @ApiImplicitParam(name = "startTime" ,value = "" ,paramType = "query"),
+            @ApiImplicitParam(name = "endTime" ,value = "" ,paramType = "query")
     })
-    public Message staffDayDetail(String token ,Integer role , Integer pageNo, Integer staff_id , String time,String name ,Integer type){
+    public Message staffDayDetail(String token ,Integer role , Integer pageNo, Integer staff_id , String time,String name ,Integer type ,String startTime ,String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = distributeService.staffDayDetail(pageNo,staff_id,time ,name ,type);
+
+            Page page = distributeService.staffDayDetail(pageNo,staff_id,time ,names ,type ,startTime , endTime);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("配送管理控制层（/distribute/staffDayDetail）接口报错---------"+e.getMessage());
@@ -397,8 +399,9 @@ public class DistributeController {
     })
     public Message salePurchaseOrder(String token ,Integer role , Integer pageNo, Integer staff_id , String time ,String name ,Integer type){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = distributeService.salePurchaseOrder(pageNo,staff_id,time ,name ,type );
+            Page page = distributeService.salePurchaseOrder(pageNo,staff_id,time ,names ,type );
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("配送管理控制层（/distribute/salePurchaseOrder）接口报错---------"+e.getMessage());

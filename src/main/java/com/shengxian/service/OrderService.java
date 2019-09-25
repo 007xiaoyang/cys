@@ -560,7 +560,7 @@ public interface OrderService {
      * @param id
      * @return
      */
-    Integer updateOrderStatus(Integer id)throws NullPointerException;
+    Integer updateOrderStatus(Integer id ,Integer mold )throws NullPointerException;
 
     /**
      * 验单

@@ -128,7 +128,7 @@ public class MothPrinter {
      * @param no
      * @param mothPrinterClasses
      */
-    public static void salePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp,Double reduce ,List<MothPrinterClass> mothPrinterClasses){
+    public static void salePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp,Double reduce , String createTime ,List<MothPrinterClass> mothPrinterClasses){
         //标签说明：
         //单标签:
         //"<BR>"为换行,"<CUT>"为切刀指令(主动切纸,仅限切刀打印机使用才有效果)
@@ -165,7 +165,8 @@ public class MothPrinter {
             content += "运费:"+f+"元"+" 差价:"+dp+"元"+" 优惠:"+reduce+"元<BR>";
             content += "--------------------------------<BR>";
             content += "<B>总计："+tatol+"元</B><BR>";
-            content += "打印时间："+ DateUtil.getTime() +"<BR>";
+            content += "打印："+ DateUtil.getTime() +"<BR>";
+            content += "创单："+ createTime +"<BR>";
             content += "订单号："+ orderNumber+"<BR>";
             content += "标识码："+ no+"<BR>";
 
@@ -243,7 +244,7 @@ public class MothPrinter {
      * @param no
      * @param mothPrinterClasses
      */
-    public static void puchasePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp ,List<MothPrinterClass> mothPrinterClasses){
+    public static void puchasePrint(String sns ,String title,String beizhu , BigDecimal tatol ,String address,String phone ,String name ,String orderNumber ,String no,Double f ,Double dp , String createTime ,List<MothPrinterClass> mothPrinterClasses){
         //标签说明：
         //单标签:
         //"<BR>"为换行,"<CUT>"为切刀指令(主动切纸,仅限切刀打印机使用才有效果)
@@ -280,7 +281,8 @@ public class MothPrinter {
         content += "运费："+f+"元"+" 差价："+dp+"元<BR>";
         content += "--------------------------------<BR>";
         content += "<B>总计："+tatol+"元</B><BR>";
-        content += "打印时间："+ DateUtil.getTime() +"<BR>";
+        content += "打印："+ DateUtil.getTime() +"<BR>";
+        content += "创单："+  createTime +"<BR>";
         content += "订单号："+ orderNumber+"<BR>";
         content += "标识码："+ no+"<BR>";
 
@@ -350,15 +352,16 @@ public class MothPrinter {
      * 计算器打印
      */
     public static void calculatorPrint(String sns , String title, Calculator cal , List<CalculatorDatell> calculatorDatells){
+        StringBuffer size = new StringBuffer();
         String content;
         content = "<CB>"+title+"</CB><BR>";
         content += "名称："+cal.getName()+"<BR>";
         for (CalculatorDatell cd: calculatorDatells  ) {
-            content += cd.getNum().toString()+"斤 ,";
+            content += calculatorPrintUtils(cd.getNum().toString() , size);
         }
         content += "<BR>--------------------------------<BR>";
-        content += "总数："+cal.getTotal()+"<BR>";
-        content += "单价："+cal.getPrice()+"元  净重："+cal.getTotalNum()+"<BR>";
+        content += "总数:"+cal.getTotal()+ "   单价:"+cal.getPrice()+"元<BR>";
+        content += "净重:"+cal.getTotalNum().setScale(2,BigDecimal.ROUND_UP)+"   均重:"+cal.getTotalNum().divide(new BigDecimal(cal.getTotal()),2,BigDecimal.ROUND_HALF_UP)+"元<BR>";
         content += "<B>总计："+ cal.getTotalMoney().setScale(2,BigDecimal.ROUND_UP)+"元</B><BR>";
         content += "创建时间："+ DateUtil.getTime(cal.getCreateTime())+"<BR>";
         content += "打印时间："+ DateUtil.getTime() +"<BR>";
@@ -421,6 +424,33 @@ public class MothPrinter {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static String calculatorPrintUtils(String num ,StringBuffer size){
+        String values = "";
+        if (num.length() == 4){
+            values += num+",     ";
+        }else if (num.length() == 5){
+            values += num+",    ";
+        }else if (num.length() == 6){
+            values += num+",   ";
+        }else if (num.length() == 7){
+            values += num+",  ";
+        }else if (num.length() == 8){
+            values += num+", ";
+        }else if (num.length() == 9){
+            values += num+",";
+        }else {
+            values += num+", ";
+        }
+        size.append(values);
+
+        if ( size.length() == 30){
+            values += "<BR>";
+            size.setLength(0);
+        }
+
+        return values;
     }
 
     /**

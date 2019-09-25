@@ -2,10 +2,7 @@ package com.shengxian.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
-import com.shengxian.common.util.DateUtil;
-import com.shengxian.common.util.Global;
-import com.shengxian.common.util.IntegerUtils;
-import com.shengxian.common.util.Page;
+import com.shengxian.common.util.*;
 import com.shengxian.entity.Exp;
 import com.shengxian.entity.Parameter;
 import com.shengxian.service.ExcelService;
@@ -51,24 +48,24 @@ public class InventoryController {
     private ExcelService excelService;
 
     /**
-     * 添加仓库信息
-     * @param token
-     * @param name
-     * @return
-     */
-    @RequestMapping("/addInventory")
-    @SysLog(module = "库存管理",methods = "添加仓库")
-    @ApiOperation(value = "添加仓库信息" ,httpMethod = "POST")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
-            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "name" ,value = "仓库名称" ,paramType = "query")
-    })
-    public Message addInventory(String token ,Integer role , String name){
-        Message message = Message.non();
-        if (StringUtils.isEmpty(name)){
-            return message.code(Message.codeFailured).message("请输入仓库名称");
-        }
+         * 添加仓库信息
+         * @param token
+         * @param name
+         * @return
+         */
+        @RequestMapping("/addInventory")
+        @SysLog(module = "库存管理",methods = "添加仓库")
+        @ApiOperation(value = "添加仓库信息" ,httpMethod = "POST")
+        @ApiImplicitParams({
+                @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+                @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+                @ApiImplicitParam(name = "name" ,value = "仓库名称" ,paramType = "query")
+        })
+        public Message addInventory(String token ,Integer role , String name){
+            Message message = Message.non();
+            if (StringUtils.isEmpty(name)){
+                return message.code(Message.codeFailured).message("请输入仓库名称");
+            }
         try {
             Integer count = inventoryService.addInventory(token ,role, name);
             if (IntegerUtils.isEmpty(count)) {
@@ -91,7 +88,6 @@ public class InventoryController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "name" ,value = "仓库名称" ,paramType = "query")
     })
     public Message findInventoryList(String token ,Integer role ){
         Message message = Message.non();
@@ -115,7 +111,7 @@ public class InventoryController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "name" ,value = "仓库名称" ,paramType = "query")
+            @ApiImplicitParam(name = "warehouseId" ,value = "仓库id" ,paramType = "query")
     })
     public Message findInventoryByWid(String token ,Integer role  , Integer warehouseId){
         Message message = Message.non();
@@ -277,8 +273,9 @@ public class InventoryController {
     })
     public Message findBusinessGoodsInventory(String token , Integer role , Integer pageNo , String name , String number , Integer category_id , Integer warehouse_id ,Integer status, Integer goods_id ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = inventoryService.findBusinessGoodsInventory(token ,role ,pageNo,name ,number ,category_id ,warehouse_id ,status,goods_id  );
+            Page page = inventoryService.findBusinessGoodsInventory(token ,role ,pageNo,names ,number ,category_id ,warehouse_id ,status,goods_id  );
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -308,8 +305,9 @@ public class InventoryController {
     })
     public Message findSettlementInventory(String token ,Integer role , Integer pageNo , String name , String number , Integer category_id , Integer warehouse_id ,Integer status, Integer goods_id ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = inventoryService.findSettlementInventory(token ,role , pageNo ,name ,number ,category_id ,warehouse_id ,status,goods_id);
+            Page page = inventoryService.findSettlementInventory(token ,role , pageNo ,names ,number ,category_id ,warehouse_id ,status,goods_id);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -466,8 +464,9 @@ public class InventoryController {
     })
     public Message settlementGoodsRecord(String token, Integer pageNo, Integer settlement_id, String name, String number, Integer category_id, Integer warehouse_id, Integer opid ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = inventoryService.settlementGoodsRecord(token, pageNo, settlement_id, name, number, category_id, warehouse_id, opid);
+            Page page = inventoryService.settlementGoodsRecord(token, pageNo, settlement_id, names, number, category_id, warehouse_id, opid);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("库存管理控制层（/inventory/settlementGoodsRecord）接口报错---------"+e.getMessage());
@@ -519,8 +518,9 @@ public class InventoryController {
     })
     public Message findBusinessSuppliers(String token ,Integer role , String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = inventoryService.findBusinessSuppliers(token ,role ,name);
+            List<HashMap> hashMaps = inventoryService.findBusinessSuppliers(token ,role ,names);
             return message.code(Message.codeSuccessed).data(hashMaps).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -608,6 +608,7 @@ public class InventoryController {
     })
     public Message findGiveGoods(String token ,Integer role , Integer pageNo, Integer warehouse_id, String name, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
          try {
              String start = DateUtil.getDay(),  end = DateUtil.getDay();
              if ( IntegerUtils.isEmpty(startTime ,endTime)){
@@ -615,7 +616,7 @@ public class InventoryController {
                  start = startTime; end = endTime;
              }
 
-             Page page = inventoryService.findGiveGoods(token ,role , pageNo, warehouse_id, name, start, end);
+             Page page = inventoryService.findGiveGoods(token ,role , pageNo, warehouse_id, names, start, end);
              return message.code(Message.codeSuccessed).data(page).message("查询成功");
          }catch (NullPointerException e){
              return message.code(Message.codeFailured).message(e.getMessage());
@@ -643,13 +644,14 @@ public class InventoryController {
     })
     public Message findLossGoods(String token ,Integer role , Integer pageNo, Integer warehouse_id, String name, String startTime, String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
             String start = DateUtil.getDay(),  end = DateUtil.getDay();
             if ( IntegerUtils.isEmpty(startTime ,endTime)){
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = inventoryService.findLossGoods(token ,role ,pageNo ,warehouse_id ,name ,start ,end);
+            Page page = inventoryService.findLossGoods(token ,role ,pageNo ,warehouse_id ,names ,start ,end);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -697,7 +699,8 @@ public class InventoryController {
     })
     public void giveGoodslDownload(String token, Integer warehouse_id,String name,String startTime,String endTime , HttpServletResponse response){
         Message message = Message.non();
-        HSSFWorkbook workbook = inventoryService.giveGoodslDownload(token,warehouse_id,name,startTime,endTime);
+        String names = StringUtil.StringFilter(name);
+        HSSFWorkbook workbook = inventoryService.giveGoodslDownload(token,warehouse_id,names,startTime,endTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fileName =dateFormat.format(new Date())+"赠送产品详情"; //文件名
         excelService.excelDownload(response,fileName,workbook);
@@ -721,7 +724,8 @@ public class InventoryController {
     })
     public void lossGoodslDownload(String token, Integer warehouse_id,String name,String startTime,String endTime , HttpServletResponse response){
         Message message = Message.non();
-        HSSFWorkbook workbook = inventoryService.lossGoodslDownload(token,warehouse_id,name,startTime,endTime);
+        String names = StringUtil.StringFilter(name);
+        HSSFWorkbook workbook = inventoryService.lossGoodslDownload(token,warehouse_id,names,startTime,endTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fileName =dateFormat.format(new Date())+"报损产品详情"; //文件名
         excelService.excelDownload(response,fileName,workbook);

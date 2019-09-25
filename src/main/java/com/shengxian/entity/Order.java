@@ -1,5 +1,6 @@
 package com.shengxian.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -49,7 +50,7 @@ public class Order {
 
     private OrderDetail[] orderDetails;
 
-
+    private String createTime ;
     public Integer getId() {
         return id;
     }
@@ -297,5 +298,51 @@ public class Order {
 
     public void setOrderDetails(OrderDetail[] orderDetails) {
         this.orderDetails = orderDetails;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", order_number='" + order_number + '\'' +
+                ", no='" + no + '\'' +
+                ", binding_id=" + binding_id +
+                ", business_id=" + business_id +
+                ", staff_id=" + staff_id +
+                ", coupon_id=" + coupon_id +
+                ", price=" + price +
+                ", status=" + status +
+                ", state=" + state +
+                ", type=" + type +
+                ", create_time=" + create_time +
+                ", confirm_time=" + confirm_time +
+                ", statis=" + statis +
+                ", beizhu='" + beizhu + '\'' +
+                ", freight=" + freight +
+                ", difference_price=" + difference_price +
+                ", print_frequ=" + print_frequ +
+                ", mold=" + mold +
+                ", making='" + making + '\'' +
+                ", deliver='" + deliver + '\'' +
+                ", payee='" + payee + '\'' +
+                ", part=" + part +
+                ", originator='" + originator + '\'' +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", tatolCount=" + tatolCount +
+                ", money='" + money + '\'' +
+                ", reduce=" + reduce +
+                ", createTime=" + createTime +
+                ", orderDetails=" + Arrays.toString(orderDetails) +
+                '}';
     }
 }

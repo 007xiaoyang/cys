@@ -301,7 +301,7 @@ public class DistributeServiceImpl implements DistributeService {
             for (HashMap hashMap: hashMaps  ) {
 
                 //统计员工每月提成
-                String statis = distributeMapper.staffMonthStatis(staff_id, hashMap.get("month").toString());
+                Double statis = distributeMapper.staffMonthStatis(staff_id, hashMap.get("month").toString());
                 hashMap.put("statis",statis);
 
                 //根据月查询员工结算金额
@@ -333,19 +333,29 @@ public class DistributeServiceImpl implements DistributeService {
 
     //员工提成订单明细
     @Override
-    public Page staffDayDetail(Integer pageNo, Integer staff_id, String time,String name ,Integer type) throws Exception {
+    public Page staffDayDetail(Integer pageNo, Integer staff_id, String time,String name ,Integer type ,String startTime ,String endTime) throws Exception {
         int pageNum=1;
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
         //员工销售订单明细和采购订单明细总数
-        Integer saleSatolCount = distributeMapper.staffDayDetailCount(staff_id,time ,name ,type);
+        Integer saleSatolCount = distributeMapper.staffDayDetailCount(staff_id,time ,name ,type ,startTime ,endTime);
 
         Page page = new Page(pageNum,saleSatolCount,10);
 
         //员工销售订单明细和采购订单明细
-        List<HashMap> sale = distributeMapper.staffDayDetail(staff_id,time ,name ,type ,page.getStartIndex(),page.getPageSize());
+        List<HashMap> sale = distributeMapper.staffDayDetail(staff_id,time ,name ,type ,startTime , endTime ,page.getStartIndex(),page.getPageSize());
+
+        HashMap hashMap = new HashMap();
+        hashMap.put("totalStatis",0);
+        if (type != null && type != 0 ){
+            Double hash = distributeMapper.staffDayDetailTotalMoney(staff_id, time, name, type, startTime, endTime);
+            hashMap.put("totalStatis",hash);
+        }
+
+
         page.setRecords(sale);
+        page.setHashMap(hashMap);
         return page;
     }
 

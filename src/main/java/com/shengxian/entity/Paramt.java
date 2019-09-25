@@ -488,6 +488,27 @@ public class Paramt {
         this.pageSize = pageSize;
     }
 
+    /**
+     * 销售导出
+     * @param name
+     * @param goodsName
+     * @param startTime
+     * @param endTime
+     * @param business_id
+     * @param bindindId
+     */
+    public Paramt( String name ,String goodsName , String startTime, String endTime ,Integer business_id ,Integer bindindId) {
+        this.name = name;
+        this.goodsName = goodsName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.business_id = business_id;
+        this.bindindId = bindindId;
+    }
+
+
+
+
     public Integer getBusiness_id() {
         return business_id;
     }

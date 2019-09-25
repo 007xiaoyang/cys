@@ -8,6 +8,9 @@
 package com.shengxian.common.util;
 
 import java.security.MessageDigest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class StringUtil {
 	public static String str;
@@ -50,4 +53,25 @@ public class StringUtil {
 		return resultString;
 	}
 
+
+	/**
+	 * 去除前后空字符串
+	 * @param str
+	 * @return
+	 * @throws PatternSyntaxException
+	 */
+	public static String StringFilter(String str) throws PatternSyntaxException {
+		Matcher m = null;
+		if (str != null && !str.equals("") ){
+			return str.trim();
+		/*	// 只允许字母和数字、中文
+			// String regEx="[^a-zA-Z0-9]";
+			// 清除掉[]中所有特殊字符
+			String regEx = "[`~☆★!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]";
+			Pattern p = Pattern.compile(regEx);
+			m = p.matcher(str);
+			return  m.replaceAll("").trim().replace(" ", "").replace("\\", "");
+*/		}
+		return str;
+	}
 }

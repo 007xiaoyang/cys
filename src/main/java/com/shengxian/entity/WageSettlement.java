@@ -12,6 +12,7 @@ public class WageSettlement {
 
     private String time;
     private  Double money;
+    private Double statis;
 
     public String getTime() {
         return time;
@@ -27,5 +28,22 @@ public class WageSettlement {
 
     public void setMoney(Double money) {
         this.money = money;
+    }
+
+    public Double getStatis() {
+        return statis;
+    }
+
+    public void setStatis(Double statis) {
+        this.statis = statis;
+    }
+
+    @Override
+    public String toString() {
+        return "WageSettlement{" +
+                "time='" + time + '\'' +
+                ", money=" + money +
+                ", statis=" + statis +
+                '}';
     }
 }

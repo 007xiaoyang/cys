@@ -334,7 +334,7 @@
         where p.is_del = 0  and p.`status`= 1  and p.mold = 0 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
@@ -354,7 +354,7 @@
         where p.is_del = 0  and p.`status` = 1  and p.mold = 0 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and p.order_number LIKE CONCAT('%',#{number},'%')
@@ -374,7 +374,7 @@
         where p.is_del = 0  and p.`status`= 1  and p.state in (#{state})  and p.mold = 0 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
@@ -396,7 +396,7 @@
         where p.is_del = 0  and p.`status` = 1   and p.mold = #{mold} and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
@@ -470,7 +470,7 @@
         where p.is_del = 0  and p.`status` = 1  and p.mold = 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and p.order_number LIKE CONCAT('%',#{number},'%')
@@ -490,7 +490,7 @@
         where p.is_del = 0 and p.`status` = 1  and p.mold = 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
@@ -510,7 +510,7 @@
         where p.is_del = 0  and p.`status` = 1  and (p.state in (#{state}) ) and p.mold = 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
@@ -531,7 +531,7 @@
         where p.is_del = 0  and p.`status`= 1  and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and p.order_number LIKE CONCAT('%',#{number},'%')
@@ -550,7 +550,7 @@
         where p.is_del = 0  and p.`status`= 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+             or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and p.order_number LIKE CONCAT('%',#{number},'%')
@@ -1242,7 +1242,7 @@
         where p.is_del = 0  and p.`status`=1 and p.state=1  and p.mold = #{mold} and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
-            or or p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
+            or  p.payee  LIKE CONCAT('%',#{name},'%') or p.no  LIKE CONCAT('%',#{name},'%'))
         </if>
         <if test="number != null and number !=''">
             and  p.order_number LIKE CONCAT('%',#{number},'%')
@@ -1342,20 +1342,24 @@
         order by o.audit_time desc limit #{startIndex} , #{pageSize}
     </select>
 
+
     <!--用户销售明细导出-->
     <select id="userSaleDetailDownload" resultType="HashMap">
-        select od.id ,bd.user_name , g.`name`,od.order_number,od.order_price ,
-        (od.order_number * od.order_price)price , o.create_time
+        select bd.user_name as userName , g.`name`,od.order_number as orderNumber
+        ,od.order_price as orderPrice , (od.order_number * od.order_price)salePrice , o.create_time as createTime
         from shengxian_order o
         inner join shengxian_order_details od on od.order_id = o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
         left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
-        <if test="is != null">
-            and bd.id = #{is}
+        <if test="bindindId != null">
+            and bd.id = #{bindindId}
         </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and ( g.name LIKE CONCAT('%',#{goodsName},'%') or g.number LIKE CONCAT('%',#{goodsName},'%') )
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -1371,16 +1375,75 @@
         inner join shengxian_binding bd on bd.id = o.binding_id
         left join shengxian_goods g on g.id = od.goods_id
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
-        <if test="is != null">
-            and bd.id = #{is}
+        <if test="bindindId != null">
+            and bd.id = #{bindindId}
         </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and ( g.name LIKE CONCAT('%',#{goodsName},'%') or g.number LIKE CONCAT('%',#{goodsName},'%') )
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
     </select>
+
+    <!--用户销售汇总导出-->
+    <select id="userSaleSummaryDownload" resultType="HashMap">
+        select bd.user_name as userName , g.name ,DATE_FORMAT(o.create_time,'%Y-%m-%d')createTime,
+        sum(od.order_number * od.order_price)salePrice,
+        sum(od.order_price)orderPrice ,
+        sum(od.order_number)orderNumber
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del=0  and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="bindindId != null">
+            and bd.id = #{bindindId}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and ( g.name LIKE CONCAT('%',#{goodsName},'%') or g.number LIKE CONCAT('%',#{goodsName},'%') )
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  bd.id ,g.id  order by o.audit_time desc
+    </select>
+
+    <!--用户销售汇总导出总金额-->
+    <select id="userSaleSummaryDownloadTatolMoney" resultType="Double">
+        select ifnull(sum(a.salePrice),0)salePrice
+        from
+        (select sum(od.order_number * od.order_price)salePrice
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        inner join shengxian_binding bd on bd.id = o.binding_id
+        left join shengxian_goods g on g.id = od.goods_id
+        where o.is_del=0  and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
+        <if test="bindindId != null">
+            and bd.id = #{bindindId}
+        </if>
+        <if test="name != null and name != ''">
+            and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.audit_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        group by  bd.id ,g.id )a
+    </select>
+
+
+
+
+
 
     <!--财务结算时查询五种收款分类-->
     <select id="fiveMoneyType" resultType="com.shengxian.entity.Settlement">

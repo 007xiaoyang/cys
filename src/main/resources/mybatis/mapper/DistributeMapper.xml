@@ -469,18 +469,18 @@
 
 
     <!--统计员工每月提成-->
-    <select id="staffMonthStatis" resultType="String">
-        select sum(a.statis)statis from (
+    <select id="staffMonthStatis" resultType="Double">
+        select ifnull(sum(a.statis) , 0)statis from (
         (select  DATE_FORMAT(os.create_time,'%Y-%m') as month, sum(os.statis)statis
         from shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id = o.id
         where o.is_del=0 and o.status=4 and os.staff_id = #{staff_id}
         group by month order by month desc )
         UNION ALL
-        (select DATE_FORMAT(ts.create_time,'%Y-%m') as month,sum(ts.statis)statis
+        (select ts.create_time  as month,sum(ts.statis)statis
         from shengxian_staff_timing_statis ts where ts.staff_id = #{staff_id}
         group by month order by month desc ))a
-        where a.month=#{time}
+        where a.month =#{time}
         group by a.month order by a.month desc
     </select>
 
@@ -502,30 +502,37 @@
     <!--员工销售提成订单明细总数-->
     <select id="staffDayDetailCount" resultType="Integer">
         select count(1) from (
-        select o.audit_time ,bd.user_name ,sf.type
+        select sf.create_time ,bd.user_name ,sf.type
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
         where   sf.staff_id=#{staff_id} and sf.type in(3,5,6 ,7) and o.is_del= 0   group by o.order_number , sf.type
         union ALL
-        select p.audit_time ,s.name as user_name ,sf.type
+        select sf.create_time ,s.name as user_name ,sf.type
         from shengxian_staff_frequency sf
         left join shengxian_purchase p on p.id = sf.order_id
         left join shengxian_suppliers s on s.id = p.suppliers_id
         where sf.staff_id = #{staff_id} and sf.type in(8 , 9 ,10) and p.is_del= 0 group by p.order_number , sf.type
         union ALL
-        select o.audit_time ,bd.user_name , op.type
+        select op.create_time ,bd.user_name , op.type
         from  shengxian_order o
         inner join shengxian_staff_once_percentage op on FIND_IN_SET(o.id,op.order_id)
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del=0 and op.staff_id=#{staff_id}
         UNION ALL
-        select o.audit_time ,bd.user_name , os.type
+        select os.create_time ,bd.user_name , os.type
         from  shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id= o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del=0 and os.staff_id=#{staff_id} group by o.order_number , os.type
-         )a  where DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+         )a
+         where 1 = 1
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(a.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(a.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(a.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
         <if test="name != null and name != ''">
             and a.user_name like CONCAT ('%', #{name}, '%')
         </if>
@@ -536,45 +543,119 @@
 
     <!--员工提成订单明细-->
     <select id="staffDayDetail" resultType="HashMap">
-        select a.id, a.order_number,a.user_name,a.price,a.money,a.type,a.audit_time,a.mold,a.statis
+        select a.id, a.order_number,a.user_name,a.price,a.money,a.type,a.create_time as audit_time,a.mold,a.statis
         from (
 
         select o.id,  o.order_number, bd.user_name ,
-        o.price,ifnull(o.money,0)money,sf.type ,o.audit_time,o.mold , sum(sf.statis)as statis
+        o.price,ifnull(o.money,0)money,sf.type ,sf.create_time,o.mold , sum(sf.statis)as statis
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del= 0  and sf.staff_id = #{staff_id}  group by o.order_number , sf.type
+        where o.is_del= 0  and sf.staff_id = #{staff_id} and sf.type in(3 , 5 ,6 , 7)  group by o.order_number , sf.type
 
         union ALL
         select p.id, p.order_number ,s.name as user_name ,
-        p.price,ifnull(p.money,0)money ,sf.type ,p.audit_time,p.mold ,  sum(sf.statis)as statis
+        p.price,ifnull(p.money,0)money ,sf.type ,sf.create_time,p.mold ,  sum(sf.statis)as statis
         from shengxian_staff_frequency sf
         left join shengxian_purchase p on p.id = sf.order_id
         left join shengxian_suppliers s on s.id = p.suppliers_id
         where sf.staff_id = #{staff_id} and sf.type in(8 , 9 ,10) and p.is_del= 0 group by p.order_number , sf.type
         union ALL
         select o.id,  o.order_number,bd.user_name ,
-        o.price,ifnull(o.money,0)money ,op.type ,o.audit_time,o.mold , 1 as statis
+        o.price,ifnull(o.money,0)money ,op.type ,op.create_time,o.mold , 1 as statis
         from  shengxian_order o
         inner join shengxian_staff_once_percentage op on FIND_IN_SET(o.id,op.order_id)
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del=0 and op.staff_id = #{staff_id}
         UNION ALL
         select o.id, o.order_number,bd.user_name ,
-        o.price,ifnull(o.money,0)money ,os.type ,o.audit_time,o.mold , sum(os.statis) as statis
+        o.price,ifnull(o.money,0)money ,os.type ,os.create_time,o.mold , sum(os.statis) as statis
         from  shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id= o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del=0 and os.staff_id = #{staff_id} group by o.order_number , os.type
-        )a  where DATE_FORMAT(a.audit_time,'%Y-%m') = #{time}
+        )a
+        where 1 = 1
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(a.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(a.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(a.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
         <if test="name != null and name != ''">
             and a.user_name like CONCAT ('%', #{name}, '%')
         </if>
         <if test="type != null">
             and a.type = #{type}
         </if>
-        order by a.audit_time desc   limit #{startIndex} ,#{pageSize}
+        order by a.create_time desc   limit #{startIndex} ,#{pageSize}
+
+    </select>
+
+
+    <!--员工提成订单明细-->
+    <select id="staffDayDetailTotalMoney" resultType="Double">
+
+
+        <if test="type > 2 and type != 4 and type lt 8">
+            select ifnull(sum(statis) , 0) from (
+            select f.statis
+            from shengxian_staff_frequency f
+            left join shengxian_order o on o.id = f.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where f.staff_id = #{staff_id} and f.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+            </if>
+            group by o.order_number , f.type  ) a
+        </if>
+        <if test="type > 7  and type lt 11">
+            select ifnull(sum(statis) , 0) from (
+            select f.statis
+            from shengxian_staff_frequency f
+            left join shengxian_purchase p on p.id = f.order_id
+            left join shengxian_suppliers s on s.id = p.suppliers_id
+            where f.staff_id = #{staff_id} and f.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(f.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(f.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            group by p.order_number , f.type ) a
+        </if>
+
+        <if test="type lt 3">
+            select ifnull(sum(statis) , 0) from (
+            select os.statis
+            from shengxian_staff_order_statis os
+            left join shengxian_order o on o.id = os.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where os.staff_id = #{staff_id} and os.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(os.create_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            group by o.order_number , os.type )a
+        </if>
+        <if test="type == 4">
+            select  count(op.id)
+            from shengxian_staff_once_percentage op
+            left join shengxian_order o on o.id = op.order_id
+            left join shengxian_binding bd on bd.id = o.binding_id
+            where op.staff_id = #{staff_id} and op.type = #{type}
+            <if test="time != null and time != ''">
+                and DATE_FORMAT(op.create_time,'%Y-%m') = #{time}
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+        </if>
 
     </select>
 

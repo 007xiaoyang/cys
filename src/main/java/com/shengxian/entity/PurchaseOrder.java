@@ -1,5 +1,6 @@
 package com.shengxian.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -266,5 +267,39 @@ public class PurchaseOrder {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "PurchaseOrder{" +
+                "id=" + id +
+                ", order_number='" + order_number + '\'' +
+                ", suppliers_id=" + suppliers_id +
+                ", business_id=" + business_id +
+                ", staff_id=" + staff_id +
+                ", making='" + making + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                ", state=" + state +
+                ", type=" + type +
+                ", create_time=" + create_time +
+                ", freight=" + freight +
+                ", difference_price=" + difference_price +
+                ", beizhu='" + beizhu + '\'' +
+                ", print_frequ=" + print_frequ +
+                ", mold=" + mold +
+                ", number='" + number + '\'' +
+                ", originator='" + originator + '\'' +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", tatolCount=" + tatolCount +
+                ", no='" + no + '\'' +
+                ", money='" + money + '\'' +
+                ", bAddress='" + bAddress + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", createTime=;" +createTime +'\''+
+                ", purchaseOrderDetail=" + Arrays.toString(purchaseOrderDetail) +
+                '}';
     }
 }

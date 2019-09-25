@@ -664,7 +664,7 @@ public class ClerkServiceImpl implements ClerkService {
 
                     MothPrinter.salePrint(printers.get(i).getSn1() ,mold == 0 ? "销售单":"销售退货单" ,OP.getBeizhu(), new BigDecimal(OP.getPrice().toString())
                             ,OP.getAddress(),OP.getPhone(),OP.getName(),OP.getOrder_number(),OP.getNo() ,OP.getFreight()
-                            ,OP.getDifference_price(),OP.getReduce() ,mothPrinters);
+                            ,OP.getDifference_price(),OP.getReduce() , OP.getCreateTime() ,mothPrinters);
 
                 }
             }
@@ -850,7 +850,7 @@ public class ClerkServiceImpl implements ClerkService {
 
                     MothPrinter.puchasePrint(printers.get(i).getSn1() ,mold == 0? "采购单":"采购退货单" ,PP.getBeizhu(), new BigDecimal(PP.getPrice().toString())
                             ,PP.getAddress(),PP.getPhone(),PP.getName(),PP.getOrder_number(),PP.getNo()
-                            ,PP.getFreight() ,PP.getDifference_price(),mothPrinters);
+                            ,PP.getFreight() ,PP.getDifference_price() , PP.getCreateTime() ,mothPrinters);
 
                 }
             }
@@ -910,6 +910,8 @@ public class ClerkServiceImpl implements ClerkService {
         Iterator<WageSettlement> it = wageSettlements.iterator();
         while (it.hasNext()){
             WageSettlement wage = it.next();
+            Double statis = distributeMapper.staffMonthStatis(staffId, wage.getTime());
+            wage.setStatis(statis);
             if (wage.getMoney() != null ){
                 if (ym.compareTo(wage.getTime()) > 0 ){
                     it.remove();

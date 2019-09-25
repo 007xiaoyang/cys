@@ -4,10 +4,7 @@ import com.shengxian.common.util.GroupNumber;
 import com.shengxian.common.util.OrderCodeFactory;
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.*;
-import com.shengxian.mapper.OrderMapper;
-import com.shengxian.mapper.ShopMapper;
-import com.shengxian.mapper.TemporaryMapper;
-import com.shengxian.mapper.UserMapper;
+import com.shengxian.mapper.*;
 import com.shengxian.service.TemporaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +39,9 @@ public class TemporaryServiceImpl  implements TemporaryService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private ClerkMapper clerkMapper;
 
 
     //查询店铺类别
@@ -108,9 +108,12 @@ public class TemporaryServiceImpl  implements TemporaryService {
             temporaryMapper.updateTShoppingcartDetailNum(tscdId,num ,type);
 
         }else {
+            //通过产品id查询临时售价
+
+            Double temporaryPrice = temporaryMapper.selectTemporaryPriceByGoodsId(goods_id);
 
             //添加购物车详情的产品数量
-            ShoppongcartDetail shoppongcartDetail = new ShoppongcartDetail(tscId,goods_id,num,new Date());
+            ShoppongcartDetail shoppongcartDetail = new ShoppongcartDetail(tscId ,goods_id ,num , temporaryPrice ,new Date());
             temporaryMapper.addTShoppingcartDetailNum(shoppongcartDetail);
             tscdId = shoppongcartDetail.getId();
         }
@@ -132,6 +135,7 @@ public class TemporaryServiceImpl  implements TemporaryService {
         if (count == null || count == 0){
             throw new NullPointerException("执行失败");
         }
+        //通过临时客户购物车详情ID查询原来的产品数量
         HashMap tscd = temporaryMapper.selectTShoppingcartDetailGoodsNum(tscdId);
         if (tscd == null ){
             throw new NullPointerException("购物车详情产品不存在");
@@ -157,44 +161,67 @@ public class TemporaryServiceImpl  implements TemporaryService {
         return temporaryMapper.updateTShoppingcartTotalMoney(tscId , money);
     }
 
+    //获取购物车金额和总数
+    @Override
+    public Integer temporaryShoppingcartMoneyAndCount( String tic) throws  Exception {
+        //通过临时客户识别码查询购物车id
+        Integer tscId = temporaryMapper.selectTShoppingcart(tic);
+        return  temporaryMapper.selectTShoppingcartGoodsDetailGoodsCount(tscId);
+    }
+
+
     //当前临时客户的购物车
     @Override
     @Transactional
-    public  ShoppingHashMap temporaryShoppingcart(Integer business_id ,String tic)throws NullPointerException ,Exception {
+    public  HashMap temporaryShoppingcart(Integer business_id ,String tic)throws NullPointerException ,Exception {
 
-
+        HashMap hash = new HashMap();
         //通过店铺id查询店铺名称
-        ShoppingHashMap hashMap = temporaryMapper.findStartingPriceAndStoreName(business_id);
-        if (hashMap == null ){
+        String storeName = temporaryMapper.findStartingPriceAndStoreName(business_id);
+        if (storeName == null || storeName.equals("") ){
             throw new NullPointerException("店铺信息不存在");
         }
 
         //通过临时客户识别码查询购物车id
         Integer tscId = temporaryMapper.selectTShoppingcart(tic);
-        hashMap.setTScId(tscId);
-
+        hash.put("tscId" , tscId);
         //通过购物车id查询临时客户购物车下是否还有产品
         List<Integer> shoppingcartIsGoods = temporaryMapper.findTShoppingcartIsGoods(tscId );
         if (shoppingcartIsGoods.size() <= 0){
             //因购物车下没有产品则删除购物车
             temporaryMapper.deleteTShoppingcart(tscId);
-            hashMap.setTScId(0);
         }
-
-        //通过购物车ID查询购物车详情产品总数
-        Integer count = temporaryMapper.selectTShoppingcartGoodsDetailGoodsCount(hashMap.getTScId());
-        hashMap.setCount(count);
+        //查询购物车下所有产品的总金额
+        Double tatolMoney = temporaryMapper.selectShoppingcartMoney( tscId , tic );
+        hash.put("money" , new BigDecimal(tatolMoney).setScale(2,BigDecimal.ROUND_CEILING));
 
         //通过临时客户购物车id查询购物车下的产品信息
-        List<HashMap> hashMaps = temporaryMapper.selectTShoppingcartGoodsDetail(hashMap.getTScId()  ,business_id);
-        hashMap.setTScDetail(hashMaps);
+        List<HashMap> hashMaps = temporaryMapper.selectTShoppingcartGoodsDetail( tscId  ,business_id);
+        hash.put("goodsDateil" , hashMaps);
 
 
-        //查询购物车下所有产品的总金额
-        Double tatolMoney = temporaryMapper.calculationTScAllGoodsTotalMoney(hashMap.getTScId() );
-        hashMap.setTatolMoney(new BigDecimal(tatolMoney).setScale(2,BigDecimal.ROUND_CEILING));
-        return hashMap;
 
+        return hash;
+    }
+
+
+    //删除购物车产品
+    @Override
+    @Transactional
+    public Integer deleteShoppingcartDateil(Integer tscId , Integer tscdId) {
+        //删除临时客户购物车详情id
+        temporaryMapper.deleteTShoppingcartDetailId(tscdId);
+
+        //通过购物车id查询临时客户购物车下是否还有产品
+        List<Integer> shoppingcartIsGoods = temporaryMapper.findTShoppingcartIsGoods(tscId);
+        if (shoppingcartIsGoods.size() <= 0){
+            //因购物车下没有产品则删除购物车
+            return  temporaryMapper.deleteTShoppingcart(tscId);
+        }
+        //计算店铺加入购物车的总金额
+        Double money = temporaryMapper.calculationTScAllGoodsTotalMoney( tscId);
+        //修改购物车总金额
+        return temporaryMapper.updateTShoppingcartTotalMoney(tscId , money);
     }
 
     //结算
@@ -222,8 +249,7 @@ public class TemporaryServiceImpl  implements TemporaryService {
     //下订单
     @Override
     @Transactional
-    public Integer addOrder(String tic , Integer business_id ,Order order) throws NullPointerException, Exception {
-        System.out.println("--------------------下订单---------------------");
+    public Integer addOrder(String tic , Integer business_id ,Integer tscId) throws NullPointerException, Exception {
 
         //通过店铺id查询店铺是否有扫码客户账号名称
         Integer biding_id = temporaryMapper.selectScanBinding(business_id);
@@ -258,6 +284,11 @@ public class TemporaryServiceImpl  implements TemporaryService {
             userMapper.addBindingIntegra(bindUser.getId(),new Date());
         }
 
+        //通过购物车id查询购物车金额
+        Double price = temporaryMapper.selectShoppingcartMoney(tscId, tic);
+
+        Order order = new Order();
+
         order.setOrder_number(OrderCodeFactory.getOnlineOrderCode("6" , (long)business_id ,5));//订单号
         order.setNo(OrderCodeFactory.getStringRandom(3,3));//标识码
         order.setMaking("扫码客户"); //制单人
@@ -265,40 +296,47 @@ public class TemporaryServiceImpl  implements TemporaryService {
         order.setBinding_id(biding_id);  //绑定用户id
         order.setStaff_id(0);
         order.setStatus(2);
+        order.setPrice(price);
         order.setCreate_time(new Date());
         orderMapper.addOrder(order);
 
-        //通过临时客户识别码查询购物车id
-        Integer tscId = temporaryMapper.selectTShoppingcart(tic); //scid 购物车id
 
-        //订单详情
-        OrderDetail[] orderDetail = order.getOrderDetails();
-        for (OrderDetail detail : orderDetail){
-            //订单id
-            detail.setOrder_id(order.getId());
-
+        //通过购物车id查询购物车产品详情
+        List<HashMap> hashs = temporaryMapper.selectTShoppingcartGoodsDetail(tscId, business_id);
+        double costPrice = 0;
+        double money = 0 ;
+        double profit = 0;
+        OrderDetail orderDetail = new OrderDetail();
+        for (HashMap hash: hashs ) {
             //根据产品id查询产品进价
-            double costPrice = shopMapper.findGoodsCostPrice(detail.getGoods_id());
+            costPrice = clerkMapper.findGoodsCostPrice(Integer.valueOf(hash.get("goodsId").toString()));
+            Integer goodsId = Integer.valueOf(hash.get("goodsId").toString());
+            Double num = Double.valueOf(hash.get("num").toString());
+
             //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以数量等于纯盈利润
-            detail.setProfit((detail.getOrder_price()-costPrice)*detail.getOrder_number());
-            detail.setType(0);
-            detail.setCost_price(costPrice);
+            profit = (Double.valueOf(hash.get("price").toString()) - costPrice) * num ;
+            money = Double.valueOf(hash.get("price").toString());
+            //销售先减少产品的虚拟库存，到货时根据订单id减少实际库存
+            shopMapper.reduceGoodsFictitiousInventory(goodsId , num );
 
-            //添加订单详情
-            orderMapper.addOrderDetail(detail);
 
-            //根据临时客户购物车id和产品id删除购物车详情
-            temporaryMapper.deteleTShoppingCartDetail( tscId , detail.getGoods_id());
+
+            orderDetail.setGoods_id(goodsId); //产品ID
+            orderDetail.setOrder_number(num); //购买数量
+            orderDetail.setOrder_price(money); //购买单价
+            orderDetail.setProfit(profit); //盈利
+            orderDetail.setOrder_id(order.getId()); //订单ID
+            orderDetail.setCost_price(costPrice);
+            //添加购物车里的产品详情
+            orderMapper.addOrderDetail(orderDetail);
+
+            //删除购物车详情
+            temporaryMapper.deleteTShoppingcartDetailId(Integer.valueOf(hash.get("id").toString()));
 
         }
-        //最后判断绑定用户的购物车里是否还有产品
 
-        //通过购物车id查询购物车下是否还有产品
-        List<Integer> shoppingcartIsGoods = temporaryMapper.findTShoppingcartIsGoods(tscId);
-        if (shoppingcartIsGoods.size() <= 0){
-            //因购物车下没有产品则删除购物车
-            return  temporaryMapper.deleteTShoppingcart(tscId );
-        }
+        temporaryMapper.deleteTShoppingcart(tscId);
+
 
         return order.getId();
     }

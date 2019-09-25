@@ -3,10 +3,7 @@ package com.shengxian.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
 import com.shengxian.common.Sendsms;
-import com.shengxian.common.util.DateUtil;
-import com.shengxian.common.util.Global;
-import com.shengxian.common.util.IntegerUtils;
-import com.shengxian.common.util.Page;
+import com.shengxian.common.util.*;
 import com.shengxian.entity.*;
 import com.shengxian.service.ShopService;
 import com.shengxian.service.ExcelService;
@@ -302,8 +299,9 @@ public class ShopController {
     })
     public Message findGoodsList(String token,Integer role ,Integer pageNo ,Integer categoryId,String number,String name,Long barcode ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = shopService.findGoodsList(token , role ,pageNo,categoryId ,number ,name,barcode);
+            Page page = shopService.findGoodsList(token , role ,pageNo,categoryId ,number ,names ,barcode);
             return message.code(Message.codeSuccessed).data(page).message("操作成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -847,13 +845,14 @@ public class ShopController {
     })
     public Message findBusinessOperationRecord(String token ,Integer role,Integer pageNo,String phone,String name,String startTime,String endTime){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         String start= DateUtil.getDay();
         String end=DateUtil.getDay();
         try {
             if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")){
                 start = startTime; end = endTime;
             }
-            Page logList = logService.findLogList(token ,role,pageNo, phone, name,start,end);
+            Page logList = logService.findLogList(token ,role,pageNo, phone, names ,start,end);
             return message.code(Message.codeSuccessed).data(logList).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeSuccessed).message(e.getMessage());
@@ -946,8 +945,9 @@ public class ShopController {
     })
     public Message selectIntegrGoodsList(String token ,Integer role,Integer pageNo ,Integer categoryId,String number,String name,Long barcode ){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            Page page = shopService.selectIntegrGoodsList(token ,role,pageNo,categoryId,number,name,barcode);
+            Page page = shopService.selectIntegrGoodsList(token ,role,pageNo,categoryId,number ,names ,barcode);
             return message.code(Message.codeSuccessed).data(page).data(page).message("操作成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1583,8 +1583,9 @@ public class ShopController {
     })
     public Message selectRestrictionGoods(String token ,Integer role ,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = shopService.selectRestrictionGoods(token ,role,name);
+            List<HashMap> hashMaps = shopService.selectRestrictionGoods(token ,role ,names );
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1611,8 +1612,9 @@ public class ShopController {
     })
     public Message searchNotRestrictionGoods(String token ,Integer role ,String name,Integer goods_id,Integer category_id){
         Message message =Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = shopService.searchNotRestrictionGoods(token ,role,name,goods_id,category_id);
+            List<HashMap> hashMaps = shopService.searchNotRestrictionGoods(token ,role ,names ,goods_id,category_id);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1754,8 +1756,9 @@ public class ShopController {
     })
     public Message selectAllCoupon(String token ,Integer role ,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = shopService.selectAllCoupon(token ,role ,name);
+            List<HashMap> hashMaps = shopService.selectAllCoupon(token ,role , names);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1970,8 +1973,9 @@ public class ShopController {
     })
     public Message searchNotAddFullBestow(String token ,Integer role ,String name,Integer category_id){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = shopService.searchNotFullBestowGoods(token ,role,name,category_id);
+            List<HashMap> hashMaps = shopService.searchNotFullBestowGoods(token ,role ,names ,category_id);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e) {
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -1996,8 +2000,9 @@ public class ShopController {
     })
     public Message selectAddFullBestow(String token ,Integer role ,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = shopService.selectAddFullBestowGoods(token ,role,name);
+            List<HashMap> hashMaps = shopService.selectAddFullBestowGoods(token ,role ,names );
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e) {
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -2273,8 +2278,9 @@ public class ShopController {
     })
     public Message notLimitedSeckillGoods(String token , Integer role ,Integer seckill_id ,String name){
         Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
         try {
-            List<HashMap> hashMaps = shopService.notLimitedSeckillGoods(token ,role, seckill_id,name);
+            List<HashMap> hashMaps = shopService.notLimitedSeckillGoods(token ,role, seckill_id ,names);
             return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
