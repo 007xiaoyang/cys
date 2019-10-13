@@ -603,6 +603,7 @@
     <select id="stayDelivered" resultType="HashMap">
         select o.id,b.user_name ,o.price,o.no, (select phone from user where id=b.user_id)phone ,o.create_time,o.mold,o.status,o.making ,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
@@ -769,6 +770,7 @@
         select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
@@ -855,6 +857,7 @@
         select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
@@ -942,6 +945,7 @@
         select o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
@@ -1132,6 +1136,7 @@
     <!--所有销售订单-->
     <select id="allSaleOrder" resultType="HashMap">
         select o.id,o.no,o.price,o.money,b.user_name,b.number ,o.status,o.state,o.type,o.mold,o.making,o.deliver,o.payee,o.reason,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         o.freight, o.difference_price,o.reason,o.arrears_cause,o.create_time,o.audit_time,o.receivable_time,o.part,o.money2
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce

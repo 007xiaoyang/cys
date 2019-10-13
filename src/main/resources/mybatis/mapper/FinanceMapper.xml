@@ -23,6 +23,7 @@
     <!--商城订单-->
     <select id="mallMoney" resultType="HashMap">
         select o.id,o.no,o.order_number,o.price,ifnull(o.money,0)money,b.user_name,o.audit_time ,o.receivable_time,o.freight,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         o.payee,o.difference_price,o.state,o.type,o.money2 ,o.create_time  from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
@@ -81,6 +82,7 @@
     <!--线下产品-->
     <select id="underLineMoney" resultType="HashMap">
         select o.id,o.no,o.order_number,o.price,o.money,b.user_name ,o.audit_time,o.receivable_time,o.freight,o.payee,o.difference_price,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         o.type,o.state,o.money2 ,o.create_time from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold =0 and o.part=0 and o.business_id = #{business_id}
@@ -138,6 +140,7 @@
     <!--退货产品-->
     <select id="returnMoney" resultType="HashMap">
         select o.id,o.no,o.order_number,o.price,o.money,b.user_name,o.audit_time ,o.receivable_time,o.freight,o.payee,o.difference_price,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
         o.type,o.state ,o.money2,o.create_time   from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 1 and o.business_id = #{business_id}
@@ -209,8 +212,9 @@
 
     <!--总销售订单-->
     <select id="tatolSaleMoney" resultType="HashMap">
-        select o.id,o.no, o.order_number,o.price,o.money,b.user_name ,o.freight,o.difference_price
-        ,o.type ,o.state,o.mold , o.part,o.payee,o.audit_time ,o.receivable_time ,o.money2,o.create_time
+        select o.id,o.no, o.order_number,o.price,o.money,b.user_name ,o.freight,o.difference_price   ,
+        (select name from shengxian_staff where id = o.staff_id )staffName,
+        o.type ,o.state,o.mold , o.part,o.payee,o.audit_time ,o.receivable_time ,o.money2,o.create_time
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4 and o.state not in(1) and o.business_id = #{business_id}
@@ -348,6 +352,7 @@
     <!--采购产品金额-->
     <select id="purchaseMoney" resultType="HashMap">
         select p.id,p.no, p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee,p.money,p.money2,
+        (select name from shengxian_staff where id = p.staff_id )staffName,
         p.receivable_time,p.audit_time,p.state,p.create_time
         from shengxian_purchase p
         inner join shengxian_suppliers s  on s.id = p.suppliers_id
@@ -484,6 +489,7 @@
     <!--采购退货产品-->
     <select id="purchaseReturnMoney" resultType="HashMap">
         select p.id,p.no, p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee, p.receivable_time,p.state,p.money2,
+        (select name from shengxian_staff where id = p.staff_id )staffName,
         p.money,p.audit_time,p.create_time
         from shengxian_purchase p
         inner join shengxian_suppliers s  on s.id = p.suppliers_id
@@ -545,6 +551,7 @@
     <!--总采购订单-->
     <select id="tatolPurchaseOrder" resultType="HashMap">
         select p.id,p.no,p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee, p.receivable_time,p.mold, p.state,
+        (select name from shengxian_staff where id = p.staff_id )staffName,
         p.money,p.audit_time ,p.money2 ,p.create_time  from shengxian_purchase p
         inner join shengxian_suppliers s  on s.id = p.suppliers_id
         where p.is_del = 0  and p.`status`= 1 and p.business_id = #{business_id}
