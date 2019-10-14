@@ -195,7 +195,7 @@
 
     <!--待审核(采购未到货的订单)-->
     <select id="stayAudited" resultType="HashMap">
-        select p.id,p.order_number,s.name,p.price ,p.status,p.freight,p.mold ,p.print_frequ
+        select p.id,p.order_number,s.name,p.price ,p.status,p.freight,p.mold ,p.print_frequ , (select name from shengxian_staff where id = p.staff_id )staffName
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id and s.is_del = 0
         where p.is_del = 0 and p.`status` = 0 and p.business_id = #{business_id}
@@ -312,7 +312,7 @@
     <!--查询采购未付款的订单-->
     <select id="purchaseUnpaidOrder" resultType="HashMap">
         select p.id,p.price,p.order_number,s.`name` ,p.create_time,p.freight,p.mold,making,p.type,p.money,
-        p.auditor,p.payee ,p.audit_time ,p.money2
+        p.auditor,p.payee ,p.audit_time ,p.money2 , (select name from shengxian_staff where id = p.staff_id )staffName
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         where p.is_del = 0 and status = 1  and p.business_id = #{business_id} and p.state = 0
@@ -387,7 +387,8 @@
     <!--查询采购欠款订单-->
     <select id="purchaseArrearsOrder" resultType="HashMap">
         select p.id,p.price,p.order_number,s.`name` ,p.create_time,p.freight,p.mold,making,p.type,p.money,
-        p.auditor,p.payee ,p.audit_time ,p.money2 ,p.receivable_time
+        p.auditor,p.payee ,p.audit_time ,p.money2 ,p.receivable_time ,
+        (select name from shengxian_staff where id = p.staff_id )staffName
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         where p.is_del = 0 and status = 1  and p.business_id = #{business_id} and p.state = 1
@@ -466,7 +467,8 @@
     <!--查询采购已完成的订单-->
     <select id="findPurchaseOrder" resultType="HashMap">
         select p.id,p.price,p.order_number,s.`name` ,p.create_time,p.freight,p.mold,making,p.type,p.money,
-        p.auditor,p.payee ,p.audit_time ,p.money2 ,p.receivable_time
+        p.auditor,p.payee ,p.audit_time ,p.money2 ,p.receivable_time ,
+        (select name from shengxian_staff where id = p.staff_id )staffName
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         where p.is_del = 0 and status = 1    and p.business_id = #{business_id} and p.state = 2
@@ -674,7 +676,8 @@
     <!--所有采购单据-->
     <select id="allPurchaseOrder" resultType="HashMap">
         select p.id,p.no,s.`name`,s.number, p.order_number,p.price,p.audit_time,p.receivable_time,
-        p.making ,p.auditor,p.payee ,p.mold,p.create_time ,p.print_frequ,p.state,p.`status`,p.type,p.money2
+        p.making ,p.auditor,p.payee ,p.mold,p.create_time ,p.print_frequ,p.state,p.`status`,p.type,p.money2 ,
+        (select name from shengxian_staff where id = p.staff_id )staffName
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id=p.suppliers_id
         where p.is_del = 0 and p.status in(0,1)  and p.business_id =#{business_id}

@@ -603,8 +603,7 @@
     <select id="stayDelivered" resultType="HashMap">
         select o.id,b.user_name ,o.price,o.no, (select phone from user where id=b.user_id)phone ,o.create_time,o.mold,o.status,o.making ,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
-        (select name from shengxian_staff where id = o.staff_id )staffName,
-        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce  , (select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del = 0 and o.print_frequ = 1
@@ -770,8 +769,7 @@
         select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
-        (select name from shengxian_staff where id = o.staff_id )staffName,
-        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce ,(select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.is_del = 0  and o.status = 4 and o.business_id = #{business_id} and o.state = 0
@@ -857,8 +855,7 @@
         select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
-        (select name from shengxian_staff where id = o.staff_id )staffName,
-        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce ,(select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.is_del = 0  and o.status = 4 and o.business_id = #{business_id} and o.state = 2
@@ -945,8 +942,7 @@
         select o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
-        (select name from shengxian_staff where id = o.staff_id )staffName,
-        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , (select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4 and o.business_id = #{business_id} and o.state = 3
