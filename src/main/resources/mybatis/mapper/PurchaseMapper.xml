@@ -613,7 +613,7 @@
 
     <!--修改采购订单总金额-->
     <update id="updatePurchaseOrderPriceid">
-        update shengxian_purchase set price = #{price}, freight = #{freight}, difference_price = #{difference_price}
+        update shengxian_purchase set price = #{price}, freight = #{freight}, difference_price = #{difference_price} , is_del = 0
         where id=#{id}
     </update>
 

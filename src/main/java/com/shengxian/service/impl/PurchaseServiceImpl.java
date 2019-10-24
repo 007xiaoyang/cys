@@ -855,7 +855,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     public Integer updatePurchaseOrderPrice(String token ,Integer role, PurchaseOrder purchaseOrder)throws NullPointerException , Exception {
 
         Integer pStatus = purchaseMapper.findPurchaseStatus( purchaseOrder.getId() );
-        if (pStatus == 1 || pStatus == 2 ){
+        if (pStatus != null && pStatus == 1 || pStatus == 2 ){
             throw new NullPointerException("订单已到货不能修改");
         }
 

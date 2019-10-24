@@ -405,12 +405,12 @@
     <select id="selectConponMoney" resultType="Double">
         select ifnull( if( o.coupon_id = 0 ,(select reduce  from shengxian_full_reduction where id = o.activity )
         , (select reduce from shengxian_binding_coupon where id = o.coupon_id ) ) , 0 )price
-        from shengxian_order o where o.id =  #{id} and o.is_del = 0
+        from shengxian_order o where o.id =  #{id}
     </select>
 
     <!--通过订单id修改订单运费和差价-->
     <update id="updatePurchaseOrderPriceid">
-        update shengxian_order set price = #{price}, freight = #{freight},difference_price = #{difference_price}
+        update shengxian_order set price = #{price}, freight = #{freight},difference_price = #{difference_price} , is_del = 0
         where id = #{id}
     </update>
 

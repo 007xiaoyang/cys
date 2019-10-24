@@ -668,7 +668,7 @@ public class OrderServiceImpl implements OrderService {
     public synchronized  Integer updateOrderPrice(String token ,Integer role, Order order)throws NullPointerException, Exception {
         double  price = 0;
         Integer status = orderMapper.findOrderStatus(order.getId());
-        if (status == 4 ){
+        if (status != null && status == 4 ){
             throw new NullPointerException("订单已到货不能修改");
         }
 
