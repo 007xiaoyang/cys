@@ -1234,11 +1234,15 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
 
-            }else if (order.get("staff_id") != null && order.get("staff_id").toString().equals("0")){
+            }else {
                 //进入这里说明该订单没有任何人接单
 
                 //获取当前登录的账号id
                 Integer staffId = shopMapper.registerIdByTokenAndRole(token, role);
+                if (staffId == null){
+                    throw new NullPointerException("失败，请刷新重试！！！");
+                }
+
                 if(staffId != null){
                     //5到达提成
                     //通过员工id查询员工是否有到货提成比例

@@ -122,6 +122,12 @@ public interface ShopMapper {
      */
     Integer shopipByTokenAndRole(@Param("token") String token ,@Param("role") Integer role);
 
+    /**
+     * 通过员工id查询店铺id
+     * @param staffId
+     * @return
+     */
+    Integer selectBusinessIdByStaffId(@Param("id") Integer staffId);
 
     /**
      * 通过店铺ID和级别level查询添加所有类别的总数

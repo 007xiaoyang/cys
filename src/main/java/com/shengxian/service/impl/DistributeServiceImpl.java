@@ -338,18 +338,24 @@ public class DistributeServiceImpl implements DistributeService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
+        //通过员工id查询店铺id
+        Integer businessId = shopMapper.selectBusinessIdByStaffId(staff_id);
+        if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")){
+            startTime = startTime.trim();
+            endTime = endTime.trim();
+        }
         //员工销售订单明细和采购订单明细总数
-        Integer saleSatolCount = distributeMapper.staffDayDetailCount(staff_id,time ,name ,type ,startTime ,endTime);
+        Integer saleSatolCount = distributeMapper.staffDayDetailCount(businessId , staff_id,time ,name ,type ,startTime ,endTime);
 
         Page page = new Page(pageNum,saleSatolCount,10);
 
         //员工销售订单明细和采购订单明细
-        List<HashMap> sale = distributeMapper.staffDayDetail(staff_id,time ,name ,type ,startTime , endTime ,page.getStartIndex(),page.getPageSize());
+        List<HashMap> sale = distributeMapper.staffDayDetail(businessId , staff_id,time ,name ,type ,startTime , endTime ,page.getStartIndex(),page.getPageSize());
 
         HashMap hashMap = new HashMap();
         hashMap.put("totalStatis",0);
         if (type != null && type != 0 ){
-            Double hash = distributeMapper.staffDayDetailTotalMoney(staff_id, time, name, type, startTime, endTime);
+            Double hash = distributeMapper.staffDayDetailTotalMoney(businessId ,staff_id, time, name, type, startTime, endTime);
             hashMap.put("totalStatis",hash);
         }
 

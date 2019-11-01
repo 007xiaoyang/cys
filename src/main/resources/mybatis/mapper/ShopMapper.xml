@@ -123,6 +123,10 @@
         </if>
     </select>
 
+    <select id="selectBusinessIdByStaffId" resultType="Integer">
+        select business_id  from shengxian_staff where id = #{id}
+    </select>
+
     <!--通过店铺ID和级别level查询添加所有类别的总数-->
     <select id="selectCategoryCount" resultType="Integer">
         select count(id) from shengxian_goods_category

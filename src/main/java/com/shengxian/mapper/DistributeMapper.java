@@ -300,7 +300,7 @@ public interface DistributeMapper {
      * @param time
      * @return
      */
-    Integer staffDayDetailCount(@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type ,@Param("startTime") String startTime ,@Param("endTime") String endTime);
+    Integer staffDayDetailCount(@Param("bid") Integer businessId ,@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type ,@Param("startTime") String startTime ,@Param("endTime") String endTime);
 
     /**
      * 员工订单明细
@@ -310,10 +310,10 @@ public interface DistributeMapper {
      * @param pageSize
      * @return
      */
-    List<HashMap> staffDayDetail(@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type ,@Param("startTime") String startTime ,@Param("endTime") String endTime, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
+    List<HashMap> staffDayDetail(@Param("bid") Integer businessId ,@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type ,@Param("startTime") String startTime ,@Param("endTime") String endTime, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
 
-    Double staffDayDetailTotalMoney(@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type ,@Param("startTime") String startTime ,@Param("endTime") String endTime);
+    Double staffDayDetailTotalMoney(@Param("bid") Integer businessId ,@Param("staff_id") Integer staff_id, @Param("time") String time  ,@Param("name") String name,@Param("type") Integer type ,@Param("startTime") String startTime ,@Param("endTime") String endTime);
 
 
 

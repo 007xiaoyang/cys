@@ -506,39 +506,77 @@
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where   sf.staff_id=#{staff_id} and sf.type in(3,5,6 ,7) and o.is_del= 0   group by o.order_number , sf.type
+        where   sf.staff_id=#{staff_id} and o.business_id = #{bid} and sf.type in(3,5,6 ,7) and o.is_del= 0
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(sf.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and sf.type = #{type}
+        </if>
+        group by o.order_number , sf.type
         union ALL
         select sf.create_time ,s.name as user_name ,sf.type
         from shengxian_staff_frequency sf
         left join shengxian_purchase p on p.id = sf.order_id
         left join shengxian_suppliers s on s.id = p.suppliers_id
-        where sf.staff_id = #{staff_id} and sf.type in(8 , 9 ,10) and p.is_del= 0 group by p.order_number , sf.type
+        where sf.staff_id = #{staff_id} and p.business_id = #{bid} and sf.type in(8 , 9 ,10) and p.is_del= 0
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(sf.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="name != null and name != ''">
+            and s.name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and sf.type = #{type}
+        </if>
+        group by p.order_number , sf.type
         union ALL
         select op.create_time ,bd.user_name , op.type
         from  shengxian_order o
         inner join shengxian_staff_once_percentage op on FIND_IN_SET(o.id,op.order_id)
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del=0 and op.staff_id=#{staff_id}
+        where o.is_del=0 and op.staff_id=#{staff_id} and o.business_id = #{bid}
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(op.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and op.type = #{type}
+        </if>
         UNION ALL
         select os.create_time ,bd.user_name , os.type
         from  shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id= o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del=0 and os.staff_id=#{staff_id} group by o.order_number , os.type
-         )a
-         where 1 = 1
+        where o.is_del=0 and os.staff_id=#{staff_id} and o.business_id = #{bid}
         <if test="time != null and time != ''">
-            and DATE_FORMAT(a.create_time,'%Y-%m') = #{time}
+            and DATE_FORMAT(os.create_time,'%Y-%m') = #{time}
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-            and DATE_FORMAT(a.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(a.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+            and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d')  &gt;= #{startTime}
         </if>
         <if test="name != null and name != ''">
-            and a.user_name like CONCAT ('%', #{name}, '%')
+            and bd.user_name like CONCAT ('%', #{name}, '%')
         </if>
         <if test="type != null">
-            and a.type = #{type}
+            and os.type = #{type}
         </if>
+        group by o.order_number , os.type
+         )a
     </select>
 
     <!--员工提成订单明细-->
@@ -551,7 +589,20 @@
         from shengxian_order o
         inner join shengxian_staff_frequency sf on o.id=sf.order_id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del= 0  and sf.staff_id = #{staff_id} and sf.type in(3 , 5 ,6 , 7)  group by o.order_number , sf.type
+        where o.is_del= 0  and sf.staff_id = #{staff_id} and o.business_id = #{bid} and sf.type in(3 , 5 ,6 , 7)
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(sf.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and sf.type = #{type}
+        </if>
+        group by o.order_number , sf.type
 
         union ALL
         select p.id, p.order_number ,s.name as user_name ,
@@ -559,35 +610,60 @@
         from shengxian_staff_frequency sf
         left join shengxian_purchase p on p.id = sf.order_id
         left join shengxian_suppliers s on s.id = p.suppliers_id
-        where sf.staff_id = #{staff_id} and sf.type in(8 , 9 ,10) and p.is_del= 0 group by p.order_number , sf.type
+        where sf.staff_id = #{staff_id} and p.business_id = #{bid} and sf.type in(8 , 9 ,10) and p.is_del= 0
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(sf.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(sf.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="name != null and name != ''">
+            and s.name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and sf.type = #{type}
+        </if>
+        group by p.order_number , sf.type
         union ALL
         select o.id,  o.order_number,bd.user_name ,
         o.price,ifnull(o.money,0)money ,op.type ,op.create_time,o.mold , 1 as statis
         from  shengxian_order o
         inner join shengxian_staff_once_percentage op on FIND_IN_SET(o.id,op.order_id)
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del=0 and op.staff_id = #{staff_id}
+        where o.is_del=0 and op.staff_id = #{staff_id} and o.business_id = #{bid}
+        <if test="time != null and time != ''">
+            and DATE_FORMAT(op.create_time,'%Y-%m') = #{time}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(op.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(op.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+        </if>
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT ('%', #{name}, '%')
+        </if>
+        <if test="type != null">
+            and op.type = #{type}
+        </if>
         UNION ALL
         select o.id, o.order_number,bd.user_name ,
         o.price,ifnull(o.money,0)money ,os.type ,os.create_time,o.mold , sum(os.statis) as statis
         from  shengxian_order o
         inner join shengxian_staff_order_statis os on os.order_id= o.id
         inner join shengxian_binding bd on bd.id = o.binding_id
-        where o.is_del=0 and os.staff_id = #{staff_id} group by o.order_number , os.type
-        )a
-        where 1 = 1
+        where o.is_del=0 and os.staff_id = #{staff_id} and o.business_id = #{bid}
         <if test="time != null and time != ''">
-            and DATE_FORMAT(a.create_time,'%Y-%m') = #{time}
+            and DATE_FORMAT(os.create_time,'%Y-%m') = #{time}
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
-            and DATE_FORMAT(a.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(a.create_time,'%Y-%m-%d')  &gt;= #{startTime}
+            and DATE_FORMAT(os.create_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(os.create_time,'%Y-%m-%d')  &gt;= #{startTime}
         </if>
         <if test="name != null and name != ''">
-            and a.user_name like CONCAT ('%', #{name}, '%')
+            and bd.user_name like CONCAT ('%', #{name}, '%')
         </if>
         <if test="type != null">
-            and a.type = #{type}
+            and os.type = #{type}
         </if>
+        group by o.order_number , os.type
+        )a
         order by a.create_time desc   limit #{startIndex} ,#{pageSize}
 
     </select>
@@ -603,7 +679,7 @@
             from shengxian_staff_frequency f
             left join shengxian_order o on o.id = f.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where f.staff_id = #{staff_id} and f.type = #{type}
+            where f.staff_id = #{staff_id} and f.type = #{type} and o.business_id = #{bid}
             <if test="time != null and time != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m') = #{time}
             </if>
@@ -618,7 +694,7 @@
             from shengxian_staff_frequency f
             left join shengxian_purchase p on p.id = f.order_id
             left join shengxian_suppliers s on s.id = p.suppliers_id
-            where f.staff_id = #{staff_id} and f.type = #{type}
+            where f.staff_id = #{staff_id} and f.type = #{type} and p.business_id = #{bid}
             <if test="time != null and time != ''">
                 and DATE_FORMAT(f.create_time,'%Y-%m') = #{time}
             </if>
@@ -634,7 +710,7 @@
             from shengxian_staff_order_statis os
             left join shengxian_order o on o.id = os.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where os.staff_id = #{staff_id} and os.type = #{type}
+            where os.staff_id = #{staff_id} and os.type = #{type} and o.business_id = #{bid}
             <if test="time != null and time != ''">
                 and DATE_FORMAT(os.create_time,'%Y-%m') = #{time}
             </if>
@@ -648,7 +724,7 @@
             from shengxian_staff_once_percentage op
             left join shengxian_order o on o.id = op.order_id
             left join shengxian_binding bd on bd.id = o.binding_id
-            where op.staff_id = #{staff_id} and op.type = #{type}
+            where op.staff_id = #{staff_id} and op.type = #{type} and o.business_id = #{bid}
             <if test="time != null and time != ''">
                 and DATE_FORMAT(op.create_time,'%Y-%m') = #{time}
             </if>
