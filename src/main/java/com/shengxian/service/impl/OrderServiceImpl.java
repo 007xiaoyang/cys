@@ -1,10 +1,13 @@
 package com.shengxian.service.impl;
 
 import com.shengxian.common.util.*;
+import com.shengxian.controller.OrderController;
 import com.shengxian.entity.*;
 import com.shengxian.mapper.*;
 import com.shengxian.service.OrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +42,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private PurchaseMapper purchaseMapper;
+
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     //创建订单编号
     @Override
@@ -1183,7 +1188,6 @@ public class OrderServiceImpl implements OrderService {
 
         //计算提成   销售单mold==0并且状态status==4
         if (status == 4 && mold == 0){
-
             //通过店铺id和下订单的绑定客户id查询店铺所有有客户提成比例的员工
             List<Percentage> bindings = orderMapper.selectBusinessAndBindingAllStaffPercentage(bid, Integer.valueOf(order.get("binding_id").toString()));
             for (Percentage pt : bindings  ) {
@@ -1207,7 +1211,7 @@ public class OrderServiceImpl implements OrderService {
 
             //判断订单是否有员工接单
             if (order.get("staff_id") != null && !order.get("staff_id").toString().equals("0")){
-
+                log.warn("【员工接单】时间"+DateUtil.getTime()+",订单为：" +id+",提成员工是：" +order.get("staff_id"));
                 // 3，重量提成
                 //通过员工id和类型查询吨位提成比例
                 HashMap tonPercentage = distributeMapper.findStaffPercentage(Integer.valueOf(order.get("staff_id").toString()),4);
@@ -1227,11 +1231,16 @@ public class OrderServiceImpl implements OrderService {
                 //通过员工id查询员工是否有到货提成比例
                 HashMap arrive = distributeMapper.findStaffPercentage(Integer.valueOf(order.get("staff_id").toString()), 6);
                 if (arrive != null ){
-                    if (arrive.get("a") != null && !arrive.get("a").equals("") && arrive.get("b") != null && !arrive.get("b").equals("")){
 
+                    if (arrive.get("a") != null && !arrive.get("a").equals("") && arrive.get("b") != null && !arrive.get("b").equals("")){
+                        log.warn("员工有到货提成，提成金额："+price);
                         //添加员工到货提成次数 type=5送达
                         orderMapper.addStaffFrequency(Integer.valueOf(order.get("staff_id").toString()),id,5 ,price , new Date());
+                    }else {
+                        log.warn("员工没有提成，订单金额为：" + price);
                     }
+                }else {
+                    log.warn("员工没有到货提成比例！订单金额为：" + price);
                 }
 
             }else {
@@ -1242,20 +1251,24 @@ public class OrderServiceImpl implements OrderService {
                 if (staffId == null){
                     throw new NullPointerException("失败，请刷新重试！！！");
                 }
-
+                log.warn("【没有任何人接单】时间"+DateUtil.getTime()+",订单为：" +id+",提成员工是：" +staffId);
                 if(staffId != null){
                     //5到达提成
                     //通过员工id查询员工是否有到货提成比例
                     HashMap staffArrive = distributeMapper.findStaffPercentage(staffId, 6);
                     if (staffArrive != null ){
                         if (staffArrive.get("a") != null && staffArrive.get("b") != null && !staffArrive.get("a").equals("")  && !staffArrive.get("b").equals("")){
-
+                            log.warn("重新指派订单给当前员工，提成金额："+price);
                             //添加员工到货提成次数 type=5送达
                             orderMapper.addStaffFrequency(staffId ,id,5 ,price , new Date());
 
                             //重新指派订单给当前员工
                             orderMapper.updateStaffIdByOrderId(id , staffId);
+                        }else {
+                            log.warn("员工没有提成，订单金额为：" + price);
                         }
+                    }else {
+                        log.warn("员工没有到货提成比例！订单金额为：" + price);
                     }
                 }
 
