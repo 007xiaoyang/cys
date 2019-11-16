@@ -1412,7 +1412,7 @@ public interface ShopMapper {
      * @param two
      * @return
      */
-    Integer updateTemplateTwo(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two );
+    Integer updateTemplateTwo(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two ,@Param("barcode") int barcode);
 
     /**
      * 添加模板3
@@ -1448,7 +1448,7 @@ public interface ShopMapper {
      * @param two
      * @return
      */
-    Integer updateTemplateThree(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two );
+    Integer updateTemplateThree(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two ,@Param("barcode") int barcode);
 
     /**
      * 添加模板5
@@ -1485,7 +1485,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    Integer updateTemplateFive(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state );
+    Integer updateTemplateFive(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") int barcode);
 
     /**
      * 添加模板4
@@ -1521,7 +1521,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    Integer updateTemplateFour(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state );
+    Integer updateTemplateFour(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") int barcode);
 
     /**
      * 添加模板2
@@ -1557,7 +1557,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    Integer updateTemplateSix(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state );
+    Integer updateTemplateSix(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") int barcode);
 
 
     /**
@@ -1582,6 +1582,31 @@ public interface ShopMapper {
      */
     String purchaseMoneyRecordsGroupConcat(@Param("id") Integer id);
 
+    /**
+     * 查询产品是否还有未到货的订单
+     * @param id
+     * @return
+     */
+    List<Long> noReceivablesOrderStatus(@Param("id") Long id);
 
+    /**
+     * 查询产品是否还有未收款的订单
+     * @param id
+     * @return
+     */
+    List<Long> noReceivablesOrderState(@Param("id") Long id);
 
+    /**
+     * 查询产品是否还有采购未收款的订单
+     * @param id
+     * @return
+     */
+    List<Long> noReceivablesPuchaseStatus(@Param("id") Long id);
+
+    /**
+     * 查询产品是否还有采购未收款的订单
+     * @param id
+     * @return
+     */
+    List<Long> noReceivablesPuchaseState(@Param("id") Long id);
 }

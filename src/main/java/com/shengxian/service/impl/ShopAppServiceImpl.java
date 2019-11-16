@@ -1,5 +1,6 @@
 package com.shengxian.service.impl;
 
+import com.shengxian.entity.WxloginInfo;
 import com.shengxian.mapper.ShopAppMapper;
 import com.shengxian.service.ShopAppService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,11 @@ public class ShopAppServiceImpl implements ShopAppService {
     @Transactional
     public Integer updateEquipment(String token, String model, String system, String version, String platform, String SDKVersion) throws Exception{
         return shopAppMapper.updateEquipment(token,model,system,version,platform,SDKVersion);
+    }
+
+    @Override
+    public WxloginInfo getUserLoginInfo(WxloginInfo wxloginInfo) {
+        return shopAppMapper.getUserLoginInfo(wxloginInfo);
     }
 
 }

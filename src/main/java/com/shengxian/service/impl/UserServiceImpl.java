@@ -337,10 +337,18 @@ public class UserServiceImpl implements UserService {
     public Integer deleteUser(Integer id) throws NullPointerException{
 
         //删除用户之前判断该用户是否有欠款和未付款的订单
+        List<Long> status = userMapper.selectBindingOrderStatus((long)id);
+        if (status.size() > 0){
+            throw new NullPointerException("该用户还有未到货之前的订单");
+        }
+
+        //删除用户之前判断该用户是否有欠款和未付款的订单
         List<Integer> oid = userMapper.selectBindingOrder(id);
         if (oid.size() > 0){
             throw new NullPointerException("该用户还有未付款或欠款的订单未结清");
         }
+
+
         return userMapper.deleteUser(id);
     }
 

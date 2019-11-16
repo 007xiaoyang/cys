@@ -342,7 +342,7 @@
         select g.`name`,g.spec ,g.units, od.id ,od.order_number,od.order_price,od.profit,od.type,od.goods_id
         from shengxian_order_details od
         inner join shengxian_goods g on g.id = od.goods_id
-        where od.order_id = #{id} and g.is_del = 0
+        where od.order_id = #{id}
     </select>
 
     <!--通过订单详情id查询原来的销售数量-->
@@ -1443,7 +1443,7 @@
 
     <!--（打印）打印销售订单详情-->
     <select id="orderPrintDetail" resultType="HashMap">
-        select od.id,g.name,g.units,od.order_number,od.order_price ,od.type
+        select od.id,g.name,g.units,od.order_number,od.order_price ,od.type , g.barcode
         from shengxian_order_details od
         inner join shengxian_goods g on g.id = od.goods_id and g.is_del = 0
         where od.order_id = #{order_id}
@@ -1471,7 +1471,7 @@
     <select id="printTemporaryOrderDetail" resultType="HashMap">
          select od.id,g.name,g.units,od.order_number,od.order_price ,od.type
         from shengxian_order_temporary_details od
-        inner join shengxian_goods g on g.id = od.goods_id  and g.is_del = 0
+        inner join shengxian_goods g on g.id = od.goods_id
         where od.order_id = #{order_id}
         order by od.id asc limit #{startIndex},#{pageSize}
     </select>

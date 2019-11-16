@@ -100,12 +100,13 @@
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="state" jdbcType="INTEGER" property="state"/>
         <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result column="barcode" jdbcType="INTEGER" property="barcode"/>
     </resultMap>
 
     <!--查询商家的采购模板-->
     <select id="selectsTemplate" resultMap="templateMap">
         select id ,title ,no , originator ,name ,phone ,beizhu ,serial ,goods_name , number,
-        unit_price ,money ,one ,two ,three , four ,address ,state ,img
+        unit_price ,money ,one ,two ,three , four ,address ,state ,img , barcode
         from shengxian_template  where business_id = #{business_id} and type = #{type}
     </select>
 
@@ -641,7 +642,7 @@
 
     <!--查询采购订单详情(打印)-->
     <select id="purchaseOrderDetail" resultType="com.shengxian.entity.PurchaseOrderDetail">
-        select pd.id,pd.purchase_number,pd.purchase_price,g.units , g.`name` as goods_name ,  pd.type
+        select pd.id,pd.purchase_number,pd.purchase_price,g.units , g.`name` as goods_name ,  pd.type  , g.barcode
         from shengxian_purchase_detail pd
         inner join shengxian_goods g on g.id = pd.goods_id and g.is_del = 0
         where pd.purchase_id = #{purchase_id}

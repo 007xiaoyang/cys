@@ -5,6 +5,7 @@ server:
 
 
 
+
 # Mybatis配置
 mybatis:
   config-location: classpath:mybatis/mybatis.cfg.xml    #  mybatis主配置文件所在路径

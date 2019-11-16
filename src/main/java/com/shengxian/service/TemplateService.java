@@ -50,7 +50,7 @@ public interface TemplateService {
      * @param two
      * @return
      */
-    Integer updateTemplateTwo(Integer id,String title ,String one , String two );
+    Integer updateTemplateTwo(Integer id,String title ,String one , String two,int barcode );
 
     /**
      * 添加模板3
@@ -89,7 +89,7 @@ public interface TemplateService {
      * @param two
      * @return
      */
-    Integer updateTemplateThree(Integer id,String title ,String one , String two );
+    Integer updateTemplateThree(Integer id,String title ,String one , String two ,int barcode);
 
     /**
      * 查询店铺模板5集合
@@ -117,7 +117,7 @@ public interface TemplateService {
      * @param state
      * @return
      */
-    Integer updateTemplateFive(Integer id,String title ,String one , Integer state );
+    Integer updateTemplateFive(Integer id,String title ,String one , Integer state ,int barcode);
 
     /**
      * 查询店铺模板4集合
@@ -145,7 +145,7 @@ public interface TemplateService {
      * @param state
      * @return
      */
-    Integer updateTemplateFour(Integer id,String title ,String one , Integer state );
+    Integer updateTemplateFour(Integer id,String title ,String one , Integer state ,int barcode);
 
     /**
      * 查询店铺模板6集合
@@ -173,5 +173,5 @@ public interface TemplateService {
      * @param state
      * @return
      */
-    Integer updateTemplateSix(Integer id,String title ,String one , Integer state );
+    Integer updateTemplateSix(Integer id,String title ,String one , Integer state ,int barcode);
 }

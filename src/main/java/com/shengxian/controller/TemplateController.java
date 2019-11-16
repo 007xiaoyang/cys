@@ -114,12 +114,13 @@ public class TemplateController {
             @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
             @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
             @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
-            @ApiImplicitParam(name = "two" ,value = "" ,paramType = "query")
+            @ApiImplicitParam(name = "two" ,value = "" ,paramType = "query"),
+            @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateTwo(String token ,Integer role ,Integer id ,String title ,String one , String two){
+    public Message updateTemplateTwo(String token ,Integer role ,Integer id ,String title ,String one , String two  ,int barcode){
         Message message = Message.non();
         try {
-            Integer count = templateService.updateTemplateTwo(id, title, one, two);
+            Integer count = templateService.updateTemplateTwo(id, title, one, two ,barcode);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("修改失败");
             }
@@ -209,12 +210,13 @@ public class TemplateController {
             @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
             @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
             @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
-            @ApiImplicitParam(name = "two" ,value = "" ,paramType = "query")
+            @ApiImplicitParam(name = "two" ,value = "" ,paramType = "query"),
+            @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateThree(String token ,Integer role ,Integer id ,String title ,String one , String two){
+    public Message updateTemplateThree(String token ,Integer role ,Integer id ,String title ,String one , String two ,int barcode){
         Message message = Message.non();
         try {
-            Integer count = templateService.updateTemplateThree(id, title, one, two);
+            Integer count = templateService.updateTemplateThree(id, title, one, two ,barcode);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("修改失败");
             }
@@ -282,12 +284,13 @@ public class TemplateController {
             @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
             @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
             @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
-            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query")
+            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query"),
+            @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateFive(String token ,Integer role ,Integer id ,String title ,String one , Integer state){
+    public Message updateTemplateFive(String token ,Integer role ,Integer id ,String title ,String one , Integer state,int barcode){
         Message message = Message.non();
         try {
-            Integer count = templateService.updateTemplateFive(id, title, one, state);
+            Integer count = templateService.updateTemplateFive(id, title, one, state,barcode);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("修改失败");
             }
@@ -357,12 +360,13 @@ public class TemplateController {
             @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
             @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
             @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
-            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query")
+            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query"),
+            @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateFour(String token ,Integer role ,Integer id ,String title ,String one , Integer state){
+    public Message updateTemplateFour(String token ,Integer role ,Integer id ,String title ,String one , Integer state,int barcode){
         Message message = Message.non();
         try {
-            Integer count = templateService.updateTemplateFour(id, title, one, state);
+            Integer count = templateService.updateTemplateFour(id, title, one, state,barcode);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("修改失败");
             }
@@ -431,12 +435,13 @@ public class TemplateController {
             @ApiImplicitParam(name = "id" ,value = "模板id" ,paramType = "query"),
             @ApiImplicitParam(name = "title" ,value = "标题名称" ,paramType = "query"),
             @ApiImplicitParam(name = "one" ,value = "" ,paramType = "query"),
-            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query")
+            @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query"),
+            @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateSix(String token ,Integer role ,Integer id ,String title ,String one , Integer state){
+    public Message updateTemplateSix(String token ,Integer role ,Integer id ,String title ,String one , Integer state ,int barcode){
         Message message = Message.non();
         try {
-            Integer count = templateService.updateTemplateSix(id, title, one, state);
+            Integer count = templateService.updateTemplateSix(id, title, one, state ,barcode);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("修改失败");
             }

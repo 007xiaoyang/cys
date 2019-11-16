@@ -1,5 +1,7 @@
 package com.shengxian.service;
 
+import com.shengxian.entity.WxloginInfo;
+
 /**
  * Description:
  *
@@ -39,5 +41,12 @@ public interface ShopAppService  {
      * @return
      */
     Integer updateEquipment(String token,String model,String system,String version,String platform ,String SDKVersion)throws Exception;
+
+    /**
+     * 获取用户登录信息
+     * @param wxloginInfo
+     * @return
+     */
+    WxloginInfo getUserLoginInfo(WxloginInfo wxloginInfo);
 
 }

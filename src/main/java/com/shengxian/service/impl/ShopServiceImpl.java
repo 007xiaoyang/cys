@@ -599,12 +599,37 @@ public class ShopServiceImpl implements ShopService {
             if (status == 2){
                 throw new NullPointerException("要先下架产品才能删除哟～");
             }
+            //查询产品是否还有未到货的订单
+            List<Long> isExistStatus = shopMapper.noReceivablesOrderStatus((long)id);
+            if(isExistStatus.size() > 0){
+                throw new NullPointerException("产品还有存在未到货之前的订单，不能删除");
+            }
 
+            //查询产品是否还有未收款的订单
+            List<Long> isExistState = shopMapper.noReceivablesOrderState((long)id);
+            if(isExistState.size() > 0){
+                throw new NullPointerException("产品还有存在未收款的订单，不能删除");
+            }
+
+            //产品还有存在采购未审核的订单
+            List<Long> iStatue = shopMapper.noReceivablesPuchaseStatus((long)id);
+            if(iStatue.size() > 0){
+                throw new NullPointerException("产品还有存在采购未审核的订单，不能删除");
+            }
+
+            //产品还有存在采购未审核的订单
+            List<Long> iState = shopMapper.noReceivablesPuchaseState((long)id);
+            if(iState.size() > 0){
+                throw new NullPointerException("产品还有存在采购未付款的订单，不能删除");
+            }
             //通过产品id查询产品库存是否大于0以上的
             Integer vid = shopMapper.goodsInventory(id);
             if (vid != null ){
                 throw new NullPointerException("产品还有库存，不能删除");
             }
+
+
+
             return shopMapper.deleGoods(id);
         }
 

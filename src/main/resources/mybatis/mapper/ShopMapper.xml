@@ -1315,6 +1315,7 @@
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="one" jdbcType="VARCHAR" property="one"/>
         <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="barcode" jdbcType="INTEGER" property="barcode"/>
     </resultMap>
     
     <!--添加模板2-->
@@ -1325,19 +1326,19 @@
 
     <!--查询店铺模板2集合-->
     <select id="selectTemplateTwoList" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state , barcode
       from shengxian_template_two where business_id = #{business_id};
     </select>
 
     <!--根据店铺和类型查询店铺模板2-->
     <select id="selectTemplateTwo" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state  , barcode
       from shengxian_template_two where business_id = #{business_id} and type = #{type};
     </select>
 
     <!--修改模板2-->
     <update id="updateTemplateTwo">
-        update shengxian_template_two set title = #{title} ,one = #{one}
+        update shengxian_template_two set title = #{title} ,one = #{one} , barcode = #{barcode}
         where id = #{id};
     </update>
 
@@ -1349,19 +1350,19 @@
 
     <!--查询店铺模板3集合-->
     <select id="selectTemplateThreeList" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state ,barcode
       from shengxian_template_three where business_id = #{business_id};
     </select>
 
     <!--根据店铺和类型查询店铺模板3-->
     <select id="selectTemplateThree" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state , barcode
       from shengxian_template_three where business_id = #{business_id} and type = #{type};
     </select>
 
     <!--修改模板3-->
     <update id="updateTemplateThree">
-        update shengxian_template_three set title = #{title} ,one = #{one}
+        update shengxian_template_three set title = #{title} ,one = #{one} , barcode = #{barcode}
         where id = #{id};
     </update>
 
@@ -1373,19 +1374,19 @@
 
     <!--查询店铺模板5集合-->
     <select id="selectTemplateFiveList" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state , barcode
       from shengxian_template_five where business_id = #{business_id};
     </select>
 
     <!--根据店铺和类型查询店铺模板5-->
     <select id="selectTemplateFive" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state ,barcode
       from shengxian_template_five where business_id = #{business_id} and type = #{type};
     </select>
 
     <!--修改模板5-->
     <update id="updateTemplateFive">
-        update shengxian_template_five set title = #{title} ,one = #{one} , state = #{state}
+        update shengxian_template_five set title = #{title} ,one = #{one} , state = #{state} , barcode = #{barcode}
         where id = #{id};
     </update>
 
@@ -1397,19 +1398,19 @@
 
     <!--查询店铺模板4集合-->
     <select id="selectTemplateFourList" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state ,barcode
       from shengxian_template_four where business_id = #{business_id};
     </select>
 
     <!--根据店铺和类型查询店铺模板4-->
     <select id="selectTemplateFour" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state , barcode
       from shengxian_template_four where business_id = #{business_id} and type = #{type};
     </select>
 
     <!--修改模板4-->
     <update id="updateTemplateFour">
-        update shengxian_template_four set title = #{title} ,one = #{one}
+        update shengxian_template_four set title = #{title} ,one = #{one} , barcode =#{barcode}
         where id = #{id};
     </update>
 
@@ -1421,19 +1422,19 @@
 
     <!--查询店铺模板6集合-->
     <select id="selectTemplateSixList" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state ,barcode
       from shengxian_template_six where business_id = #{business_id};
     </select>
 
     <!--根据店铺和类型查询店铺模板6-->
     <select id="selectTemplateSix" resultMap="TemplateTwoMap">
-      select id , title , type , one ,state
+      select id , title , type , one ,state , barcode
       from shengxian_template_six where business_id = #{business_id} and type = #{type};
     </select>
 
     <!--修改模板6-->
     <update id="updateTemplateSix">
-        update shengxian_template_six set title = #{title} ,one = #{one}
+        update shengxian_template_six set title = #{title} ,one = #{one} , barcode = #[barcode]
         where id = #{id};
     </update>
 
@@ -1458,5 +1459,35 @@
       from shengxian_purchase_money_type where order_id = #{id} GROUP BY type ORDER BY id asc ) a
     </select>
 
+    <!--查询产品是否还有未到货的订单-->
+    <select id="noReceivablesOrderStatus" resultType="Long">
+        select o.id
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        where od.goods_id = #{id} and o.is_del = 0  and o.status in (1,2,3)
+    </select>
 
+    <!--查询产品是否还有未收款的订单-->
+    <select id="noReceivablesOrderState" resultType="Long">
+        select o.id
+        from shengxian_order o
+        inner join shengxian_order_details od on od.order_id = o.id
+        where od.goods_id = #{id} and o.is_del = 0  and o.status= 4 and o.state in (0 ,1 ,2 )
+    </select>
+
+    <!--查询产品是否还有未到货的订单-->
+    <select id="noReceivablesPuchaseStatus" resultType="Long">
+        select p.id
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        where pd.goods_id = #{id} and p.is_del = 0  and p.status = 0
+    </select>
+
+    <!--查询产品是否还有未收款的订单-->
+    <select id="noReceivablesPuchaseState" resultType="Long">
+        select p.id
+        from shengxian_purchase p
+        inner join shengxian_purchase_detail pd on pd.purchase_id = p.id
+        where pd.goods_id = #{id} and p.is_del = 0  and p.status= 1 and p.state in (0 ,1 )
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.shengxian.mapper;
 
+import com.shengxian.entity.WxloginInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,6 +48,6 @@ public interface ShopAppMapper {
     Integer  updateEquipment(@Param("token") String token,@Param("model") String model,@Param("system") String system,@Param("version") String version,@Param("platform") String platform ,@Param("SDKVersion") String SDKVersion);
 
 
-
+    WxloginInfo getUserLoginInfo(WxloginInfo wxloginInfo);
 
 }

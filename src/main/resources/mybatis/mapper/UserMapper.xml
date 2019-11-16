@@ -215,6 +215,11 @@
     </select>
 
     <!--删除用户之前判断该用户是否有欠款和未付款的订单-->
+    <select id="selectBindingOrderStatus" resultType="Long">
+        select id from shengxian_order where is_del=0 and status in (1, 2,3) and  binding_id=#{id}
+     </select>
+
+    <!--删除用户之前判断该用户是否有欠款和未付款的订单-->
     <select id="selectBindingOrder" resultType="Integer">
         select id from shengxian_order where is_del=0 and status=4 and state in(0,1,2) and  binding_id=#{id}
      </select>

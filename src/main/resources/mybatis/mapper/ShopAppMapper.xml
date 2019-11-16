@@ -21,5 +21,9 @@
         where is_del=0 and  token =#{token}
     </update>
 
+    <select id="getUserLoginInfo" resultType="com.shengxian.entity.WxloginInfo" parameterType="com.shengxian.entity.WxloginInfo">
+        select login_phone as loginPhone , login_type as loginType
+        from  shengxian_login_info where login_phone = #{loginPhone} and login_type = #{loginType} limit 1
+    </select>
 
 </mapper>

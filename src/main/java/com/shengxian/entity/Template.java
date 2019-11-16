@@ -30,6 +30,7 @@ public class Template {
     private String four;
     private Integer type;
     private Integer state;
+    private int barcode;
 
     public Template() {
     }
@@ -53,6 +54,7 @@ public class Template {
         this.three = "下午送到，下午3点钟订货，晚上之前送到，当天下午3点后订货，明天中午之前送到。";
         this.four = "希望客户合理备货，尽量不要催货，好让本店安排，有所不便之处，敬请谅解。";
         this.type = type;
+        this.barcode = barcode;
     }
 
     /**
@@ -81,6 +83,7 @@ public class Template {
         this.two = "为了更好的服务到位，尽量在晚上微信订货，方便早上安排送货，当天上午6点-12点订货，";
         this.three = "下午送到，下午3点钟订货，晚上之前送到，当天下午3点后订货，明天中午之前送到。";
         this.four = "希望客户合理备货，尽量不要催货，好让本店安排，有所不便之处，敬请谅解。";
+        this.barcode = 0;
     }
     public String getTitle() {
         return title;
@@ -248,5 +251,10 @@ public class Template {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public int getBarcode(){return  barcode;}
+    public void setBarcode(int barcode) {
+        this.barcode = barcode;
     }
 }

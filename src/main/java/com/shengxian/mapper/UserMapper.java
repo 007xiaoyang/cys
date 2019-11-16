@@ -259,6 +259,13 @@ public interface UserMapper {
      * @param id
      * @return
      */
+    List<Long> selectBindingOrderStatus(@Param("id") Long id);
+
+    /**
+     *删除用户之前判断该用户是否有欠款和未付款的订单
+     * @param id
+     * @return
+     */
     List<Integer> selectBindingOrder(@Param("id") Integer id);
 
     /**

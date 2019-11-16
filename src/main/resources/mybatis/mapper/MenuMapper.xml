@@ -171,7 +171,7 @@
 
     <!--修改模板-->
     <update id="updateTemplate">
-        update shengxian_template set img = #{img} ,title = #{title},no = #{no} ,originator = #{originator},
+        update shengxian_template set img = #{img} ,barcode = #{barcode} ,title = #{title},no = #{no} ,originator = #{originator},
          name = #{name} ,phone = #{phone},address = #{address} ,beizhu = #{beizhu} ,serial = #{serial}
          ,goods_name = #{goods_name},number = #{number},unit_price = #{unit_price},money = #{money},
         one = #{one},two = #{two},three = #{three},four = #{four} where id = #{id}
@@ -179,7 +179,7 @@
 
     <!--恢复模板-->
     <update id="updateRecoveryTemplate">
-        update shengxian_template set img = #{img}, title = #{title},no = #{no} ,originator = #{originator}, name = #{name} ,
+        update shengxian_template set img = #{img} ,barcode = #{barcode}, title = #{title},no = #{no} ,originator = #{originator}, name = #{name} ,
         phone = #{phone},address = #{address} ,beizhu = #{beizhu} ,serial = #{serial},goods_name = #{goods_name},
         number = #{number},unit_price = #{unit_price},money = #{money},
         one = #{one},two = #{two},three = #{three},four = #{four} where id = #{id}

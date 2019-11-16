@@ -3,6 +3,7 @@ package com.shengxian.controller;
 import com.shengxian.common.Message;
 import com.shengxian.common.util.Global;
 import com.shengxian.common.util.IntegerUtils;
+import com.shengxian.entity.WxloginInfo;
 import com.shengxian.service.ShopAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -111,6 +112,24 @@ public class ShopAppController {
         }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
+    }
+
+
+    /**
+     * 获取用户登录信息
+     * @param wXloginInfo
+     * @return
+     */
+    @RequestMapping("/getUserLoginInfo")
+    @ApiOperation(value = "获取用户登录信息" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "loginType" ,value = "0用户 ，1店铺，2员工" ,paramType = "query")
+    })
+    public Message getUserLoginInfo(WxloginInfo wXloginInfo){
+        Message message = Message.non();
+        WxloginInfo userLoginInfo = shopAppService.getUserLoginInfo(wXloginInfo);
+        return message.code(Message.codeSuccessed).data(userLoginInfo).message("获取成功");
     }
 
 
