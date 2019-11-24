@@ -47,7 +47,7 @@ public class TemplateServiceImpl implements TemplateService {
     //修改模板2
     @Override
     @Transactional
-    public Integer updateTemplateTwo(Integer id, String title,  String one, String two ,int barcode) {
+    public Integer updateTemplateTwo(Integer id, String title,  String one, String two ,Integer barcode) {
         return shopMapper.updateTemplateTwo(id , title  , one ,two ,barcode);
     }
 
@@ -75,7 +75,7 @@ public class TemplateServiceImpl implements TemplateService {
     //修改模板3
     @Override
     @Transactional
-    public Integer updateTemplateThree(Integer id, String title, String one, String two ,int barcode) {
+    public Integer updateTemplateThree(Integer id, String title, String one, String two ,Integer barcode) {
         return shopMapper.updateTemplateThree(id , title  , one ,two ,barcode);
     }
 
@@ -96,7 +96,7 @@ public class TemplateServiceImpl implements TemplateService {
     //修改模板5
     @Override
     @Transactional
-    public Integer updateTemplateFive(Integer id, String title, String one, Integer state ,int barcode) {
+    public Integer updateTemplateFive(Integer id, String title, String one, Integer state ,Integer barcode) {
         return shopMapper.updateTemplateFive(id , title  , one ,state ,barcode);
     }
 
@@ -117,7 +117,7 @@ public class TemplateServiceImpl implements TemplateService {
     //修改模板4
     @Override
     @Transactional
-    public Integer updateTemplateFour(Integer id, String title, String one, Integer state,int barcode) {
+    public Integer updateTemplateFour(Integer id, String title, String one, Integer state,Integer barcode) {
         return shopMapper.updateTemplateFour(id ,title , one ,state ,barcode);
     }
 
@@ -138,7 +138,7 @@ public class TemplateServiceImpl implements TemplateService {
     //修改模板6
     @Override
     @Transactional
-    public Integer updateTemplateSix(Integer id, String title, String one, Integer state,int barcode) {
+    public Integer updateTemplateSix(Integer id, String title, String one, Integer state,Integer barcode) {
         return shopMapper.updateTemplateSix(id ,title , one ,state ,barcode);
     }
 }

@@ -60,7 +60,7 @@
         IFNULL( IFNULL((select gs.price from shengxian_goods_scheme gs where g.id = gs.goods_id and gs.scheme_id = #{scheme_id}),
         (select od.order_price  from shengxian_order_details od ,shengxian_order o where o.id = od.order_id and o.is_del = 0 and
         od.goods_id =g.id and o.binding_id = #{binding_id} order by od.id desc limit 1)),'')price,
-        ifnull((select id from shengxian_goods_collection gc where g.id = gc.goods_id and gc.binding_id = #{binding_id} ),0)collection_id
+        ifnull((select id from shengxian_goods_collection gc where g.id = gc.goods_id and gc.binding_id = #{binding_id} order by id desc limit 1 ),0)collection_id
         from shengxian_goods g
 		inner join shengxian_goods_inventory gi on gi.goods_id = g.id
 		where g.id = #{goods_id}
@@ -322,7 +322,7 @@
     <select id="waitingOrder" resultType="HashMap">
         select o.id,b.user_name ,o.price, (select phone from user where id = b.user_id)phone ,o.create_time ,o.order_number
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
-		(select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+		(select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , o.no
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.status = 1 and o.business_id = #{business_id} and o.is_del = 0
@@ -601,7 +601,7 @@
 
     <!--待送货订单-->
     <select id="stayDelivered" resultType="HashMap">
-        select o.id,b.user_name ,o.price,o.no, (select phone from user where id=b.user_id)phone ,o.create_time,o.mold,o.status,o.making ,o.ck
+        select o.id,b.user_name ,o.price,o.no,o.order_number, (select phone from user where id=b.user_id)phone ,o.create_time,o.mold,o.status,o.making ,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce  , (select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
@@ -766,8 +766,8 @@
     </select>
     <!--查询未付款订单-->
     <select id="unpaidOrder" resultType="HashMap">
-        select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
-        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
+        select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time ,
+        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck ,(select phone from user where id=b.user_id)phone
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce ,(select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
@@ -852,8 +852,8 @@
     </select>
     <!--查询欠款订单-->
     <select id="arrearsOrder" resultType="HashMap">
-        select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
-        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
+        select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time ,
+        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck,(select phone from user where id=b.user_id)phone
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce ,(select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o
@@ -939,7 +939,7 @@
 
     <!--查询已完成订单-->
     <select id="orderInfo" resultType="HashMap">
-        select o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold ,
+        select o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time ,
         o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , (select name from shengxian_staff where id = o.staff_id )staffName

@@ -144,10 +144,10 @@ public class MothPrinter {
 
             String content;
             content = "<CB>"+title+"</CB><BR>";
-            content += "名称："+name+"<BR>";
+            content += "<L>名称："+name+"</L><BR>";
             content += "联系电话："+phone+"<BR>";
             content += "送货地点："+address+"<BR>";
-            content += "名称<BR>";
+            content += "品名<BR>";
             content += "数量　    单价         金额<BR>";
             content += "--------------------------------<BR>";
             for (MothPrinterClass moth: mothPrinterClasses  ) {
@@ -157,7 +157,7 @@ public class MothPrinter {
                     }
                     content +="<B>"+ moth.getGoodsName()+typename+"</B><BR>";
                     String values = MothPrinterClass.divisionString( String.valueOf(moth.getNum())+moth.getUnits() ,moth.getPrice() ,moth.getMoney());
-                    content += values;
+                    content += "<L>"+values+"</L>";
                 }
             }
             content += "--------------------------------<BR>";
@@ -259,10 +259,10 @@ public class MothPrinter {
 
         String content;
         content = "<CB>"+title+"</CB><BR>";
-        content += "名称："+name+"<BR>";
+        content += "<L>名称："+name+"</L><BR>";
         content += "联系电话："+phone+"<BR>";
         content += "送货地点："+address+"<BR>";
-        content += "名称<BR>";
+        content += "品名<BR>";
         content += "数量　    单价         金额<BR>";
         content += "--------------------------------<BR>";
         for (MothPrinterClass moth: mothPrinterClasses  ) {
@@ -272,7 +272,7 @@ public class MothPrinter {
                 }
                 content += moth.getGoodsName()+typename+"<BR>";
                 String values = MothPrinterClass.divisionString( String.valueOf(moth.getNum())+moth.getUnits() ,moth.getPrice() ,moth.getMoney());
-                content += values;
+                content += "<L>"+values+"</L>";
             }
 
         }

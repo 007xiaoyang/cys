@@ -1212,7 +1212,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping("/unpaidOrder")
-    @ApiOperation(value = "查询未付款,欠款订单总数" ,httpMethod = "POST")
+    @ApiOperation(value = "查询未付款的订单" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),

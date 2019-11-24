@@ -649,7 +649,6 @@
         order by pd.id asc limit #{startIndex},#{pageSize}
     </select>
 
-
     <!--所有采购单据总数-->
     <select id="allPurchaseOrderCount" resultType="Integer">
         select count(p.id)

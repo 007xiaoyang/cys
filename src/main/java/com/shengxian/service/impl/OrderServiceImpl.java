@@ -2130,6 +2130,7 @@ public class OrderServiceImpl implements OrderService {
         //通过订单id查询订单详情 1
         return orderMapper.orderPrintDetail(order_id,page.getStartIndex(),page.getPageSize());
     }
+    //打印销售订单详情
 
 
     //打印临时订单

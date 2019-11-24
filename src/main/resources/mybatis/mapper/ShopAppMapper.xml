@@ -26,4 +26,12 @@
         from  shengxian_login_info where login_phone = #{loginPhone} and login_type = #{loginType} limit 1
     </select>
 
+    <insert id="addUserLoginInfo" parameterType="com.shengxian.entity.WxloginInfo">
+        insert into shengxian_login_info (login_phone,login_type ,login_date) values (#{loginPhone} , #{loginType} ,#{loginDate});
+    </insert>
+
+    <update id="updataUserLoginInfo">
+        update shengxian_login_info set  login_date= #{loginDate} where login_phone = #{loginPhone} and login_type =#{loginType};
+    </update>
+
 </mapper>

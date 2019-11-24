@@ -1,7 +1,11 @@
 
 ####证书配置 端口号####
 server:
-  port: 8089
+  port: 8443
+  ssl:
+    key-store: 2790513.pfx
+    key-store-password: Q3W2NXmP
+    key-store-type: PKCS12
 
 
 

@@ -1338,7 +1338,12 @@
 
     <!--修改模板2-->
     <update id="updateTemplateTwo">
-        update shengxian_template_two set title = #{title} ,one = #{one} , barcode = #{barcode}
+        update shengxian_template_two
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title != null "> title = #{title,jdbcType=VARCHAR}, </if>
+            <if test="one != null "> one = #{one,jdbcType=VARCHAR}, </if>
+            <if test="barcode != null "> barcode =#{barcode,jdbcType=VARCHAR},</if>
+        </trim>
         where id = #{id};
     </update>
 
@@ -1362,7 +1367,12 @@
 
     <!--修改模板3-->
     <update id="updateTemplateThree">
-        update shengxian_template_three set title = #{title} ,one = #{one} , barcode = #{barcode}
+        update shengxian_template_three
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title != null "> title = #{title,jdbcType=VARCHAR}, </if>
+            <if test="one != null "> one = #{one,jdbcType=VARCHAR}, </if>
+            <if test="barcode != null "> barcode =#{barcode,jdbcType=VARCHAR},</if>
+        </trim>
         where id = #{id};
     </update>
 
@@ -1386,7 +1396,13 @@
 
     <!--修改模板5-->
     <update id="updateTemplateFive">
-        update shengxian_template_five set title = #{title} ,one = #{one} , state = #{state} , barcode = #{barcode}
+        update shengxian_template_five
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title != null "> title = #{title,jdbcType=VARCHAR}, </if>
+            <if test="one != null "> one = #{one,jdbcType=VARCHAR}, </if>
+            <if test="state != null "> state = #{state,jdbcType=INTEGER}, </if>
+            <if test="barcode != null "> barcode =#{barcode,jdbcType=VARCHAR},</if>
+        </trim>
         where id = #{id};
     </update>
 
@@ -1410,7 +1426,12 @@
 
     <!--修改模板4-->
     <update id="updateTemplateFour">
-        update shengxian_template_four set title = #{title} ,one = #{one} , barcode =#{barcode}
+        update shengxian_template_four
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title != null "> title = #{title,jdbcType=VARCHAR}, </if>
+            <if test="one != null "> one = #{one,jdbcType=VARCHAR}, </if>
+            <if test="barcode != null "> barcode =#{barcode,jdbcType=VARCHAR},</if>
+        </trim>
         where id = #{id};
     </update>
 
@@ -1434,7 +1455,12 @@
 
     <!--修改模板6-->
     <update id="updateTemplateSix">
-        update shengxian_template_six set title = #{title} ,one = #{one} , barcode = #[barcode]
+        update shengxian_template_six
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title != null "> title = #{title,jdbcType=VARCHAR}, </if>
+            <if test="one != null "> one = #{one,jdbcType=VARCHAR}, </if>
+            <if test="barcode != null "> barcode =#{barcode,jdbcType=VARCHAR},</if>
+        </trim>
         where id = #{id};
     </update>
 

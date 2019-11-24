@@ -117,19 +117,42 @@ public class ShopAppController {
 
     /**
      * 获取用户登录信息
-     * @param wXloginInfo
+     * @param wxloginInfo
      * @return
      */
     @RequestMapping("/getUserLoginInfo")
     @ApiOperation(value = "获取用户登录信息" ,httpMethod = "POST")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "phone" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "loginType" ,value = "0用户 ，1店铺，2员工" ,paramType = "query")
     })
-    public Message getUserLoginInfo(WxloginInfo wXloginInfo){
+    public Message getUserLoginInfo(WxloginInfo wxloginInfo){
         Message message = Message.non();
-        WxloginInfo userLoginInfo = shopAppService.getUserLoginInfo(wXloginInfo);
+        WxloginInfo userLoginInfo = shopAppService.getUserLoginInfo(wxloginInfo);
         return message.code(Message.codeSuccessed).data(userLoginInfo).message("获取成功");
+    }
+    /**
+     * 修改用户登录信息
+     * @param wxloginInfo
+     * @return
+     */
+    @RequestMapping("/updataUserLoginInfo")
+    @ApiOperation(value = "修改用户登录信息" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "loginType" ,value = "0用户 ，1店铺，2员工" ,paramType = "query")
+    })
+    public Message updataUserLoginInfo(String token ,Integer role , WxloginInfo wxloginInfo){
+        Message message = Message.non();
+        try {
+            shopAppService.updataUserLoginInfo(wxloginInfo);
+        }catch (Exception e){
+            log.error(e);
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }
+        return message.code(Message.codeSuccessed).message("获取成功");
     }
 
 

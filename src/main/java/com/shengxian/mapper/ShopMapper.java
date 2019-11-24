@@ -1412,7 +1412,7 @@ public interface ShopMapper {
      * @param two
      * @return
      */
-    Integer updateTemplateTwo(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two ,@Param("barcode") int barcode);
+    Integer updateTemplateTwo(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two ,@Param("barcode") Integer barcode);
 
     /**
      * 添加模板3
@@ -1448,7 +1448,7 @@ public interface ShopMapper {
      * @param two
      * @return
      */
-    Integer updateTemplateThree(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two ,@Param("barcode") int barcode);
+    Integer updateTemplateThree(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("two") String two ,@Param("barcode") Integer barcode);
 
     /**
      * 添加模板5
@@ -1485,7 +1485,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    Integer updateTemplateFive(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") int barcode);
+    Integer updateTemplateFive(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") Integer barcode);
 
     /**
      * 添加模板4
@@ -1521,7 +1521,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    Integer updateTemplateFour(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") int barcode);
+    Integer updateTemplateFour(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") Integer barcode);
 
     /**
      * 添加模板2
@@ -1557,7 +1557,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    Integer updateTemplateSix(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") int barcode);
+    Integer updateTemplateSix(@Param("id") Integer id,@Param("title") String title  ,@Param("one") String one ,@Param("state") Integer state ,@Param("barcode") Integer barcode);
 
 
     /**

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * Description:
  *
@@ -48,4 +50,15 @@ public class ShopAppServiceImpl implements ShopAppService {
         return shopAppMapper.getUserLoginInfo(wxloginInfo);
     }
 
+    @Override
+    public Integer updataUserLoginInfo(WxloginInfo wxloginInfo) throws Exception {
+        WxloginInfo userLoginInfo = shopAppMapper.getUserLoginInfo(wxloginInfo);
+        wxloginInfo.setLoginDate(new Date());
+        if (userLoginInfo == null ){
+            //添加用户信息
+            return  shopAppMapper.addUserLoginInfo(wxloginInfo);
+        }else {
+            return shopAppMapper.updataUserLoginInfo(wxloginInfo);
+        }
+    }
 }

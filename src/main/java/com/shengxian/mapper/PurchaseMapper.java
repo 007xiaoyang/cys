@@ -499,6 +499,7 @@ public interface PurchaseMapper {
     List<PurchaseOrderDetail> purchaseOrderDetail(@Param("purchase_id") Integer purchase_id, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
 
+
     /**
      * 所有采购单据总数
      * @return

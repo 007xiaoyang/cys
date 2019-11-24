@@ -117,7 +117,7 @@ public class TemplateController {
             @ApiImplicitParam(name = "two" ,value = "" ,paramType = "query"),
             @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateTwo(String token ,Integer role ,Integer id ,String title ,String one , String two  ,int barcode){
+    public Message updateTemplateTwo(String token ,Integer role ,Integer id ,String title ,String one , String two  ,Integer barcode){
         Message message = Message.non();
         try {
             Integer count = templateService.updateTemplateTwo(id, title, one, two ,barcode);
@@ -213,7 +213,7 @@ public class TemplateController {
             @ApiImplicitParam(name = "two" ,value = "" ,paramType = "query"),
             @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateThree(String token ,Integer role ,Integer id ,String title ,String one , String two ,int barcode){
+    public Message updateTemplateThree(String token ,Integer role ,Integer id ,String title ,String one , String two ,Integer barcode){
         Message message = Message.non();
         try {
             Integer count = templateService.updateTemplateThree(id, title, one, two ,barcode);
@@ -287,7 +287,7 @@ public class TemplateController {
             @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query"),
             @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateFive(String token ,Integer role ,Integer id ,String title ,String one , Integer state,int barcode){
+    public Message updateTemplateFive(String token ,Integer role ,Integer id ,String title ,String one , Integer state,Integer barcode){
         Message message = Message.non();
         try {
             Integer count = templateService.updateTemplateFive(id, title, one, state,barcode);
@@ -352,7 +352,7 @@ public class TemplateController {
      * @return
      */
     @RequestMapping("/updateTemplateFour")
-    @SysLog(module = "模板管理" ,methods = "修改模板5")
+    @SysLog(module = "模板管理" ,methods = "修改模板4")
     @ApiOperation(value = "修改模板4" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
@@ -363,7 +363,7 @@ public class TemplateController {
             @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query"),
             @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateFour(String token ,Integer role ,Integer id ,String title ,String one , Integer state,int barcode){
+    public Message updateTemplateFour(String token ,Integer role ,Integer id ,String title ,String one , Integer state,Integer barcode){
         Message message = Message.non();
         try {
             Integer count = templateService.updateTemplateFour(id, title, one, state,barcode);
@@ -438,7 +438,7 @@ public class TemplateController {
             @ApiImplicitParam(name = "state" ,value = "1启动二维码" ,paramType = "query"),
             @ApiImplicitParam(name = "barcode" ,value = "0默认，1显示条形码" ,paramType = "query")
     })
-    public Message updateTemplateSix(String token ,Integer role ,Integer id ,String title ,String one , Integer state ,int barcode){
+    public Message updateTemplateSix(String token ,Integer role ,Integer id ,String title ,String one , Integer state ,Integer barcode){
         Message message = Message.non();
         try {
             Integer count = templateService.updateTemplateSix(id, title, one, state ,barcode);

@@ -1,6 +1,7 @@
 package com.shengxian.service;
 
 import com.shengxian.entity.WxloginInfo;
+import io.swagger.models.auth.In;
 
 /**
  * Description:
@@ -48,5 +49,13 @@ public interface ShopAppService  {
      * @return
      */
     WxloginInfo getUserLoginInfo(WxloginInfo wxloginInfo);
+
+    /**
+     * 修改用户登录信息
+     * @param wxloginInfo
+     * @return
+     * @throws Exception
+     */
+    Integer updataUserLoginInfo(WxloginInfo wxloginInfo)throws Exception;
 
 }
