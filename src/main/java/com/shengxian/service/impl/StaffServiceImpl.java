@@ -1,11 +1,14 @@
 package com.shengxian.service.impl;
 
+import com.google.common.collect.Lists;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.*;
 import com.shengxian.mapper.ShopMapper;
 import com.shengxian.mapper.MenuMapper;
 import com.shengxian.mapper.StaffMapper;
 import com.shengxian.service.StaffService;
+import com.shengxian.vo.StaffCategoryVO;
+import com.shengxian.vo.StaffVO;
 import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Description: 员工
@@ -407,4 +411,31 @@ public class StaffServiceImpl implements StaffService {
         HSSFWorkbook workbook = ExcelUtil.getHSSWorkbook(seetName, title, values, null);
         return workbook;
     }
+
+    @Override
+    public List<StaffCategoryVO> getStaffList(String token, Integer role) {
+
+        //获取店铺id
+        Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
+
+        //通过店铺id查询店铺类别集合
+        List<StaffCategoryVO> categoryList = staffMapper.getStaffCategoryInfo((long) businessId);
+        List<StaffVO> staffList = staffMapper.getStaffInfo((long)businessId );
+
+        categoryList.forEach(category -> {
+
+            List<StaffVO> staffVOS = Lists.newArrayList();
+            staffList.forEach(staff -> {
+                if(category.getId().equals(staff.getCategoryId())){
+                    staffVOS.add(staff);
+                }
+            });
+            staffList.removeAll(staffVOS);
+            category.setChildren(staffVOS);
+
+        });
+        return categoryList;
+    }
+
+
 }

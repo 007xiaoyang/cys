@@ -3,6 +3,9 @@ package com.shengxian.service;
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.BindUser;
 import com.shengxian.entity.Parameter;
+import com.shengxian.vo.UserCategoryVO;
+import com.shengxian.vo.UserVO;
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.util.HashMap;
@@ -155,4 +158,14 @@ public interface UserService {
      * @return
      */
     Integer addUserPhone(String phone)throws NullPointerException ,Exception;
+
+    /**
+     * 获取每个类别下对应的用户数据集合
+     * @param token
+     * @param role
+     * @return
+     */
+    List<UserCategoryVO> getUserList(String token ,Integer role);
+
+
 }

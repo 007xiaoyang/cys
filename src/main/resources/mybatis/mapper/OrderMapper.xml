@@ -323,6 +323,7 @@
         select o.id,b.user_name ,o.price, (select phone from user where id = b.user_id)phone ,o.create_time ,o.order_number
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
 		(select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , o.no
+		,o.making , o.deliver,o.payee
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.status = 1 and o.business_id = #{business_id} and o.is_del = 0
@@ -331,7 +332,10 @@
 
     <!--通过订单id查询订单运费差价和用户会员方案-->
     <select id="freightAndDifferencePrice" resultType="HashMap">
-        select o.freight,o.difference_price,o.binding_id ,o.order_number , bd.scheme_id , bd.number , bd.user_name as userName
+        select o.freight,o.difference_price,o.binding_id ,o.order_number , bd.scheme_id , bd.number , bd.user_name as userName , o.beizhu
+        ,o.price , o.money
+        ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+		(select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         where  o.is_del = 0 and  o.id = #{id}
@@ -509,7 +513,7 @@
     <!--未打印的订单-->
     <select id="notPrintedOrder" resultType="HashMap">
         select o.id,b.user_name ,o.price,o.no, (select phone from user where id=b.user_id)phone ,o.create_time,
-        o.status,o.state,o.mold,o.order_number
+        o.status,o.state,o.mold,o.order_number ,o.making , o.deliver,o.payee
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
@@ -601,9 +605,10 @@
 
     <!--待送货订单-->
     <select id="stayDelivered" resultType="HashMap">
-        select o.id,b.user_name ,o.price,o.no,o.order_number, (select phone from user where id=b.user_id)phone ,o.create_time,o.mold,o.status,o.making ,o.ck
+        select o.id,b.user_name ,o.price,o.no,o.order_number, (select phone from user where id=b.user_id)phone ,o.create_time,o.mold,o.status ,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce  , (select name from shengxian_staff where id = o.staff_id )staffName
+        ,o.making , o.deliver,o.payee
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.status in (2,3)  and o.business_id = #{business_id} and o.is_del = 0 and b.is_del = 0 and o.print_frequ = 1
@@ -766,10 +771,11 @@
     </select>
     <!--查询未付款订单-->
     <select id="unpaidOrder" resultType="HashMap">
-        select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time ,
-        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck ,(select phone from user where id=b.user_id)phone
+        select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time
+        ,o.type,o.receivable_time,o.money2,o.ck ,(select phone from user where id=b.user_id)phone
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce ,(select name from shengxian_staff where id = o.staff_id )staffName
+        ,o.making , o.deliver,o.payee
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.is_del = 0  and o.status = 4 and o.business_id = #{business_id} and o.state = 0
@@ -853,9 +859,10 @@
     <!--查询欠款订单-->
     <select id="arrearsOrder" resultType="HashMap">
         select  o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time ,
-        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck,(select phone from user where id=b.user_id)phone
+        o.type,o.receivable_time,o.money2,o.ck,(select phone from user where id=b.user_id)phone
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce ,(select name from shengxian_staff where id = o.staff_id )staffName
+        ,o.making , o.deliver,o.payee
         from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.is_del = 0  and o.status = 4 and o.business_id = #{business_id} and o.state = 2
@@ -939,8 +946,8 @@
 
     <!--查询已完成订单-->
     <select id="orderInfo" resultType="HashMap">
-        select o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time ,
-        o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
+        select o.id,o.order_number,o.price,o.money,b.user_name ,o.audit_time ,o.mold , o.no , o.create_time
+        ,o.making , o.deliver,o.payee,o.type,o.receivable_time,o.money2,o.ck
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce , (select name from shengxian_staff where id = o.staff_id )staffName
         from shengxian_order o

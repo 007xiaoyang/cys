@@ -478,7 +478,7 @@ public class OrderController {
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
-            @ApiImplicitParam(name = "type" ,value = "json格式" ,paramType = "query"),
+            @ApiImplicitParam(name = "type" ,value = "0费用支出，1费用收入" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "json格式" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "json格式" ,paramType = "query")
     })

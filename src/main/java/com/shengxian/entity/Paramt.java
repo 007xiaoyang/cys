@@ -32,7 +32,7 @@ public class Paramt {
 
     private String type2;
 
-
+    private  Long goodsId;
     public Paramt() {
     }
 
@@ -320,13 +320,14 @@ public class Paramt {
      * @param endTime
      * @param is
      */
-    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer is ,String goodsName) {
+    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer is ,String goodsName ,Long goodsId) {
         this.business_id = business_id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.is = is;
         this.goodsName = goodsName;
+        this.goodsId = goodsId;
     }
 
     /**
@@ -340,7 +341,7 @@ public class Paramt {
      * @param is
      * @param goodsName
      */
-    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer startIndex, Integer pageSize, Integer is ,String goodsName) {
+    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer startIndex, Integer pageSize, Integer is ,String goodsName ,Long goodsId) {
         this.business_id = business_id;
         this.name = name;
         this.startTime = startTime;
@@ -349,17 +350,19 @@ public class Paramt {
         this.pageSize = pageSize;
         this.is = is;
         this.goodsName = goodsName;
+        this.goodsId = goodsId;
     }
 
-    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer is) {
+    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer is , Long  goodsId) {
         this.business_id = business_id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.is = is;
+        this.goodsId = goodsId;
     }
 
-    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer startIndex, Integer pageSize, Integer is) {
+    public Paramt(Integer business_id, String name, String startTime, String endTime, Integer startIndex, Integer pageSize, Integer is, Long  goodsId) {
         this.business_id = business_id;
         this.name = name;
         this.startTime = startTime;
@@ -367,6 +370,7 @@ public class Paramt {
         this.startIndex = startIndex;
         this.pageSize = pageSize;
         this.is = is;
+        this.goodsId = goodsId;
     }
 
     public Paramt(Integer business_id, Integer staff_id,Integer status, String startTime, String endTime, Integer is) {

@@ -143,14 +143,14 @@ public interface FinanceService {
      * @param token
      * @return
      */
-    Page userSaleProfitSummary(String token ,Integer role , Integer pageNo, String name,String goodsName, String startTime, String endTime,Integer bindindId)throws NullPointerException;
+    Page userSaleProfitSummary(String token ,Integer role , Integer pageNo, String name,String goodsName, String startTime, String endTime,Integer bindindId ,Long goodsId)throws NullPointerException;
 
     /**
      * 用户销售明细
      * @param token
      * @return
      */
-    Page userSaleProfitDetails(String token ,Integer role , Integer pageNo, String name ,String goodsName, String startTime, String endTime,Integer bindindId)throws NullPointerException;
+    Page userSaleProfitDetails(String token ,Integer role , Integer pageNo, String name ,String goodsName, String startTime, String endTime,Integer bindindId  ,Long goodsId)throws NullPointerException;
 
 
     /**
@@ -158,14 +158,14 @@ public interface FinanceService {
      * @param token
      * @return
      */
-    Page goodsSaleProfitSummary(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime, Integer is)throws NullPointerException;
+    Page goodsSaleProfitSummary(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime, Integer is ,Long goodsId)throws NullPointerException;
 
     /**
      * 产品销售明细
      * @param token
      * @return
      */
-    Page goodsSaleProfitDetails(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime, Integer is) throws NullPointerException;
+    Page goodsSaleProfitDetails(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime, Integer is ,Long goodsId) throws NullPointerException;
 
 
     /**

@@ -1,6 +1,8 @@
 package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
+import com.shengxian.vo.UserCategoryVO;
+import com.shengxian.vo.UserVO;
 import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -310,6 +312,12 @@ public interface UserMapper {
      * @return
      */
     Integer addUserPhone(@Param("phone") String phone ,@Param("password") String password , @Param("token") String token ,@Param("time") Date time);
+
+
+
+    List<UserCategoryVO> getUserCategoryList(@Param("businessId") Long businessId);
+
+    List<UserVO> getUserList(@Param("businessId") Long businessId);
 
 }
 

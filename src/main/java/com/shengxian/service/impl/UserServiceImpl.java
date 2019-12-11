@@ -1,11 +1,14 @@
 package com.shengxian.service.impl;
 
+import com.google.common.collect.Lists;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.*;
 import com.shengxian.mapper.ShopMapper;
 import com.shengxian.mapper.StaffMapper;
 import com.shengxian.mapper.UserMapper;
 import com.shengxian.service.UserService;
+import com.shengxian.vo.UserCategoryVO;
+import com.shengxian.vo.UserVO;
 import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -438,5 +441,30 @@ public class UserServiceImpl implements UserService {
         }
         String pwd = PasswordMD5.EncoderByMd5("123456" + Global.passwordKey);
         return userMapper.addUserPhone(phone ,pwd , UUID.randomUUID().toString() , new Date());
+    }
+
+    @Override
+    public List<UserCategoryVO> getUserList(String token, Integer role) {
+
+        //获取店铺id
+        Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
+
+        List<UserCategoryVO> userCategoryList = userMapper.getUserCategoryList((long) businessId);
+
+        List<UserVO> userList = userMapper.getUserList((long) businessId);
+
+        userCategoryList.forEach(category -> {
+
+            List<UserVO> userVOS = Lists.newArrayList();
+
+            userList.forEach(user -> {
+                if(user.getCategoryId().equals(category.getId())){
+                    userVOS.add(user);
+                }
+            });
+            userList.removeAll(userVOS);
+            category.setChildren(userVOS);
+        });
+        return userCategoryList;
     }
 }

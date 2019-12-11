@@ -273,4 +273,15 @@
         insert into user(phone , password , token ,cate_time)
         values( #{phone} ,#{password} , #{token}, #{time})
     </insert>
+
+    <select id="getUserCategoryList" resultType="com.shengxian.vo.UserCategoryVO">
+        select id , name ,code from shengxian_binding_category where business_id = #{businessId}
+    </select>
+
+    <select id="getUserList" resultType="com.shengxian.vo.UserVO">
+        select id , category_id as categoryId ,business_id as businessId ,user_id as userId ,staff_id as staffId,
+        number , user_name as userName , telephone , scheme_id as schemeId , source , type
+        from shengxian_binding where is_del = 0 and  business_id = #{businessId}
+    </select>
+
 </mapper>

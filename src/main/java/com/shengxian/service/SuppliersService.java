@@ -1,8 +1,10 @@
 package com.shengxian.service;
 
+import com.google.common.collect.Lists;
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.Parameter;
 import com.shengxian.entity.Suppliers;
+import com.shengxian.vo.SuppliersCategoryVO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.util.HashMap;
@@ -102,4 +104,6 @@ public interface SuppliersService {
      */
     List<HashMap> findSuppliersList(Integer id);
 
+
+    List<SuppliersCategoryVO> getSuppliersList(String token , Integer role) throws Exception;
 }

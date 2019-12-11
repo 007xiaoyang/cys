@@ -1,6 +1,8 @@
 package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
+import com.shengxian.vo.StaffCategoryVO;
+import com.shengxian.vo.StaffVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -377,5 +379,19 @@ public interface StaffMapper {
      */
     List<HashMap>  excelDownloadStaffInfoList(@Param("business_id") Integer business_id, @Param("categoryId") Integer categoryId, @Param("phone") String phone, @Param("number") String number, @Param("name") String name);
 
+
+    /**
+     * 通过店铺id查询店铺类别集合
+     * @param businessId
+     * @return
+     */
+    List<StaffCategoryVO> getStaffCategoryInfo(@Param("businessId") Long businessId);
+
+    /**
+     * 获取店铺下的员工
+     * @param businessId
+     * @return
+     */
+    List<StaffVO> getStaffInfo(@Param("businessId") Long businessId );
 
 }

@@ -1113,6 +1113,17 @@
     </update>
 
 
+    <select id="getGoodsCategoryList" resultType="com.shengxian.vo.GoodsCategoryVO">
+        select id , name , code , level , status
+        from shengxian_goods_category where business_id = #{businessId}
+    </select>
+
+    <select id="getGoodsList" resultType="com.shengxian.vo.GoodsVO">
+        select id ,category_id as categoryId , number , name , spec ,units , barcode , cost_price as costPrice
+        , minimum_price as minimumPrice , temporary_price as  temporaryPrice , status
+        from shengxian_goods where is_del = 0 and  business_id = #{businessId}
+    </select>
+
 
 
 

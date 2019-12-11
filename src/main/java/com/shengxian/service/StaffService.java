@@ -2,6 +2,7 @@ package com.shengxian.service;
 
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.Staff;
+import com.shengxian.vo.StaffCategoryVO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.UnsupportedEncodingException;
@@ -186,6 +187,8 @@ public interface StaffService {
      */
     HSSFWorkbook excelDownload(String token ,Integer role, Integer id, String phone, String number, String name);
 
+
+    List<StaffCategoryVO> getStaffList(String token , Integer role);
 
 }
 

@@ -161,7 +161,7 @@ public class MothPrinter {
                 }
             }
             content += "--------------------------------<BR>";
-            content += "备注："+beizhu+"<BR>";
+            content += "<L>备注："+beizhu+"</L><BR>";
             content += "运费:"+f+"元"+" 差价:"+dp+"元"+" 优惠:"+reduce+"元<BR>";
             content += "--------------------------------<BR>";
             content += "<B>总计："+tatol+"元</B><BR>";
@@ -277,7 +277,7 @@ public class MothPrinter {
 
         }
         content += "--------------------------------<BR>";
-        content += "备注："+beizhu+"<BR>";
+        content += "</L>备注："+beizhu+"</L><BR>";
         content += "运费："+f+"元"+" 差价："+dp+"元<BR>";
         content += "--------------------------------<BR>";
         content += "<B>总计："+tatol+"元</B><BR>";

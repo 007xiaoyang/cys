@@ -2,6 +2,7 @@ package com.shengxian.service;
 
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.*;
+import com.shengxian.vo.GoodsCategoryVO;
 import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
@@ -715,5 +716,13 @@ public interface ShopService {
      * @return
      */
     Integer refreshGoodsORIdentificationCode(String token , Integer role);
+
+    /**
+     * 获取每个类别下对应的产品数据集合
+     * @param token
+     * @param role
+     * @return
+     */
+    List<GoodsCategoryVO> getGoodsList(String token , Integer role);
 
 }

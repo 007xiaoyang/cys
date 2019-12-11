@@ -1,5 +1,6 @@
 package com.shengxian.service.impl;
 
+import com.google.common.collect.Lists;
 import com.shengxian.common.util.ExcelUtil;
 import com.shengxian.common.util.GroupNumber;
 import com.shengxian.common.util.IntegerUtils;
@@ -9,11 +10,14 @@ import com.shengxian.entity.Suppliers;
 import com.shengxian.mapper.ShopMapper;
 import com.shengxian.mapper.SuppliersMapper;
 import com.shengxian.service.SuppliersService;
+import com.shengxian.vo.SuppliersCategoryVO;
+import com.shengxian.vo.SuppliersVO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -205,5 +209,31 @@ public class SuppliersServiceImpl implements SuppliersService {
     @Override
     public List<HashMap> findSuppliersList(Integer id) {
         return suppliersMapper.findSuppliersList(id);
+    }
+
+    @Override
+    public List<SuppliersCategoryVO> getSuppliersList(String token, Integer role) throws Exception {
+        //获取店铺id
+        Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
+
+        //获取店铺所有的供应商类别
+        List<SuppliersCategoryVO> categoryList = suppliersMapper.getSuppliersCategoryList((long) businessId);
+        //获取店铺所有的供应商列表
+        List<SuppliersVO> suppliersList = suppliersMapper.getSuppliersList(((long) businessId));
+
+        categoryList.forEach(categor ->{
+
+            List<SuppliersVO> suppliersVO  = Lists.newArrayList();
+
+            suppliersList.forEach(suppliers -> {
+                if(categor.getId().equals(suppliers.getCategoryId())){
+                    suppliersVO.add(suppliers);
+                }
+            });
+            suppliersList.removeAll(suppliersVO);
+            categor.setChildren(suppliersVO);
+        });
+
+        return categoryList;
     }
 }

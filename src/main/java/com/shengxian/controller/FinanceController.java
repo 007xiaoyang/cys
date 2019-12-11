@@ -452,7 +452,7 @@ public class FinanceController {
                 @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
                 @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
                 @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
-                @ApiImplicitParam(name = "type" ,value = "1销售，2采购" ,paramType = "query")
+                @ApiImplicitParam(name = "type" ,value = "0销售，1采购" ,paramType = "query")
             })
     public Message settlementInfo(String token ,Integer role , Integer pageNo, String startTime, String endTime, Integer type){
         Message message = Message.non();
@@ -524,7 +524,7 @@ public class FinanceController {
             @ApiImplicitParam(name = "type" ,value = "1用户销售汇总，2用户销售明细" ,paramType = "query"),
             @ApiImplicitParam(name = "bindindId" ,value = "用户id" ,paramType = "query")
     })
-    public Message userSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name ,String goodsName, String startTime, String endTime ,Integer bindindId ){
+    public Message userSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name ,String goodsName, String startTime, String endTime ,Integer bindindId ,Long goodsId ){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         Page page = null;
@@ -537,10 +537,10 @@ public class FinanceController {
             }
             if (type == 1){
                 //用户销售汇总
-                page = financeService.userSaleProfitSummary(token ,role ,pageNo,names ,goodsName ,start,end ,bindindId);
+                page = financeService.userSaleProfitSummary(token ,role ,pageNo,names ,goodsName ,start,end ,bindindId ,goodsId);
             }else if (type == 2){
                 //用户销售明细
-                page = financeService.userSaleProfitDetails(token ,role ,pageNo,names ,goodsName ,start,end ,bindindId);
+                page = financeService.userSaleProfitDetails(token ,role ,pageNo,names ,goodsName ,start,end ,bindindId ,goodsId);
             }
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
@@ -568,7 +568,7 @@ public class FinanceController {
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
             @ApiImplicitParam(name = "type" ,value = "1用户销售汇总，2用户销售明细" ,paramType = "query")
     })
-    public Message goodsSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name , String startTime, String endTime, Integer is ){
+    public Message goodsSaleProfit(String token ,Integer role , Integer type, Integer pageNo, String name , String startTime, String endTime, Integer is  ,Long goodsId){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         Page page = null;
@@ -581,9 +581,9 @@ public class FinanceController {
                 start = startTime; end = endTime;
             }
             if (type == 1){
-                page = financeService.goodsSaleProfitSummary(token ,role ,pageNo,names ,start,end,is);
+                page = financeService.goodsSaleProfitSummary(token ,role ,pageNo,names ,start,end,is ,goodsId);
             }else if (type == 2){
-                page = financeService.goodsSaleProfitDetails(token ,role ,pageNo,names ,start,end,is);
+                page = financeService.goodsSaleProfitDetails(token ,role ,pageNo,names ,start,end,is , goodsId);
             }
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
@@ -901,7 +901,7 @@ public class FinanceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "type" ,value = "1销售，2采购" ,paramType = "query")
+            @ApiImplicitParam(name = "type" ,value = "0销售，1采购" ,paramType = "query")
     })
     public Message finalSettlementTime(String token , Integer role , Integer type){
         Message message= Message.non();

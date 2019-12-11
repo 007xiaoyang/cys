@@ -11,6 +11,8 @@ import com.shengxian.entity.Parameter;
 import com.shengxian.service.ExcelService;
 import com.shengxian.service.UserService;
 import com.shengxian.sysLog.SysLog;
+import com.shengxian.vo.SuppliersCategoryVO;
+import com.shengxian.vo.UserCategoryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -603,6 +605,30 @@ public class UserController {
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
 
+    }
+
+
+    /**
+     * 获取每个类别下对应的用户数据集合
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getUserList")
+    @ApiOperation(value = "获取每个类别下对应的用户数据集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message getUserList(String token ,Integer role){
+        Message message = Message.non();
+
+        try {
+            List<UserCategoryVO> hashMaps = userService.getUserList(token ,role);
+            return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
+        }catch (Exception e){
+            log.error("员工控制层（/staff/getStaffList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
     }
 
 }

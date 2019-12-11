@@ -2,6 +2,8 @@ package com.shengxian.mapper;
 
 import com.shengxian.entity.Parameter;
 import com.shengxian.entity.Suppliers;
+import com.shengxian.vo.SuppliersCategoryVO;
+import com.shengxian.vo.SuppliersVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -143,4 +145,7 @@ public interface SuppliersMapper {
     List<HashMap> excelDownload(Parameter parameter);
 
 
+    List<SuppliersCategoryVO> getSuppliersCategoryList(@Param("businessId") Long businessId);
+
+    List<SuppliersVO> getSuppliersList(@Param("businessId") Long businessId);
 }

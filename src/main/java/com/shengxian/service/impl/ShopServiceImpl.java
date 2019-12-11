@@ -1,5 +1,6 @@
 package com.shengxian.service.impl;
 
+import com.google.common.collect.Lists;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.*;
 import com.shengxian.mapper.MenuMapper;
@@ -7,6 +8,8 @@ import com.shengxian.mapper.PurchaseMapper;
 import com.shengxian.mapper.ShopMapper;
 import com.shengxian.mapper.UserMapper;
 import com.shengxian.service.ShopService;
+import com.shengxian.vo.GoodsCategoryVO;
+import com.shengxian.vo.GoodsVO;
 import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -1466,5 +1470,74 @@ public class ShopServiceImpl implements ShopService {
             int icode = (int) ((Math.random() * 4 + 1) * 1000);
             return shopMapper.refreshGoodsORIdentificationCode(business_id , icode);
         }
+
+    @Override
+    public List<GoodsCategoryVO> getGoodsList(String token, Integer role) {
+
+        long time1 = new Date().getTime();
+        Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
+
+        List<GoodsCategoryVO> vos = new ArrayList<>();
+
+        List<GoodsCategoryVO> goodsCategoryList = shopMapper.getGoodsCategoryList((long) businessId);
+
+        List<GoodsVO> goodsList = shopMapper.getGoodsList((long) businessId);
+
+        long time2 = new Date().getTime();
+        //遍历所有的菜单分类
+        goodsCategoryList.forEach((category) -> {
+            if(category.getLevel().equals(0) ){
+                vos.add(category);
+            }
+        });
+        //删除根节点
+        goodsCategoryList.removeAll(vos);
+        //为根菜单设置子菜单，getClild是递归调用的
+        vos.forEach((root) -> {
+            /* 获取根节点下的所有子节点 使用getChild方法*/
+            List<GoodsCategoryVO> childList = getChild(root.getId(), goodsCategoryList , goodsList);
+            root.setChildren(childList);//给根节点设置子节点
+        });
+        long time3 = new Date().getTime();
+        System.out.println( time3 - time1);
+        System.out.println( time3 - time2);
+        System.out.println( time2 - time1);
+        return vos;
+    }
+
+    /**
+     * 获取子节点
+     * @param id 父节点id
+     * @param allMenu 所有菜单列表
+     * @return 每个根节点下，所有子菜单列表
+     */
+    public List<GoodsCategoryVO> getChild(Long id,List<GoodsCategoryVO> allMenu , List<GoodsVO> goodsList){
+        //子菜单
+        List<GoodsCategoryVO> childList = Lists.newArrayList();
+
+
+        allMenu.forEach((son) -> {
+            List<GoodsVO> gvos = Lists.newArrayList();
+            if( id.equals((long)son.getLevel())){
+                childList.add(son);
+
+                goodsList.forEach((goods) -> {
+                    if(son.getId().equals(goods.getCategoryId())){
+                       gvos.add(goods);
+                    }
+                });
+                goodsList.removeAll(gvos);
+                son.setgChildren(gvos);
+
+            }
+        });
+
+
+        if(childList.size() == 0){
+            return new ArrayList<GoodsCategoryVO>();
+        }
+        allMenu.removeAll(childList);
+        return childList;
+    }
 
 }

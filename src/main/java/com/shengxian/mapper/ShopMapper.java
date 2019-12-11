@@ -1,6 +1,8 @@
 package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
+import com.shengxian.vo.GoodsCategoryVO;
+import com.shengxian.vo.GoodsVO;
 import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -1109,6 +1111,12 @@ public interface ShopMapper {
      * @return
      */
     Integer refreshGoodsORIdentificationCode(@Param("id") Integer business_id , @Param("icode") Integer icode);
+
+
+    List<GoodsCategoryVO> getGoodsCategoryList(@Param("businessId") Long businessId);
+
+    List<GoodsVO>  getGoodsList(@Param("businessId") Long businessId);
+
 
 
 

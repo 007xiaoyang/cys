@@ -24,7 +24,9 @@
     <select id="mallMoney" resultType="HashMap">
         select o.id,o.no,o.order_number,o.price,ifnull(o.money,0)money,b.user_name,o.audit_time ,o.receivable_time,o.freight,
         (select name from shengxian_staff where id = o.staff_id )staffName,
-        o.payee,o.difference_price,o.state,o.type,o.money2 ,o.create_time  from shengxian_order o
+        o.payee,o.difference_price,o.state,o.type,o.money2 ,o.create_time  ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        from shengxian_order o
         inner join shengxian_binding b on b.id=o.binding_id
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
@@ -83,7 +85,9 @@
     <select id="underLineMoney" resultType="HashMap">
         select o.id,o.no,o.order_number,o.price,o.money,b.user_name ,o.audit_time,o.receivable_time,o.freight,o.payee,o.difference_price,
         (select name from shengxian_staff where id = o.staff_id )staffName,
-        o.type,o.state,o.money2 ,o.create_time from shengxian_order o
+        o.type,o.state,o.money2 ,o.create_time ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold =0 and o.part=0 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
@@ -141,7 +145,9 @@
     <select id="returnMoney" resultType="HashMap">
         select o.id,o.no,o.order_number,o.price,o.money,b.user_name,o.audit_time ,o.receivable_time,o.freight,o.payee,o.difference_price,
         (select name from shengxian_staff where id = o.staff_id )staffName,
-        o.type,o.state ,o.money2,o.create_time   from shengxian_order o
+        o.type,o.state ,o.money2,o.create_time   ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
+        from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
@@ -215,6 +221,8 @@
         select o.id,o.no, o.order_number,o.price,o.money,b.user_name ,o.freight,o.difference_price   ,
         (select name from shengxian_staff where id = o.staff_id )staffName,
         o.type ,o.state,o.mold , o.part,o.payee,o.audit_time ,o.receivable_time ,o.money2,o.create_time
+        ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
+        (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.is_del = 0  and o.status = 4 and o.state not in(1) and o.business_id = #{business_id}
@@ -731,6 +739,9 @@
         <if test="is != null">
             and bd.id = #{is}
         </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
+        </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
@@ -759,6 +770,9 @@
         <if test="is != null">
             and bd.id = #{is}
         </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
+        </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
@@ -782,6 +796,9 @@
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
         <if test="is != null">
             and bd.id = #{is}
+        </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
         </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
@@ -808,6 +825,9 @@
         <if test="is != null">
             and bd.id = #{is}
         </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
+        </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
@@ -833,6 +853,9 @@
         <if test="is != null">
             and bd.id = #{is}
         </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
+        </if>
         <if test="name != null and name != ''">
             and (bd.user_name LIKE CONCAT('%',#{name},'%') or bd.number LIKE CONCAT('%',#{name},'%'))
         </if>
@@ -856,6 +879,9 @@
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
         <if test=" is != null">
             and gi.warehouse_id = #{is}
+        </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
         </if>
         <if test="name != null and name != ''">
             and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
@@ -881,6 +907,9 @@
         where o.is_del = 0 and o.status = 4  and o.business_id = #{business_id}  and o.mold = 0
         <if test="is != null ">
             and gi.warehouse_id = #{is}
+        </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
         </if>
         <if test="name != null and name != ''">
             and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
@@ -908,6 +937,9 @@
         <if test="is != null ">
             and gi.warehouse_id=#{is}
         </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
+        </if>
         <if test="name != null and name != ''">
             and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
         </if>
@@ -930,6 +962,9 @@
         where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
         <if test="is != null ">
             and gi.warehouse_id = #{is}
+        </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
         </if>
         <if test="name != null and name != ''">
             and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
@@ -955,6 +990,9 @@
         <if test="is != null ">
             and gi.warehouse_id = #{is}
         </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
+        </if>
         <if test="name != null and name != ''">
             and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))
         </if>
@@ -979,6 +1017,9 @@
         where o.is_del = 0  and o.status = 4  and o.business_id = #{business_id}   and o.mold = 0
         <if test="is != null ">
             and gi.warehouse_id = #{is}
+        </if>
+        <if test=" goodsId != null">
+            and g.id = #{goodsId}
         </if>
         <if test="name != null and name != ''">
             and (g.name LIKE CONCAT('%',#{name},'%') or g.number LIKE CONCAT('%',#{name},'%'))

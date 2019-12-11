@@ -7,10 +7,13 @@ import com.shengxian.entity.Suppliers;
 import com.shengxian.service.ExcelService;
 import com.shengxian.service.SuppliersService;
 import com.shengxian.sysLog.SysLog;
+import com.shengxian.vo.StaffCategoryVO;
+import com.shengxian.vo.SuppliersCategoryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -36,6 +39,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/suppliers")
 public class SuppliersController {
+    private static Logger log = Logger.getLogger(SuppliersController.class);
 
     @Resource
     private SuppliersService suppliersService;
@@ -402,5 +406,28 @@ public class SuppliersController {
         }
     }
 
+
+    /**
+     * 获取每个类别下对应的供应商数据集合
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getSuppliersList")
+    @ApiOperation(value = "获取每个类别下对应的供应商数据集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message getSuppliersList(String token ,Integer role){
+        Message message = Message.non();
+
+        try {
+            List<SuppliersCategoryVO> hashMaps = suppliersService.getSuppliersList(token ,role);
+            return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
+        }catch (Exception e){
+            log.error("员工控制层（/staff/getStaffList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
 
 }

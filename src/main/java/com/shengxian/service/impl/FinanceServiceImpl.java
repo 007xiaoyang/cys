@@ -661,7 +661,7 @@ public class FinanceServiceImpl implements FinanceService {
 
     //用户销售汇总
     @Override
-    public Page userSaleProfitSummary(String token ,Integer role , Integer pageNo, String name ,String goodsName, String startTime, String endTime,Integer bindindId)throws NullPointerException {
+    public Page userSaleProfitSummary(String token ,Integer role , Integer pageNo, String name ,String goodsName, String startTime, String endTime,Integer bindindId ,Long goodsId)throws NullPointerException {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
@@ -671,14 +671,14 @@ public class FinanceServiceImpl implements FinanceService {
             pageNum=pageNo;
         }
         //用户销售汇总总数
-        Integer tatolCount = financeMapper.userSaleProfitSummaryCount(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName));
+        Integer tatolCount = financeMapper.userSaleProfitSummaryCount(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName , goodsId));
         Page page = new Page(pageNum,tatolCount);
 
         //用户销售汇总
-        List<HashMap> hashMaps = financeMapper.userSaleProfitSummary(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize() ,bindindId ,goodsName ));
+        List<HashMap> hashMaps = financeMapper.userSaleProfitSummary(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize() ,bindindId ,goodsName , goodsId));
 
         //用户销售汇总总金额
-        HashMap hashMap = financeMapper.userSaleProfitSummaryTatolMoney(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName));
+        HashMap hashMap = financeMapper.userSaleProfitSummaryTatolMoney(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName, goodsId));
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);
         return page;
@@ -686,7 +686,7 @@ public class FinanceServiceImpl implements FinanceService {
 
     //用户销售明细
     @Override
-    public Page userSaleProfitDetails(String token ,Integer role , Integer pageNo, String name ,String goodsName, String startTime, String endTime,Integer bindindId)throws NullPointerException {
+    public Page userSaleProfitDetails(String token ,Integer role , Integer pageNo, String name ,String goodsName, String startTime, String endTime,Integer bindindId ,Long goodsId)throws NullPointerException {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
@@ -695,10 +695,10 @@ public class FinanceServiceImpl implements FinanceService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
-        Integer tatolCount = financeMapper.userSaleProfitDetailsCount(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName));
+        Integer tatolCount = financeMapper.userSaleProfitDetailsCount(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName, goodsId));
         Page page = new Page(pageNum,tatolCount);
-        List<HashMap> hashMaps = financeMapper.userSaleProfitDetails(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize() ,bindindId ,goodsName));
-        HashMap hashMap = financeMapper.userSaleProfitDetailsTatolMoney(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName));
+        List<HashMap> hashMaps = financeMapper.userSaleProfitDetails(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize() ,bindindId ,goodsName, goodsId));
+        HashMap hashMap = financeMapper.userSaleProfitDetailsTatolMoney(new Paramt(bid,name,startTime,endTime ,bindindId ,goodsName, goodsId));
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);
         return page;
@@ -707,7 +707,7 @@ public class FinanceServiceImpl implements FinanceService {
 
     //产品销售汇总
     @Override
-    public Page goodsSaleProfitSummary(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime, Integer is) throws NullPointerException {
+    public Page goodsSaleProfitSummary(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime, Integer is ,Long goodsId) throws NullPointerException {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
@@ -716,10 +716,10 @@ public class FinanceServiceImpl implements FinanceService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
-        Integer tatolCount = financeMapper.goodsSaleProfitSummaryCount(new Paramt(bid,name,startTime,endTime,is));
+        Integer tatolCount = financeMapper.goodsSaleProfitSummaryCount(new Paramt(bid,name,startTime,endTime,is, goodsId));
         Page page = new Page(pageNum,tatolCount);
-        List<HashMap> hashMaps = financeMapper.goodsSaleProfitSummary(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize(),is));
-        HashMap hashMap = financeMapper.goodsSaleProfitSummaryTatolMoney(new Paramt(bid, name, startTime, endTime,is));
+        List<HashMap> hashMaps = financeMapper.goodsSaleProfitSummary(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize(),is, goodsId));
+        HashMap hashMap = financeMapper.goodsSaleProfitSummaryTatolMoney(new Paramt(bid, name, startTime, endTime,is, goodsId));
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);
         return page;
@@ -727,7 +727,7 @@ public class FinanceServiceImpl implements FinanceService {
 
     //产品销售明细
     @Override
-    public Page goodsSaleProfitDetails(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime , Integer is) throws NullPointerException {
+    public Page goodsSaleProfitDetails(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime , Integer is ,Long goodsId) throws NullPointerException {
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
@@ -736,10 +736,10 @@ public class FinanceServiceImpl implements FinanceService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
-        Integer tatolCount = financeMapper.goodsSaleProfitDetailsCount(new Paramt(bid,name,startTime,endTime,is));
+        Integer tatolCount = financeMapper.goodsSaleProfitDetailsCount(new Paramt(bid,name,startTime,endTime,is, goodsId));
         Page page = new Page(pageNum,tatolCount);
-        List<HashMap> hashMaps = financeMapper.goodsSaleProfitDetails(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize(),is));
-        HashMap hashMap = financeMapper.goodsSaleProfitDetailsTatolMoney(new Paramt(bid, name, startTime, endTime,is));
+        List<HashMap> hashMaps = financeMapper.goodsSaleProfitDetails(new Paramt(bid, name, startTime, endTime, page.getStartIndex(), page.getPageSize(),is, goodsId));
+        HashMap hashMap = financeMapper.goodsSaleProfitDetailsTatolMoney(new Paramt(bid, name, startTime, endTime,is, goodsId));
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);
         return page;

@@ -132,4 +132,16 @@
         order by id
     </select>
 
+
+    <select id="getSuppliersCategoryList" resultType="com.shengxian.vo.SuppliersCategoryVO">
+        select id , name , code from shengxian_suppliers_category where business_id = #{businessId}
+    </select>
+
+    <select id="getSuppliersList" resultType="com.shengxian.vo.SuppliersVO">
+        select id , category_id as categoryId , number , phone , name , address , illustrated , remarks
+        , business_id as businessId
+        from shengxian_suppliers
+        where is_del = 0 and  business_id = #{businessId}
+    </select>
+
 </mapper>

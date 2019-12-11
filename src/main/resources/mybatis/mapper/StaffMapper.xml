@@ -365,4 +365,15 @@
         order by id asc
     </select>
 
+    <!--通过店铺id查询店铺类别集合-->
+    <select id="getStaffCategoryInfo" resultType="com.shengxian.vo.StaffCategoryVO">
+        select  id , name from shengxian_staff_category where business_id = #{businessId}
+    </select>
+
+    <!--获取店铺下的员工-->
+    <select id="getStaffInfo" resultType="com.shengxian.vo.StaffVO">
+        select id , name ,number ,category_id as categoryId
+        from shengxian_staff where is_del = 0 and business_id = #{businessId}
+    </select>
+
 </mapper>
