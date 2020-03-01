@@ -296,6 +296,7 @@ public interface StaffMapper {
      * @param goodsPercent
      * @return
      */
+    Integer updateGoodsPercent(GoodsPercent goodsPercent);
     Integer updateStaffGoodsPercent(GoodsPercent goodsPercent);
 
     /**
@@ -303,6 +304,7 @@ public interface StaffMapper {
      * @param userPercent
      * @return
      */
+    Integer updateUserPercent(UserPercent userPercent);
     Integer updateStaffUserPercent(UserPercent userPercent);
 
     /**

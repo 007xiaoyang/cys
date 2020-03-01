@@ -32,6 +32,9 @@ public class Paramt {
 
     private String type2;
 
+    private  String userName ;
+    private  Integer warehouseId;
+
     private  Long goodsId;
     public Paramt() {
     }
@@ -80,6 +83,12 @@ public class Paramt {
     public Paramt(Integer business_id, String name, Integer mold) {
         this.business_id = business_id;
         this.name = name;
+        this.mold = mold;
+    }
+    public Paramt(Integer business_id, String name,String number, Integer mold) {
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
         this.mold = mold;
     }
 
@@ -394,7 +403,9 @@ public class Paramt {
     }
 
     //待送货订单汇总参数
-    public Paramt(Integer business_id, String name, String number ,Integer mold ) {
+    public Paramt(String startTime , String endTime ,Integer business_id, String name, String number ,Integer mold ) {
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.business_id = business_id;
         this.name = name;
         this.number = number;
@@ -402,7 +413,35 @@ public class Paramt {
     }
 
     //待送货订单汇总参数
-    public Paramt(Integer business_id, String name, String number  ,Integer mold , Integer startIndex, Integer pageSize) {
+    public Paramt(String startTime , String endTime, Integer business_id, String name, String number  ,Integer mold , Integer startIndex, Integer pageSize) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
+        this.mold = mold;
+        this.startIndex = startIndex;
+        this.pageSize = pageSize;
+    }
+
+    //待送货订单明细参数
+    public Paramt(String startTime , String endTime ,String userName ,Integer warehouseId  ,Integer business_id, String name, String number ,Integer mold ) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.userName = userName;
+        this.warehouseId = warehouseId;
+        this.business_id = business_id;
+        this.name = name;
+        this.number = number;
+        this.mold = mold;
+    }
+
+    //待送货订单明细参数
+    public Paramt(String startTime , String endTime,String userName ,Integer warehouseId , Integer business_id, String name, String number  ,Integer mold , Integer startIndex, Integer pageSize) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.userName = userName;
+        this.warehouseId = warehouseId;
         this.business_id = business_id;
         this.name = name;
         this.number = number;
@@ -617,6 +656,22 @@ public class Paramt {
         this.type2 = type2;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Integer getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Integer warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
     @Override
     public String toString() {
         return "Paramt{" +
@@ -637,6 +692,8 @@ public class Paramt {
                 ", part=" + part +
                 ", mold=" + mold +
                 ", type=" + type +
+                ", userName=" + userName +
+                ", warehouseId=" + warehouseId +
                 '}';
     }
 }

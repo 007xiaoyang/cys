@@ -1010,7 +1010,7 @@ public class OrderServiceImpl implements OrderService {
 
     //未打印订单汇总
     @Override
-    public Page notPrintedOrderSummary(String token, Integer role, Integer pageNo, String name, String number) {
+    public Page notPrintedOrderSummary(String token, Integer role, Integer pageNo, String name, String number, String startTime, String endTime) {
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
 
@@ -1018,10 +1018,28 @@ public class OrderServiceImpl implements OrderService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
-        Integer tatolCount = orderMapper.notPrintedOrderSummaryCount(new Paramt(bid,name ,number ));
+        Integer tatolCount = orderMapper.notPrintedOrderSummaryCount(bid , name , number , startTime ,endTime);
         Page page = new Page(pageNum,tatolCount);
-        List<HashMap> hashMaps = orderMapper.notPrintedOrderSummary(new Paramt(bid, name, number, page.getStartIndex(), page.getPageSize()));
-        HashMap hashMap = orderMapper.notPrintedOrderSummaryTatolMoney(new Paramt(bid, name,number));
+        List<HashMap> hashMaps = orderMapper.notPrintedOrderSummary(bid , name , number , startTime ,endTime ,page.getStartIndex(), page.getPageSize());
+        HashMap hashMap = orderMapper.notPrintedOrderSummaryTatolMoney(bid , name , number , startTime ,endTime);
+        page.setHashMap(hashMap);
+        page.setRecords(hashMaps);
+        return page;
+    }
+    //未打印订单明细
+    @Override
+    public Page notPrintedOrderDetail(String token, Integer role, Integer pageNo, String name, String number,String userName ,Integer warehouseId , String startTime, String endTime ) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
+        int pageNum=1;
+        if (IntegerUtils.isNotEmpty(pageNo)){
+            pageNum=pageNo;
+        }
+        Integer tatolCount = orderMapper.notPrintedOrderDetailCount(bid , name , number ,userName, warehouseId, startTime ,endTime);
+        Page page = new Page(pageNum,tatolCount);
+        List<HashMap> hashMaps = orderMapper.notPrintedOrderDetail(bid , name , number ,userName,warehouseId , startTime ,endTime ,page.getStartIndex(), page.getPageSize());
+        HashMap hashMap = orderMapper.notPrintedOrderDetailTatolMoney(bid , name , number,userName ,warehouseId, startTime ,endTime);
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);
         return page;
@@ -1065,7 +1083,7 @@ public class OrderServiceImpl implements OrderService {
 
     //待送货订单汇总
     @Override
-    public Page stayDeliveredSummary(String token, Integer role, Integer pageNo, String name, String number, Integer mold) throws NullPointerException, Exception {
+    public Page stayDeliveredSummary(String token, Integer role, Integer pageNo, String name, String number, Integer mold , String startTime, String endTime ) throws NullPointerException, Exception {
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
 
@@ -1073,14 +1091,35 @@ public class OrderServiceImpl implements OrderService {
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum=pageNo;
         }
-        Integer tatolCount = orderMapper.stayDeliveredSummaryCount(new Paramt( bid,name ,number ,mold ));
+        Integer tatolCount = orderMapper.stayDeliveredSummaryCount(new Paramt( startTime , endTime ,bid,name ,number ,mold  ));
         Page page = new Page(pageNum,tatolCount);
-        List<HashMap> hashMaps = orderMapper.stayDeliveredSummary(new Paramt(bid, name, number ,mold , page.getStartIndex(), page.getPageSize()));
-        HashMap hashMap = orderMapper.stayDeliveredSummaryTatolMoney(new Paramt(bid, name,number ,mold ));
+        List<HashMap> hashMaps = orderMapper.stayDeliveredSummary(new Paramt(startTime , endTime ,bid, name, number ,mold , page.getStartIndex(), page.getPageSize()));
+        HashMap hashMap = orderMapper.stayDeliveredSummaryTatolMoney(new Paramt(startTime , endTime ,bid, name,number ,mold ));
         page.setHashMap(hashMap);
         page.setRecords(hashMaps);
         return page;
     }
+
+
+    //待送货订单明细
+    @Override
+    public Page stayDeliveredDetail(String token, Integer role, Integer pageNo, String name, String number, Integer mold,String userName ,Integer warehouseId , String startTime, String endTime ) throws NullPointerException, Exception {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
+        int pageNum=1;
+        if (IntegerUtils.isNotEmpty(pageNo)){
+            pageNum=pageNo;
+        }
+        Integer tatolCount = orderMapper.stayDeliveredDetailCount(new Paramt( startTime ,  endTime, userName , warehouseId , bid,name ,number ,mold ));
+        Page page = new Page(pageNum,tatolCount);
+        List<HashMap> hashMaps = orderMapper.stayDeliveredDetail(new Paramt(startTime ,  endTime, userName , warehouseId ,bid, name, number ,mold , page.getStartIndex(), page.getPageSize()));
+        HashMap hashMap = orderMapper.stayDeliveredDetailTatolMoney(new Paramt(startTime ,  endTime, userName , warehouseId ,bid, name,number ,mold ));
+        page.setHashMap(hashMap);
+        page.setRecords(hashMaps);
+        return page;
+    }
+
 
     //确认到货或取消订单状态（4 确认已送达）（6 取消订单）
     @Override
@@ -1315,6 +1354,37 @@ public class OrderServiceImpl implements OrderService {
                         throw new NullPointerException("产品["+detail.get("name")+"]销售数量低于实际库存，因此不能到货。如要到货，则到商家设置里进行修改");
                     }
                 }
+                //确认到货的订单需要 记录每一件的产品库存
+                if(status == 4  ){
+                    //通过店铺产品id和当前时间判断该产品是否在每天产品库存统计记录里
+                    Integer statisId = shopMapper.selectGoodsInventoryStatisByBidAndDate(Integer.valueOf(detail.get("goods_id").toString()));
+                    Double goodsInventory = null ;
+                    if (statisId == null ){
+                        //通过产品id查询每天产品的初始库存
+                        goodsInventory = shopMapper.selectGoodsInventory(Integer.valueOf(detail.get("goods_id").toString()));
+
+                    }
+                    if (statisId == null && mold == 0 ){
+
+                        //当前这件销售产品没有产品库存统计记录 则添加
+                        shopMapper.addSaleGoodsInventoryStatis( businessId ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
+
+                    }else if(statisId != null && mold == 0 ){
+
+                        //增加销售产品是否在每天产品库存统计记录
+                        shopMapper.increaseSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
+
+                    }else if(statisId == null && mold == 1 ){
+
+                        //当前这件销售产品没有产品库存统计记录 则添加数据
+                        shopMapper.addReduceSaleGoodsInventoryStatis( businessId ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
+
+                    }else if(statisId != null && mold == 1 ){
+
+                        //减少销售产品是否在每天产品库存统计记录
+                        shopMapper.reduceSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
+                    }
+                }
 
                 //销售单，减少产品实际库存
                 shopMapper.reduceGoodsActualInventory(Integer.valueOf(detail.get("goods_id").toString()) , Double.valueOf(detail.get("num").toString()) );
@@ -1349,37 +1419,7 @@ public class OrderServiceImpl implements OrderService {
                 shopMapper.reduceGoodsFictitiousInventory(Integer.valueOf(detail.get("goods_id").toString()),Double.valueOf(detail.get("num").toString()));
             }
 
-            //确认到货的订单需要 记录每一件的产品库存
-            if(status == 4  ){
-                //通过店铺产品id和当前时间判断该产品是否在每天产品库存统计记录里
-                Integer statisId = shopMapper.selectGoodsInventoryStatisByBidAndDate(Integer.valueOf(detail.get("goods_id").toString()));
-                Double goodsInventory = null ;
-                if (statisId == null ){
-                    //通过产品id查询每天产品的初始库存
-                    goodsInventory = shopMapper.selectGoodsInventory(Integer.valueOf(detail.get("goods_id").toString()));
 
-                }
-                if (statisId == null && mold == 0 ){
-
-                    //当前这件销售产品没有产品库存统计记录 则添加
-                    shopMapper.addSaleGoodsInventoryStatis( businessId ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
-
-                }else if(statisId != null && mold == 0 ){
-
-                    //增加销售产品是否在每天产品库存统计记录
-                    shopMapper.increaseSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
-
-                }else if(statisId == null && mold == 1 ){
-
-                    //当前这件销售产品没有产品库存统计记录 则添加数据
-                    shopMapper.addReduceSaleGoodsInventoryStatis( businessId ,Integer.valueOf(detail.get("goods_id").toString()) , new BigDecimal(goodsInventory) ,new BigDecimal( Double.valueOf(detail.get("num").toString())) , new Date()  );
-
-                }else if(statisId != null && mold == 1 ){
-
-                    //减少销售产品是否在每天产品库存统计记录
-                    shopMapper.reduceSaleGoodsInventoryStatis(statisId , new BigDecimal( Double.valueOf(detail.get("num").toString())));
-                }
-            }
         }
     }
 
@@ -2416,5 +2456,39 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<HashMap> selectOrderMoneyRecords(Integer id) {
         return orderMapper.selectOrderMoneyRecords(id);
+    }
+
+    @Override
+    public HashMap overdueAndStaypurchasedCount(String token, Integer role) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
+        HashMap hashMap = new HashMap();
+        Integer overdue = orderMapper.overdueUserCount(bid);
+        Integer stay = purchaseMapper.PurchasereportCount(bid, null);
+        hashMap.put("overdue" ,overdue);
+        hashMap.put("stay" ,stay);
+        return hashMap;
+    }
+
+    @Override
+    public HashMap dataCount(String token, Integer role, String startTime, String endTime)throws RuntimeException {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token ,role );
+        if (bid == null) {
+            throw new RuntimeException("您的账号登录失效或在另一台设备登录");
+        }
+        HashMap hashMap = new HashMap();
+        Integer saleCancel = orderMapper.userCancelOrderCount(bid, startTime, endTime);
+        //采购取消订单总数
+        Integer purchaseCancel = purchaseMapper.cancelOrderCount(bid, startTime, endTime);
+        Integer integra = orderMapper.selectIntegraOrderCount(bid, 1);
+        Integer afterSale = orderMapper.salesServiceCount(bid, 0);
+        Integer auditUser = orderMapper.auditUserCount(bid);
+        hashMap.put("saleCancel" ,saleCancel);
+        hashMap.put("purchaseCancel" ,purchaseCancel);
+        hashMap.put("integra" ,integra);
+        hashMap.put("afterSale" ,afterSale);
+        hashMap.put("auditUser" ,auditUser);
+        return hashMap;
     }
 }

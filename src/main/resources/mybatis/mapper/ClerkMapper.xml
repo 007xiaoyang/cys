@@ -335,7 +335,7 @@
 
     <!--店铺产品类别-->
     <select id="busienssGoodsCategory" resultType="HashMap">
-        select id , name from shengxian_goods_category
+        select id , name ,level from shengxian_goods_category
         where business_id = #{business_id}
         <if test="level == null">
             and level != 0
@@ -372,9 +372,9 @@
 
     <!--店铺类别下的产品（客户）-->
     <select id="businessGoodsList" resultType="HashMap">
-        select  g.id as goods_id,g.`name`,g.units,g.minimum_price, if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,
+        select  g.id as goods_id,g.`name`,g.units,g.minimum_price, if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,gi.actual,g.number,
         ifnull(gs.price ,(select od.order_price  from shengxian_order_details od,shengxian_order o where o.id = od.order_id and o.is_del=0 and
-        od.goods_id =g.id and o.binding_id = #{binding_id} order by od.id desc limit 1) )price ,
+        od.goods_id =g.id and od.type = 0 and o.binding_id = #{binding_id} order by od.id desc limit 1) )price ,
         ifnull(c.id , 0)c_id
         from shengxian_goods g
         inner join shengxian_goods_category gc on gc.id=g.category_id
@@ -419,7 +419,7 @@
         if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,if( 0 = #{shield} , g.cost_price ,'进价不可见')cost_price ,
         IFNULL((select purchase_price from shengxian_purchase_detail pd,shengxian_purchase p
         where pd.goods_id = g.id and p.id = pd.purchase_id and p.suppliers_id = #{binding_id} order by pd.id desc limit 1),g.cost_price)price ,
-        ifnull(c.id , 0)c_id
+        ifnull(c.id , 0)c_id ,gi.actual ,g.number
         from shengxian_goods g
         inner join shengxian_goods_category gc on gc.id = g.category_id
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
@@ -581,7 +581,7 @@
     <select id="bindingCollectionBindingGoodsList" resultType="HashMap">
         select gc.id, g.id as goods_id ,g.`name`,g.units,g.minimum_price,if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,
         ifnull(gs.price ,(select od.order_price  from shengxian_order_details od,shengxian_order o where o.id = od.order_id and o.is_del=0 and
-        od.goods_id =g.id and o.binding_id = #{bindingId} order by od.id desc limit 1) )price
+        od.goods_id =g.id and od.type = 0 and o.binding_id = #{bindingId} order by od.id desc limit 1) )price
         from shengxian_goods_collection gc
         inner join (select id,name ,number,units,minimum_price,business_id,is_del  from shengxian_goods ) g on g.id = gc.goods_id and g.is_del = 0
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id and gi.goods_id = gc.goods_id
@@ -988,14 +988,18 @@
         insert into shengxian_WXShareUserRecord (id ,binding_id , share_id ,price ,startTime ,endTime)
         values ( #{id} , #{bindingId} , #{shareId} ,#{price} ,#{startTime} ,#{endTime});
     </insert>
-    
+
+    <update id="deleteWXShareRecord">
+        update shengxian_WXShareUserRecord set is_del = 1 where id = #{id}
+    </update>
+
     
     <!--客户账单的微信分享-->
     <select id="selectUserWXShareRecord" resultType="HashMap">
         select wx.price ,wx.startTime ,wx.endTime , bd.user_name
         from shengxian_WXShareUserRecord  wx
         inner join shengxian_binding bd on bd.id = wx.binding_id
-        where wx.id = #{id}
+        where wx.id = #{id} and wx.is_del = 0
     </select>
 
     <!--客户账单的微信分享商品时间汇总-->
@@ -1030,7 +1034,7 @@
 
     <!--订单的微信分享-->
     <select id="orderWXShareRecord" resultType="HashMap">
-        select o.id , o.order_number ,o.no ,bd.user_name , o.price ,o.create_time  , o.audit_time
+        select o.id , o.order_number ,o.no ,bd.user_name , o.price ,o.create_time  , o.audit_time , o.mold ,
         , o.receivable_time , o.state , o.status ,o.money , o.money2 ,o.beizhu , o.difference_price ,o.freight
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id)  ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
@@ -1069,6 +1073,9 @@
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersId != null ">
+            and s.id = #{suppliersId}
+        </if>
         <if test="suppliersName != null and suppliersName != ''">
             and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>
@@ -1091,6 +1098,9 @@
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         inner join shengxian_goods g on g.id = pd.goods_id
         where p.business_id = #{bid} and p.is_del=0  and p.status = 1  and p.mold = 0
+        <if test="suppliersId != null ">
+            and s.id = #{suppliersId}
+        </if>
         <if test="suppliersName != null and suppliersName != ''">
             and (s.name LIKE CONCAT('%',#{suppliersName},'%'))
         </if>

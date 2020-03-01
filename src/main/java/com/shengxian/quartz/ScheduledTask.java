@@ -35,6 +35,8 @@ public class ScheduledTask {
         log.warn("---------------------------开始进入（每月定时员工提成统计）-------------------------------------------");
         teamUpdateService.teamUpdate();
     }
-
-
+    @Scheduled(cron = "0 0 * * * ? ")
+    private void  cacheEvict(){
+        teamUpdateService.cacheEvict();
+    }
 }

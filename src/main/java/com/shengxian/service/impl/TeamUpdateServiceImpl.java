@@ -8,6 +8,7 @@ import com.shengxian.mapper.StaffMapper;
 import com.shengxian.service.TeamUpdateService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -251,5 +252,11 @@ public class TeamUpdateServiceImpl extends HttpServlet implements TeamUpdateServ
         }
         logger.warn("---------------------------结束（每晚清除订单结算状态）-------------------------------------------");
 
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "demoCache" , allEntries = true)
+    public void cacheEvict() {
+        System.out.println("清除拦截器查询店铺信息" );
     }
 }

@@ -192,6 +192,9 @@
             and (p.order_number LIKE CONCAT('%',#{name},'%') or p.no LIKE CONCAT('%',#{name},'%')
             or s.name LIKE CONCAT('%',#{name},'%'))
         </if>
+        <if test="number != null and number != ''">
+            and p.order_number = #{number}
+        </if>
     </select>
 
     <!--待审核(采购未到货的订单)-->
@@ -205,6 +208,9 @@
             and (p.order_number LIKE CONCAT('%',#{name},'%') or p.no LIKE CONCAT('%',#{name},'%')
             or s.name LIKE CONCAT('%',#{name},'%'))
         </if>
+        <if test="number != null and number != ''">
+            and p.order_number = #{number}
+        </if>
         order by p.create_time desc limit #{startIndex},#{pageSize}
     </select>
 
@@ -217,6 +223,9 @@
         <if test="name != null and name != ''">
             and (p.order_number LIKE CONCAT('%',#{name},'%') or p.no LIKE CONCAT('%',#{name},'%')
             or s.name LIKE CONCAT('%',#{name},'%'))
+        </if>
+        <if test="number != null and number != ''">
+            and p.order_number = #{number}
         </if>
     </select>
 

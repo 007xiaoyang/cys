@@ -45,6 +45,16 @@ public interface ShopService {
     HashMap home(String token ,Integer role)throws NullPointerException , Exception;
 
     /**
+     * 微信小程序首页轮播图
+     * @param token
+     * @return
+     */
+    HashMap getHome(String token ,Integer role)throws  Exception;
+
+    Integer getUsefulLlife(String token ,Integer role);
+
+
+    /**
      * 找回密码
      * @param phone
      * @return
@@ -66,7 +76,8 @@ public interface ShopService {
      * @param token
      * @return
      */
-    List<HashMap> findGoodsCategoryList(String token ,Integer role)throws NullPointerException;
+    //List<HashMap> findGoodsCategoryList(String token ,Integer role)throws NullPointerException;
+    List<GoodsCategoryVO> findGoodsCategoryList(String token ,Integer role)throws NullPointerException;
 
     /**
      * 分页查询类别下的产品信息
@@ -724,5 +735,13 @@ public interface ShopService {
      * @return
      */
     List<GoodsCategoryVO> getGoodsList(String token , Integer role);
+
+    /**
+     * 获取每个类别下对应的产品数据集合
+     * @param token
+     * @param role
+     * @return
+     */
+    List<GoodsCategoryVO> getCategroyList(String token , Integer role);
 
 }

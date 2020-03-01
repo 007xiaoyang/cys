@@ -14,4 +14,6 @@ public interface TeamUpdateService {
 
     //清除结算状态
     void settlement();
+
+    void  cacheEvict();
 }

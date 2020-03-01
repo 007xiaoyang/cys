@@ -12,6 +12,8 @@ import com.shengxian.vo.GoodsCategoryVO;
 import com.shengxian.vo.GoodsVO;
 import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipException;
 
 /**
  * Description:
@@ -133,6 +136,7 @@ public class ShopServiceImpl implements ShopService {
 
         //登录
         @Override
+        @CacheEvict(value = "demoCache" , allEntries = true)
         public String login(Integer role, String phone, String password) throws  NullPointerException ,Exception{
 
             //密码加密
@@ -199,8 +203,27 @@ public class ShopServiceImpl implements ShopService {
             shop.put("menu", oneMenu);
             return shop;
         }
+    @Override
+    public HashMap getHome(String token ,Integer role) throws  Exception{
 
-        //找回密码
+        //通过token和角色查询店铺信息
+        HashMap shop = shopMapper.selectShopInfoByIdAndRole(token , role);
+        if (shop == null ){
+            throw new RuntimeException("您的账号登录失效或在另一台设备登录");
+        }
+        List<HashMap> imgs = shopMapper.BMJ();
+        shop.put("imgs" , imgs);
+        return shop;
+    }
+
+    @Override
+    public Integer getUsefulLlife(String token, Integer role) {
+        //通过token和role查询店铺ID
+        Integer id = shopMapper.shopipByTokenAndRole(token ,role);
+        return shopMapper.getUsefulLlife((long)id);
+    }
+
+    //找回密码
         @Override
         @Transactional
         public Integer updateRetrievePwd(String phone, String password) throws NullPointerException, Exception {
@@ -255,9 +278,8 @@ public class ShopServiceImpl implements ShopService {
         }
 
         //查询类别下的商品信息
-        @Override
+        /*@Override
         public List<HashMap> findGoodsCategoryList(String token ,Integer role) throws NullPointerException {
-
             //通过token和role查询店铺ID
             Integer id = shopMapper.shopipByTokenAndRole(token ,role);
 
@@ -268,7 +290,42 @@ public class ShopServiceImpl implements ShopService {
                 one.put("twoCategory", twoCategory);
             }
             return oneCagory;
-        }
+        }*/
+
+    //查询类别下的商品信息
+    @Override
+    public List<GoodsCategoryVO> findGoodsCategoryList(String token ,Integer role) throws NullPointerException {
+
+        //通过token和role查询店铺ID
+        Integer id = shopMapper.shopipByTokenAndRole(token ,role);
+        List<GoodsCategoryVO> vos = new ArrayList<>();
+
+        List<GoodsCategoryVO> categoryList = shopMapper.getGoodsCategoryList((long) id);
+        //遍历所有的菜单分类
+        categoryList.forEach((category) -> {
+            if(category.getLevel().equals(0) ){
+                vos.add(category);
+            }
+        });
+        //删除根节点
+        categoryList.removeAll(vos);
+        List<GoodsCategoryVO> gc = new ArrayList<>();
+        gc.addAll(categoryList);
+
+        //为根菜单设置子菜单，getClild是递归调用的
+        vos.forEach((root) -> {
+            //子菜单
+            List<GoodsCategoryVO> childList = Lists.newArrayList();
+            categoryList.forEach((son) -> {
+                if( root.getId().equals((long)son.getLevel())){
+                    childList.add(son);
+                }
+            });
+            categoryList.removeAll(childList);
+            root.setTwoCategory(childList);//给根节点设置子节点
+        });
+        return vos;
+    }
 
         //分页查询类别下的产品信息
         @Override
@@ -1474,7 +1531,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public List<GoodsCategoryVO> getGoodsList(String token, Integer role) {
 
-        long time1 = new Date().getTime();
+
         Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
 
         List<GoodsCategoryVO> vos = new ArrayList<>();
@@ -1483,7 +1540,6 @@ public class ShopServiceImpl implements ShopService {
 
         List<GoodsVO> goodsList = shopMapper.getGoodsList((long) businessId);
 
-        long time2 = new Date().getTime();
         //遍历所有的菜单分类
         goodsCategoryList.forEach((category) -> {
             if(category.getLevel().equals(0) ){
@@ -1498,12 +1554,9 @@ public class ShopServiceImpl implements ShopService {
             List<GoodsCategoryVO> childList = getChild(root.getId(), goodsCategoryList , goodsList);
             root.setChildren(childList);//给根节点设置子节点
         });
-        long time3 = new Date().getTime();
-        System.out.println( time3 - time1);
-        System.out.println( time3 - time2);
-        System.out.println( time2 - time1);
         return vos;
     }
+
 
     /**
      * 获取子节点
@@ -1529,6 +1582,73 @@ public class ShopServiceImpl implements ShopService {
                 goodsList.removeAll(gvos);
                 son.setgChildren(gvos);
 
+            }
+        });
+
+
+        if(childList.size() == 0){
+            return new ArrayList<GoodsCategoryVO>();
+        }
+        allMenu.removeAll(childList);
+        return childList;
+    }
+
+
+    @Override
+    public List<GoodsCategoryVO> getCategroyList(String token, Integer role) {
+
+        List<GoodsCategoryVO> vos = new ArrayList<>();
+        Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
+        GoodsCategoryVO cate = new GoodsCategoryVO();
+        cate.setId(null);
+        cate.setName("全部");
+        vos.add(cate);
+
+        List<GoodsCategoryVO> goodsCategoryList = shopMapper.getGoodsCategoryList((long) businessId);
+
+
+
+        //遍历所有的菜单分类
+        goodsCategoryList.forEach((category) -> {
+            if(category.getLevel().equals(0) ){
+                vos.add(category);
+            }
+        });
+        //删除根节点
+        goodsCategoryList.removeAll(vos);
+        List<GoodsCategoryVO> gc = new ArrayList<>();
+        gc.addAll(goodsCategoryList);
+
+        //为根菜单设置子菜单，getClild是递归调用的
+        vos.forEach((root) -> {
+            if(root.getId()== null && root.getName().equals("全部")){
+                root.setChildren(gc);
+            }else {
+                /* 获取根节点下的所有子节点 使用getChild方法*/
+                List<GoodsCategoryVO> childList = getCategoryChild(root.getId(), goodsCategoryList );
+                root.setChildren(childList);//给根节点设置子节点
+            }
+
+        });
+        return vos;
+    }
+
+    /**
+     * 获取子节点
+     * @param id 父节点id
+     * @param allMenu 所有菜单列表
+     * @return 每个根节点下，所有子菜单列表
+     */
+    public List<GoodsCategoryVO> getCategoryChild(Long id,List<GoodsCategoryVO> allMenu ){
+        //子菜单
+        List<GoodsCategoryVO> childList = Lists.newArrayList();
+
+
+        allMenu.forEach((son) -> {
+            List<GoodsVO> gvos = Lists.newArrayList();
+            if( id.equals((long)son.getLevel())){
+                childList.add(son);
+                son.setgChildren(gvos);
             }
         });
 

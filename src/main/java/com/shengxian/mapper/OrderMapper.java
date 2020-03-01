@@ -521,24 +521,46 @@ public interface OrderMapper {
 
     /**
      * 未打印订单汇总总数
-     * @param paramt
+     * @param
      * @return
      */
-    Integer notPrintedOrderSummaryCount(Paramt paramt);
+    Integer notPrintedOrderSummaryCount(@Param("bid") Integer bid ,@Param("name") String name,@Param("number") String number, @Param("startTime") String startTime,@Param("endTime") String endTime );
 
     /**
      * 未打印订单汇总
-     * @param paramt
+     * @param
      * @return
      */
-    List<HashMap> notPrintedOrderSummary(Paramt paramt);
+    List<HashMap> notPrintedOrderSummary(@Param("bid") Integer bid ,@Param("name") String name,@Param("number") String number, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
 
     /**
      * 未打印订单汇总统计金额
-     * @param paramt
+     * @param
      * @return
      */
-    HashMap notPrintedOrderSummaryTatolMoney(Paramt paramt);
+    HashMap notPrintedOrderSummaryTatolMoney(@Param("bid") Integer bid ,@Param("name") String name,@Param("number") String number, @Param("startTime") String startTime,@Param("endTime") String endTime );
+
+    /**
+     * 未打印订单明细总数
+     * @param
+     * @return
+     */
+    Integer notPrintedOrderDetailCount(@Param("bid") Integer bid ,@Param("name") String name,@Param("number") String number,@Param("userName") String userName,@Param("wid") Integer warehouseId , @Param("startTime") String startTime,@Param("endTime") String endTime );
+
+    /**
+     * 未打印订单明细
+     * @param
+     * @return
+     */
+    List<HashMap> notPrintedOrderDetail(@Param("bid") Integer bid ,@Param("name") String name,@Param("number") String number,@Param("userName") String userName,@Param("wid") Integer warehouseId , @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
+
+    /**
+     * 未打印订单明细统计金额
+     * @param
+     * @return
+     */
+    HashMap notPrintedOrderDetailTatolMoney(@Param("bid") Integer bid ,@Param("name") String name,@Param("number") String number,@Param("userName") String userName,@Param("wid") Integer warehouseId , @Param("startTime") String startTime,@Param("endTime") String endTime );
+
 
     /**
      * 待送货订单总数
@@ -582,6 +604,27 @@ public interface OrderMapper {
      * @return
      */
     HashMap stayDeliveredSummaryTatolMoney(Paramt paramt);
+
+    /**
+     * 待送货订单明细总数
+     * @param paramt
+     * @return
+     */
+    Integer stayDeliveredDetailCount(Paramt paramt);
+
+    /**
+     * 待送货订单明细
+     * @param paramt
+     * @return
+     */
+    List<HashMap> stayDeliveredDetail(Paramt paramt);
+
+    /**
+     * 待送货订单明细统计金额
+     * @param paramt
+     * @return
+     */
+    HashMap stayDeliveredDetailTatolMoney(Paramt paramt);
 
 
 

@@ -6,6 +6,7 @@ import com.shengxian.vo.GoodsVO;
 import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -29,6 +30,7 @@ public interface ShopMapper {
      * @param role 1店铺，2员工
      * @return
      */
+    @Cacheable(cacheNames = "demoCache" ,key = "#p0")
     HashMap interceptorSelectShopInfo(@Param("token") String token ,@Param("role") Integer role);
 
     /**
@@ -98,6 +100,13 @@ public interface ShopMapper {
      * @return
      */
     HashMap selectShopInfoByIdAndRole(@Param("token") String token  ,@Param("role") Integer role);
+
+    /**
+     * 获取店铺使用期限
+     * @param id
+     * @return
+     */
+    Integer getUsefulLlife(@Param("id") Long id );
 
     /**
      * 根据token和角色查询店铺ID和注册名称
@@ -1377,6 +1386,13 @@ public interface ShopMapper {
      */
     Integer reducePurchaseGoodsInventoryStatis(@Param("id") Integer id ,@Param("purchase") BigDecimal purchase);
 
+    /**
+     * 修改昨日库存
+     * @param id
+     * @param total
+     * @return
+     */
+    Integer updataGoodsInventorySituation(@Param("id") Integer id ,@Param("total") BigDecimal total);
 
     /**
      * 查询店铺启用的打印机

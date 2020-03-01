@@ -2,6 +2,8 @@ import com.shengxian.common.MothPrinter;
 import com.shengxian.common.util.DateUtil;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -87,26 +89,8 @@ public class Test {
 
     public static void main(String[] args) {
 
-        long a = test(1);
 
-        System.out.println(a);
 
-        String str = "";
-        System.out.println(str);
-        System.out.println(StringFilter(str));
-     /*       String[] a = {"10.00" ,"12.00" ,"35.00" ,"20.00","10.00" ,"2.00" ,"35.00" ,"2.00" };
-        StringBuffer size = new StringBuffer();
-        String s = "";
-        for (String c :a){
-             s += MothPrinter.calculatorPrintUtils(c ,size);
-        }
-        System.out.print(s);
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-        //addDay(sdf,10);
-        //getWeekDay(sdf);
-        getMonth(sdf);*/
-       /* String s = DateUtil.thisMonthOneNum();
-        System.out.println(s);*/
     }
 
 }

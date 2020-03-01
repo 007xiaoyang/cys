@@ -385,7 +385,7 @@
 
     <!--条件搜索商家的供应商-->
     <select id="findBusinessSuppliers" resultType="HashMap">
-        select id name from shengxian_suppliers
+        select id ,name from shengxian_suppliers
         where business_id = #{business_id} and name LIKE CONCAT('%',#{name},'%') or number LIKE CONCAT('%',#{name},'%')
     </select>
 
@@ -414,7 +414,7 @@
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
         inner join shengxian_suppliers s on s.id = gg.suppliers_id
         where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(gg.give_time)
-        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=''">
             AND  DATE_FORMAT(gg.give_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(gg.give_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
         <if test="warehouse_id != null">
@@ -435,7 +435,7 @@
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
         inner join shengxian_suppliers s on s.id = gg.suppliers_id
         where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(gg.give_time)
-        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!= ''">
             AND   DATE_FORMAT(gg.give_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(gg.give_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
         <if test="warehouse_id != null">
@@ -455,7 +455,7 @@
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
         inner join shengxian_binding b on b.id = lg.binding_id
         where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(lg.loss_time)
-        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=''">
             AND  DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
         <if test="warehouse_id != null">
@@ -476,7 +476,7 @@
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
         inner join shengxian_binding b on b.id = lg.binding_id
         where g.business_id = #{business_id} and date_sub(now(),INTERVAL 365 DAY) &lt;= date(lg.loss_time)
-        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=null">
+        <if test="startTime!=null and startTime !='' and endTime!=null and endTime!=''">
             AND  DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &lt;= #{endTime} AND DATE_FORMAT(lg.loss_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
         <if test="warehouse_id != null">

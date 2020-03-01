@@ -151,14 +151,14 @@ public class OrderController {
     }
 
     /**
-     * 添加用户的产品收藏
+     * 添加用户的产品
      * @param token
      * @param binding_id 商家用户id
      * @param goods_id 产品id
      * @return
      */
     @RequestMapping("/addBandingUserGoodsCollection")
-    @SysLog(module = "销售管理",methods = "添加用户产品收藏")
+    @SysLog(module = "销售管理",methods = "添加用户产品")
     @ApiOperation(value = "添加用户的产品收藏" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
@@ -531,7 +531,7 @@ public class OrderController {
     }
 
     /**
-     * 超期进货的用户总数
+     * 进货的用户总数
      * @param token
      * @return
      */
@@ -954,20 +954,46 @@ public class OrderController {
             @ApiImplicitParam(name = "name" ,value = "名称" ,paramType = "query"),
             @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query")
     })
-    public Message notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number ){
+    public Message notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number , String startTime, String endTime ){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.notPrintedOrderSummary(token ,role ,pageNo,names ,number);
+            Page page = orderService.notPrintedOrderSummary(token ,role ,pageNo,names ,number ,startTime , endTime);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
-        }catch (NullPointerException e){
+        }catch (RuntimeException e){
             return message.code(Message.codeFailured).message(e.getMessage());
         }catch (Exception e){
             log.error("订单控制层（/order/notPrintedOrderSummary）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
-
+    /**
+     * 未打印的订单明细
+     * @param token
+     * @return
+     */
+    @RequestMapping("/notPrintedOrderDetail")
+    @ApiOperation(value = "未打印的订单明细" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query")
+    })
+    public Message notPrintedOrderDetail(String token ,Integer role, Integer pageNo, String name, String number ,String userName ,Integer warehouseId , String startTime, String endTime  ){
+        Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
+        try {
+            Page page = orderService.notPrintedOrderDetail(token ,role ,pageNo,names ,number ,userName, warehouseId , startTime ,endTime);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (RuntimeException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("订单控制层（/order/notPrintedOrderDetail）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
     /**
      * 待送货订单总数
      * @param token
@@ -1042,11 +1068,42 @@ public class OrderController {
             @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query"),
             @ApiImplicitParam(name = "mold" ,value = "0销售，1退货" ,paramType = "query")
     })
-    public Message stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold  ){
+    public Message stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold  , String startTime, String endTime ){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
-            Page page = orderService.stayDeliveredSummary(token ,role ,pageNo,names ,number ,mold);
+            Page page = orderService.stayDeliveredSummary(token ,role ,pageNo,names ,number ,mold , startTime ,endTime);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("订单控制层（/order/stayDeliveredSummary）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+    /**
+     * 待送货订单明细
+     * @param token
+     * @param pageNo
+     * @param name 用户名称或用户编号或二维码标识号
+     * @param number 订单编号
+     * @return
+     */
+    @RequestMapping("/stayDeliveredDetail")
+    @ApiOperation(value = "待送货订单明细" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "number" ,value = "订单号" ,paramType = "query"),
+            @ApiImplicitParam(name = "mold" ,value = "0销售，1退货" ,paramType = "query")
+    })
+    public Message stayDeliveredDetail(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold ,String userName ,Integer warehouseId , String startTime, String endTime ){
+        Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
+        try {
+            Page page = orderService.stayDeliveredDetail(token ,role ,pageNo,names ,number ,mold ,userName ,warehouseId ,startTime ,endTime);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -2162,11 +2219,11 @@ public class OrderController {
     }
 
     /**
-     * 售货服务总数
+     * 售后服务总数
      * @return
      */
     @RequestMapping("/salesServiceTCount")
-    @ApiOperation(value = "售货服务总数" ,httpMethod = "POST")
+    @ApiOperation(value = "售后服务总数" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
@@ -2259,5 +2316,47 @@ public class OrderController {
     }
 
 
+    /**
+     * 超期进货和待采购的用户总数
+     * @param token
+     * @return
+     */
+    @RequestMapping("/overdueAndStaypurchasedCount")
+    @ApiOperation(value = "超期进货和待采购的用户总数" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message overdueAndStaypurchasedCount(String token ,Integer role){
+        Message message = Message.non();
+        HashMap count = orderService.overdueAndStaypurchasedCount(token ,role );
+        return message.code(Message.codeSuccessed).data(count).message("获取成功");
+    }
+
+    /**
+     * 微信小程序资料中心的总数
+     * @param token
+     * @return
+     */
+    @RequestMapping("/dataCount")
+    @ApiOperation(value = "微信小程序资料中心的总数" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message dataCount(String token ,Integer role){
+        Message message = Message.non();
+        try {
+            String start = DateUtil.getDay();
+            String end = DateUtil.getDay();
+            HashMap count = orderService.dataCount(token ,role,start,end);
+            return message.code(Message.codeSuccessed).data(count).message("获取成功");
+        }catch (RuntimeException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("订单控制层（/order/dataCount）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
 
 }

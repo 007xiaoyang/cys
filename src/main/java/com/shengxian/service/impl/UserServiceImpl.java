@@ -127,12 +127,18 @@ public class UserServiceImpl implements UserService {
             if (uid == null){
                 throw new NullPointerException("手机号码还未注册");
             }
+            //通过手机号和店铺查询当前号码有被当前店铺绑定了别的用户了吗
+            List<Integer> bindId = userMapper.findIdByPhoneAndBid((long) bid, bindUser.getPhone());
+            if(bindId.size() >= 1){
+                throw new NullPointerException("手机号码已经绑定过别的客户了");
+            }
+
         }
 
         if (bindUser.getTelephone() != null && !bindUser.getTelephone().equals("")){
             //查询备留电话是否有重复的
             List<Integer> teleSize = userMapper.selectTelephone(bid , bindUser.getTelephone());
-            if (teleSize.size() > 1 ){
+            if (teleSize.size() >= 1 ){
                 throw new NullPointerException("备留联系电话有重复的了");
             }
         }
@@ -224,11 +230,6 @@ public class UserServiceImpl implements UserService {
 
         //条件查询类别下的客户信息
         List<HashMap> customer = userMapper.findCustomerInfoList(parameter);
-        for (HashMap hashMap: customer ) {
-            if (hashMap.get("scheme_name") == null){
-                hashMap.put("scheme_name","默认价格");
-            }
-        }
         page.setRecords(customer);
         return page;
     }
@@ -261,7 +262,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Integer updateUser(String token ,Integer role ,BindUser bindUser)throws NullPointerException ,Exception {
-
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
         Integer uid = null;
         if (!StringUtils.isEmpty(bindUser.getPhone())){
 
@@ -270,11 +272,31 @@ public class UserServiceImpl implements UserService {
             if (IntegerUtils.isEmpty(uid)){
                throw new NullPointerException("手机号码还未注册");
             }
+            //通过用户绑定id查询原来绑定的号码
+            String oldPhone = userMapper.getOldPhone(bindUser.getId());
+            if(oldPhone != null && oldPhone.equals(bindUser.getPhone())){
+
+                //通过手机号和店铺查询当前号码有被当前店铺绑定了别的用户了吗
+                List<Integer> bindId = userMapper.findIdByPhoneAndBid((long) bid, bindUser.getPhone());
+                if(bindId.size() > 1){
+                    throw new NullPointerException("手机号码已经绑定过别的客户了");
+                }
+            }else {
+                //通过手机号和店铺查询当前号码有被当前店铺绑定了别的用户了吗
+                List<Integer> bindId = userMapper.findIdByPhoneAndBid((long) bid, bindUser.getPhone());
+                if(bindId.size() >= 1){
+                    throw new NullPointerException("手机号码已经绑定过别的客户了");
+                }
+            }
+
         }
 
+
+
+
+
         if (bindUser.getTelephone() != null && !bindUser.getTelephone().equals("")){
-            //通过token和role查询店铺ID
-            Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+
 
             //查询备留电话是否有重复的
             List<Integer> teleSize = userMapper.selectTelephone(bid  , bindUser.getTelephone());

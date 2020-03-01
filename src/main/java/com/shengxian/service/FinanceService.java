@@ -340,4 +340,7 @@ public interface FinanceService {
      */
     HSSFWorkbook userSaleSummaryDownload(String token ,Integer role ,   String name  ,String goodsName , String startTime, String endTime ,Integer bindindId );
 
+
+
+    HashMap riskCount(String token ,Integer role ,String startTime , String endTime);
 }

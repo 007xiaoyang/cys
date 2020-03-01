@@ -396,7 +396,7 @@ public interface ClerkService {
      */
     String shareWXRecord(String token, Integer role ,Integer type ,Integer bindingID ,String name ,String goodsName ,String startTime , String endTime )throws NullPointerException;
 
-
+    Integer deleteWXShareRecord(String shareID);
 
     /**
      * 客户账单的微信分享
@@ -432,7 +432,7 @@ public interface ClerkService {
      * @param endTime
      * @return
      */
-    Page purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName,String goodsName ,String startTime ,String endTime);
+    Page purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName,Integer suppliersId,String goodsName ,String startTime ,String endTime);
 
     /**
      * 采购产品明细
@@ -445,7 +445,7 @@ public interface ClerkService {
      * @param endTime
      * @return
      */
-    Page purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName,String goodsName ,String startTime ,String endTime);
+    Page purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName, Integer suppliersId,String goodsName ,String startTime ,String endTime);
 
     /**
      * 添加计算器

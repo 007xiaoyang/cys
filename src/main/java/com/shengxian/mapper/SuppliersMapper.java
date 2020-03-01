@@ -124,6 +124,14 @@ public interface SuppliersMapper {
      */
     Integer updateSuppliersInfo(Suppliers suppliers);
 
+
+    /**
+     * 删除供应商前判断是否有未付款或欠款的订单
+     * @param id
+     * @return
+     */
+    List<Integer> dayPurchaseOrder(@Param("id") Integer id);
+
     /**
      * 删除供应商前判断是否有未付款或欠款的订单
      * @param id

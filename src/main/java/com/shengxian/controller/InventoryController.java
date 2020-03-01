@@ -4,22 +4,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.shengxian.common.Message;
 import com.shengxian.common.util.*;
 import com.shengxian.entity.Exp;
-import com.shengxian.entity.Parameter;
+import com.shengxian.mapper.ShopMapper;
 import com.shengxian.service.ExcelService;
 import com.shengxian.service.InventoryService;
 import com.shengxian.sysLog.SysLog;
-import com.shengxian.vo.UserCategoryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -47,6 +44,9 @@ public class InventoryController {
 
     @Resource
     private ExcelService excelService;
+
+    @Autowired
+    private ShopMapper shopMapper;
 
     /**
          * 添加仓库信息
@@ -220,7 +220,8 @@ public class InventoryController {
             return message.code(Message.codeFailured).message("请输入盘点状态");
         }
         try {
-            Integer count = inventoryService.check(token ,role ,status);
+            Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+            Integer count = inventoryService.check(bid ,status);
             if (IntegerUtils.isEmpty(count)) {
                 return message.code(Message.codeFailured).message("盘点失败");
             }
@@ -245,7 +246,8 @@ public class InventoryController {
     public Message checkGoodsInventory(String token ,Integer role ){
         Message message = Message.non();
         try {
-            Integer count = inventoryService.checkGoodsInventory(token ,role );
+            Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+            Integer count = inventoryService.checkGoodsInventory(bid);
             return message.code(Message.codeSuccessed).data(count).message("操作成功");
         }catch (Exception e){
             log.error("库存管理控制层（/inventory/checkGoodsInventory）接口报错---------"+e.getMessage());

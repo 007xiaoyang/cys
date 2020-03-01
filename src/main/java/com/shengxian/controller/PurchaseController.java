@@ -130,13 +130,13 @@ public class PurchaseController {
     }
 
     /**
-     * 添加商家收藏的产品
+     * 添加商家的产品
      * @param token
      * @param goods_id
      * @return
      */
     @RequestMapping("/addBusinessGoodsCollection")
-    @SysLog(module = "采购管理",methods = "添加收藏产品")
+    @SysLog(module = "采购管理",methods = "添加产品")
     @ApiOperation(value = "添加商家收藏的产品" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
@@ -423,11 +423,11 @@ public class PurchaseController {
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "供应商名称,订单号，标识码" ,paramType = "query")
     })
-    public Message stayAudited(String token ,Integer role, Integer  pageNo, String name){
+    public Message stayAudited(String token ,Integer role, Integer  pageNo, String name , String number){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
-            Page page = purchaseService.stayAudited(token ,role ,pageNo ,names);
+            Page page = purchaseService.stayAudited(token ,role ,pageNo ,names , number);
             return message.code(Message.codeSuccessed).data(page).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -918,7 +918,7 @@ public class PurchaseController {
      * @return
      */
     @RequestMapping("/updatePrintFrequ")
-    @SysLog(module = "采购管理",methods = "打印订单")
+    @SysLog(module = "采购管理",methods = "")
     @ApiOperation(value = "修改订单打印的次数" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),

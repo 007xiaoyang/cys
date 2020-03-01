@@ -95,6 +95,13 @@
         </if>
     </select>
 
+    <!--获取店铺使用期限-->
+    <select id="getUsefulLlife" resultType="Integer">
+        select DATEDIFF(duration,NOW())duration
+        from shengxian_business where is_del = 0 and id = #{id}
+    </select>
+
+
     <!--根据token和角色查询店铺ID和注册名称-->
     <select id="selectNameAndShopIdByTokenAndRole" resultType="HashMap">
         <if test="role == 1">
@@ -191,7 +198,7 @@
     <!--分页查询类别下的产品信息集合-->
     <select id="findGoodsList" resultType="HashMap">
         select gc.`name`as categoryName,g.id ,g.number,g.name,g.brand,
-        CONCAT(g.spec,g.units)spec,g.barcode,g.cost_price,g.priority,
+        CONCAT(g.spec,g.units)spec,g.barcode,g.cost_price,g.priority,g.units,
         g.minimum_price,g.temporary_price,g.status,gi.actual,gi.fictitious
         from shengxian_goods g
         inner join shengxian_goods_category gc on gc.id = g.category_id
@@ -239,12 +246,7 @@
 
     <!--产品大类别置顶-->
     <update id="upateCategoryRP">
-        <if test="status == 0">
-            update  shengxian_goods_category set status = #{status} where id = #{id}
-        </if>
-        <if test="status == 1">
-            update  shengxian_goods_category set status = status + 1 where id = #{id}
-        </if>
+         update  shengxian_goods_category set status = #{status} where id = #{id}
     </update>
 
     <!--通过产品类别id查询最后一条产品编号-->
@@ -538,7 +540,7 @@
 
     <!--查询店铺积分产品类别下的产品信息集合-->
     <select id="selectIntegrGoodsList" resultType="HashMap">
-        select gc.`name`as categoryName,g.id,g.img ,g.number,g.name,g.brand,CONCAT(g.spec,g.units)spec,
+        select gc.`name`as categoryName,g.id,g.img ,g.number,g.name,g.brand,g.units as spec,
         g.barcode,g.status ,g.integr_price ,g.actual
         from shengxian_integr_goods g ,shengxian_integr_goods_category gc
         where g.is_del = 0 and  gc.id=g.category_id and g.business_id = #{business_id}
@@ -1115,7 +1117,7 @@
 
     <select id="getGoodsCategoryList" resultType="com.shengxian.vo.GoodsCategoryVO">
         select id , name , code , level , status
-        from shengxian_goods_category where business_id = #{businessId}
+        from shengxian_goods_category where business_id = #{businessId} order by  level , status desc
     </select>
 
     <select id="getGoodsList" resultType="com.shengxian.vo.GoodsVO">
@@ -1312,6 +1314,11 @@
     <!--减少采购产品是否在每天产品库存统计记录（采购）-->
     <update id="reducePurchaseGoodsInventoryStatis">
         update shengxian_goods_inventory_statis set purchase = purchase - #{purchase} where id = #{id}
+    </update>
+
+    <!--修改昨日库存-->
+    <update id="updataGoodsInventorySituation">
+        update shengxian_goods_inventory_statis set total = #{total} where id = #{id}
     </update>
 
 

@@ -36,6 +36,8 @@ public class GoodsCategoryVO {
     @ApiModelProperty(value = "子菜单下的产品集合")
     private List<GoodsVO> gChildren;
 
+    @ApiModelProperty(value = "PC端资料子菜单")
+    private List<GoodsCategoryVO> twoCategory ;
 
     public Long getId() {
         return id;
@@ -91,6 +93,14 @@ public class GoodsCategoryVO {
 
     public void setChildren(List<GoodsCategoryVO> children) {
         this.children = children;
+    }
+
+    public List<GoodsCategoryVO> getTwoCategory() {
+        return twoCategory;
+    }
+
+    public void setTwoCategory(List<GoodsCategoryVO> twoCategory) {
+        this.twoCategory = twoCategory;
     }
 
     public List<GoodsVO> getgChildren() {

@@ -767,8 +767,8 @@ public class ClerkController {
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
-            @ApiImplicitParam(name = "bindingId" ,value = "供应商ID" ,paramType = "query"),
-            @ApiImplicitParam(name = "name" ,value = "客户名称" ,paramType = "query")
+            @ApiImplicitParam(name = "bindingId" ,value = "客户ID" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "产品名称" ,paramType = "query")
     })
     public Message bindingCollectionBindingGoodsList(String token ,Integer role  ,Integer pageNo,Integer bindingId,String name ){
         Message message = Message.non();
@@ -1130,7 +1130,27 @@ public class ClerkController {
         }
     }
 
+    /**
+     * 删除分享微信的客户账单信息
+     * @return
+     */
+    @RequestMapping("/deleteWXShareRecord")
+    @ApiOperation(value = "删除分享微信的客户账单信息" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shareID" ,value = "分享id" ,paramType = "query")
+    })
+    public Message deleteWXShareRecord(String shareID){
+        Message message= Message.non();
 
+        try {
+            //客户账单的分享
+            Integer count = clerkService.deleteWXShareRecord(shareID);
+            return message.code(Message.codeSuccessed).message("查询成功");
+        }catch (Exception e){
+            log.error("员工APP控制层（/clerk/selectWXShareRecord）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
 
     /**
      * 查看分享到微信的客户账单信息
@@ -1209,11 +1229,12 @@ public class ClerkController {
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "suppliersName" ,value = "供应商名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "suppliersId" ,value = "供应商id" ,paramType = "query"),
             @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
     })
-    public Message purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName,String goodsName ,String startTime ,String endTime){
+    public Message purchaseGoodsSummary(String token ,Integer role ,Integer pageNo,String suppliersName , Integer suppliersId,String goodsName ,String startTime ,String endTime){
         Message message =Message.non();
         String sName = StringUtil.StringFilter(suppliersName);
         String gName = StringUtil.StringFilter(goodsName);
@@ -1224,7 +1245,7 @@ public class ClerkController {
                 start = startTime; end = endTime;
             }
 
-            Page page = clerkService.purchaseGoodsSummary(token, role, pageNo, sName, gName, start, end);
+            Page page = clerkService.purchaseGoodsSummary(token, role, pageNo, sName ,suppliersId, gName, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -1248,11 +1269,12 @@ public class ClerkController {
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "suppliersName" ,value = "供应商名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "suppliersId" ,value = "供应商id" ,paramType = "query"),
             @ApiImplicitParam(name = "goodsName" ,value = "产品名称" ,paramType = "query"),
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query")
     })
-    public Message purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName,String goodsName ,String startTime ,String endTime){
+    public Message purchaseGoodsDetails(String token ,Integer role ,Integer pageNo ,String suppliersName, Integer suppliersId,String goodsName ,String startTime ,String endTime){
         Message message =Message.non();
         String sName = StringUtil.StringFilter(suppliersName);
         String gName = StringUtil.StringFilter(goodsName);
@@ -1262,7 +1284,7 @@ public class ClerkController {
                 //当没有传开始时间和结束时间，默认查询当天的订单
                 start = startTime; end = endTime;
             }
-            Page page = clerkService.purchaseGoodsDetails(token, role, pageNo, sName, gName, start, end);
+            Page page = clerkService.purchaseGoodsDetails(token, role, pageNo, sName ,suppliersId, gName, start, end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             return message.code(Message.codeFailured).message(Global.ERROR);
@@ -1281,7 +1303,7 @@ public class ClerkController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
-            @ApiImplicitParam(name = "json" ,value = "{'name':'张三' , 'price': 30 , 'tatol': 3 ,'calculatorDatell':[{'num':2},{'num':23} ,{'num':5}]}" ,paramType = "query")
+            @ApiImplicitParam(name = "json" ,value = "{'name':'张三' , 'price': 30 , 'total': 3 ,'calculatorDatell':[{'num':2},{'num':23} ,{'num':5}]}" ,paramType = "query")
     })
     public Message addCalculator(String token , Integer role , String json){
         Message message = Message.non();

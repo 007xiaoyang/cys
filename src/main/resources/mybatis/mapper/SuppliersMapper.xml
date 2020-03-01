@@ -107,6 +107,12 @@
     </update>
 
     <!--删除供应商前判断是否有未付款或欠款的订单-->
+    <select id="dayPurchaseOrder" resultType="Integer">
+        select id from shengxian_purchase
+        where is_del = 0 and status = 0 and suppliers_id = #{id}
+    </select>
+
+    <!--删除供应商前判断是否有未付款或欠款的订单-->
     <select id="selectPurchaseOrder" resultType="Integer">
         select id from shengxian_purchase
         where is_del = 0 and status = 1 and state in (0,1) and suppliers_id = #{id}

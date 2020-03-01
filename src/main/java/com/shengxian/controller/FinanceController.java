@@ -1107,4 +1107,32 @@ public class FinanceController {
 
 
 
+
+    /**
+     *风险订单记录总数（销售/采购默认当天的）
+     * @param token
+     * @return
+     */
+    @RequestMapping("/riskCount")
+    @ApiOperation(value = "销售风险订单记录总数（默认当天的）" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message riskCount(String token ,Integer role ){
+        Message message = Message.non();
+
+        try {
+            String start = DateUtil.getDay() , end = DateUtil.getDay();
+
+            HashMap count = financeService.riskCount(token ,role ,start,end);
+            return message.code(Message.codeSuccessed).data(count).message("获取成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("财务控制层（/finance/riskOrderCount）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+
+    }
 }

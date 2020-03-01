@@ -8,6 +8,7 @@ import com.shengxian.service.LogService;
 import com.shengxian.service.ShopService;
 import com.shengxian.service.SysLogService;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -31,7 +32,7 @@ import java.util.HashMap;
  * @Date: 2019-03-27
  * @Version: 1.0
  */
-@Aspect
+    @Aspect
 @Component
 public class SysLogAspect {
 
@@ -104,6 +105,4 @@ public class SysLogAspect {
    public Object AfterExec(JoinPoint joinPoint,Object rvt){
 
    }*/
-
-
 }

@@ -324,7 +324,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     //待审核(采购未到货的订单)
     @Override
-    public Page stayAudited(String token , Integer role , Integer  pageNo, String name) throws  NullPointerException{
+    public Page stayAudited(String token , Integer role , Integer  pageNo, String name, String number) throws  NullPointerException{
 
         //通过token和role查询店铺ID
         Integer bid = shopMapper.shopipByTokenAndRole(token, role);
@@ -334,17 +334,17 @@ public class PurchaseServiceImpl implements PurchaseService {
             pageNum=pageNo;
         }
         //待审核总数
-        Integer tatolCount = purchaseMapper.stayAuditedCount(new Paramt(bid,name));
+        Integer tatolCount = purchaseMapper.stayAuditedCount(new Paramt(bid,name , number));
         Page page = new Page(pageNum,tatolCount);
 
         //待审核
-        List<HashMap> hashMaps = purchaseMapper.stayAudited(new Paramt(bid, name, page.getStartIndex(), page.getPageSize()));
+        List<HashMap> hashMaps = purchaseMapper.stayAudited(new Paramt(bid, name, number, page.getStartIndex(), page.getPageSize()));
 
         //待审核总金额
         HashMap hashMap = new HashMap();
-        Double price= purchaseMapper.stayAuditedTatolMoney(new Paramt(bid,name,0));//采购总金额
+        Double price= purchaseMapper.stayAuditedTatolMoney(new Paramt(bid,name, number,0 ));//采购总金额
 
-        Double Return = purchaseMapper.stayAuditedTatolMoney(new Paramt(bid,name,1));//退货总金额
+        Double Return = purchaseMapper.stayAuditedTatolMoney(new Paramt(bid,name, number ,1));//退货总金额
 
         hashMap.put("price",price);
         hashMap.put("return",Return);

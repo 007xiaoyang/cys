@@ -1012,7 +1012,10 @@ public class ClerkServiceImpl implements ClerkService {
     }
 
 
-
+    @Override
+    public Integer deleteWXShareRecord(String shareID) {
+        return clerkMapper.deleteWXShareRecord(shareID);
+    }
 
     //客户账单的微信分享
     @Override
@@ -1056,33 +1059,33 @@ public class ClerkServiceImpl implements ClerkService {
 
 
     @Override
-    public Page purchaseGoodsSummary(String token, Integer role, Integer pageNo, String suppliersName, String goodsName, String startTime, String endTime) {
+    public Page purchaseGoodsSummary(String token, Integer role, Integer pageNo, String suppliersName,Integer suppliersId, String goodsName, String startTime, String endTime) {
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
         int pageNum = 1 ;
         if(IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
-        Integer totalCount = clerkMapper.purchaseGoodsSummaryCount(bid , suppliersName , goodsName , startTime , endTime);
+        Integer totalCount = clerkMapper.purchaseGoodsSummaryCount(bid , suppliersName ,suppliersId , goodsName , startTime , endTime);
         Page page = new Page(pageNum , totalCount);
-        List<HashMap> hashMaps = clerkMapper.purchaseGoodsSummary(bid , suppliersName , goodsName ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
+        List<HashMap> hashMaps = clerkMapper.purchaseGoodsSummary(bid , suppliersName ,suppliersId , goodsName ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
         page.setRecords(hashMaps);
-        HashMap hashMap = clerkMapper.purchaseGoodsSummaryTotalMoney(bid , suppliersName , goodsName , startTime , endTime);
+        HashMap hashMap = clerkMapper.purchaseGoodsSummaryTotalMoney(bid , suppliersName ,suppliersId, goodsName , startTime , endTime);
         page.setHashMap(hashMap);
         return page;
     }
 
     @Override
-    public Page purchaseGoodsDetails(String token, Integer role, Integer pageNo, String suppliersName, String goodsName, String startTime, String endTime) {
+    public Page purchaseGoodsDetails(String token, Integer role, Integer pageNo, String suppliersName, Integer suppliersId, String goodsName, String startTime, String endTime) {
         Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
         int pageNum = 1 ;
         if(IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
-        Integer totalCount = clerkMapper.purchaseGoodsDetailsCount(bid , suppliersName , goodsName , startTime , endTime);
+        Integer totalCount = clerkMapper.purchaseGoodsDetailsCount(bid , suppliersName ,suppliersId, goodsName , startTime , endTime);
         Page page = new Page(pageNum , totalCount);
-        List<HashMap> hashMaps = clerkMapper.purchaseGoodsDetails(bid , suppliersName , goodsName ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
+        List<HashMap> hashMaps = clerkMapper.purchaseGoodsDetails(bid , suppliersName ,suppliersId, goodsName ,startTime ,endTime , page.getStartIndex() , page.getPageSize());
         page.setRecords(hashMaps);
-        HashMap hashMap = clerkMapper.purchaseGoodsDetailsTotalMoney(bid , suppliersName , goodsName , startTime , endTime);
+        HashMap hashMap = clerkMapper.purchaseGoodsDetailsTotalMoney(bid , suppliersName ,suppliersId, goodsName , startTime , endTime);
         page.setHashMap(hashMap);
         return page;
     }

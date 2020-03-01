@@ -56,6 +56,7 @@ public class ShopController {
     private ExcelService excelService;
 
     private Logger log = Logger.getLogger(ShopController.class);
+
     /**
      * 获取验证码
      * @param phone
@@ -186,6 +187,53 @@ public class ShopController {
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
+    /**
+     * 微信小程序首页轮播图
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getHome")
+    @ApiOperation(value = "微信小程序首页轮播图" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "角色(1店铺，2员工)" ,paramType = "query")
+    })
+    public Message getHome( String token ,Integer role){
+        Message message = Message.non();
+        try {
+            HashMap hashMap = shopService.getHome(token ,role);
+            return message.code(Message.codeSuccessed).data(hashMap).message("操作成功");
+        }catch (RuntimeException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("店铺控制层（/business/home）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 微信小程序店铺使用期限
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getUsefulLlife")
+    @ApiOperation(value = "微信小程序店铺使用期限" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "角色(1店铺，2员工)" ,paramType = "query")
+    })
+    public Message getUsefulLlife( String token ,Integer role){
+        Message message = Message.non();
+        try {
+            Integer llife = shopService.getUsefulLlife(token ,role);
+            return message.code(Message.codeSuccessed).data(llife).message("获取成功");
+        }catch (Exception e){
+            log.error("店铺控制层（/business/getUsefulLlife）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
 
     /**
      * 找回密码
@@ -260,7 +308,7 @@ public class ShopController {
      * @param token
      * @return
      */
-    @RequestMapping("/findGoodsCategoryList")
+    /*@RequestMapping("/findGoodsCategoryList")
     @ApiOperation(value = "查询店铺下的产品类别集合" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
@@ -270,6 +318,30 @@ public class ShopController {
         Message message = Message.non();
         try {
             List<HashMap> goodsCategory = shopService.findGoodsCategoryList(token ,role);
+            return message.code(Message.codeSuccessed).data(goodsCategory).message("查询成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e) {
+            log.error("店铺控制层（/business/findGoodsCategoryList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }*/
+
+    /**
+     * 查询店铺下的产品类别集合
+     * @param token
+     * @return
+     */
+    @RequestMapping("/findGoodsCategoryList")
+    @ApiOperation(value = "查询店铺下的产品类别集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "角色(1店铺，2员工)" ,paramType = "query")
+    })
+    public Message findGoodsCategoryList(String token ,Integer role){
+        Message message = Message.non();
+        try {
+            List<GoodsCategoryVO> goodsCategory = shopService.findGoodsCategoryList(token ,role);
             return message.code(Message.codeSuccessed).data(goodsCategory).message("查询成功");
         }catch (NullPointerException e){
             return message.code(Message.codeFailured).message(e.getMessage());
@@ -392,7 +464,7 @@ public class ShopController {
      */
     @RequestMapping("/upateCategoryRP")
     @SysLog(module = "资料管理", methods = "产品大类别置顶")
-    @ApiOperation(value = "删除产品类别" ,httpMethod = "POST")
+    @ApiOperation(value = "产品大类别置顶" ,httpMethod = "POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
             @ApiImplicitParam(name = "role" ,value = "角色(1店铺，2员工)" ,paramType = "query"),
@@ -1346,11 +1418,11 @@ public class ShopController {
     }
 
     /**
-     * 获取电子协议
+     * 获取协议
      * @return
      */
     @RequestMapping("/agreement")
-    @ApiOperation(value = "获取pc端系统公告" ,httpMethod = "POST")
+    @ApiOperation(value = "获取协议" ,httpMethod = "POST")
     public Message agreement(){
         Message message = Message.non();
         try {
@@ -2754,6 +2826,28 @@ public class ShopController {
     }
 
 
+    /**
+     * 获取每个类别下对应的产品数据集合
+     * @param token
+     * @param
+     */
+    @RequestMapping("/getCategroyList")
+    @ApiOperation(value = "获取每个类别下对应的产品数据集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message getCategroyList(String token ,Integer role ){
+        Message message = Message.non();
+
+        try {
+            List<GoodsCategoryVO> hashMaps = shopService.getCategroyList(token ,role);
+            return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
+        }catch (Exception e){
+            log.error("员工控制层（/business/getCategroyList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
 
 
 

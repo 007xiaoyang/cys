@@ -91,6 +91,20 @@
         select id from user where phone = #{phone} and is_del= 0
     </select>
 
+    <!--通过手机号和店铺查询当前号码有被当前店铺绑定了别的用户了吗-->
+    <select id="getOldPhone" resultType="String">
+        select u.phone   from shengxian_binding bd
+		inner join user u on u.id  = bd.user_id
+		where bd.is_del= 0 and  bd.id = #{id}
+    </select>
+
+    <!--通过手机号和店铺查询当前号码有被当前店铺绑定了别的用户了吗-->
+    <select id="findIdByPhoneAndBid" resultType="Integer">
+        select bd.id   from shengxian_binding bd
+		inner join user u on u.id  = bd.user_id and u.is_del= 0
+		where bd.is_del= 0 and  u.phone = #{phone} and bd.business_id = #{id}
+    </select>
+
     <!--根据类别id和编号查询是否存在-->
     <select id="findUserByCategoryIdAndNumber" resultType="String">
         select number from shengxian_binding where category_id=#{categoryId} and number=#{number} and is_del=0
@@ -128,7 +142,7 @@
     <!--条件查询类别下的客户信息集合-->
     <select id="findCustomerInfoList" resultType="HashMap">
         select b.id,u.phone,b.number,b.user_name,b.source,
-        (select bs.scheme_name from shengxian_business_scheme bs where bs.scheme_id =b.scheme_id and business_id =#{business_id})scheme_name,
+        ifnull((select bs.scheme_name from shengxian_business_scheme bs where bs.scheme_id =b.scheme_id and business_id =#{business_id}),'默认价格')as scheme_name,
         b.illustrated1,b.remark1,b.address,(select integar_num from shengxian_binding_integra where binding_id=b.id)integar_num,
         (select create_time from shengxian_order where binding_id=b.id and is_del=0 order by create_time desc limit 1 )create_time
         from shengxian_binding b

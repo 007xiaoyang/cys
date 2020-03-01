@@ -133,6 +133,15 @@ public interface UserMapper {
      */
     Integer findUidByPhone(@Param("phone") String phone);
 
+    String getOldPhone(@Param("id") Integer id);
+
+    /**
+     * 通过手机号和店铺查询当前号码有被当前店铺绑定了别的用户了吗
+     * @param phone
+     * @return
+     */
+    List<Integer> findIdByPhoneAndBid(@Param("id")  Long businessId , @Param("phone") String phone);
+
     /**
      * 根据类别id和编号查询是否存在
      * @param categoryId

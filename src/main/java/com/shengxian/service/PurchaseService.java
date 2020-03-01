@@ -125,7 +125,7 @@ public interface PurchaseService {
      * @param token
      * @return
      */
-   Page stayAudited(String token , Integer role, Integer pageNo, String name) throws  NullPointerException;
+   Page stayAudited(String token , Integer role, Integer pageNo, String name, String number) throws  NullPointerException;
 
     /**
      * 采购确认

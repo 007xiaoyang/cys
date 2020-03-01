@@ -170,6 +170,12 @@ public class SuppliersServiceImpl implements SuppliersService {
     @Override
     @Transactional
     public Integer deleSuppliers(Integer id) throws NullPointerException ,Exception{
+
+        List<Integer> dayId = suppliersMapper.dayPurchaseOrder(id);
+        if(dayId.size() > 0){
+            throw new NullPointerException("还有待审核的订单,故不能删除");
+        }
+
         //删除供应商前判断是否有未付款或欠款的订单
         List<Integer> pid = suppliersMapper.selectPurchaseOrder(id);
         if (pid.size() > 0){

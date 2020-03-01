@@ -601,6 +601,7 @@ public interface ClerkMapper {
      */
     Integer addWXShareRecord(@Param("id") String id ,@Param("bindingId") Integer bindingId , @Param("shareId") String shareId  , @Param("price") Double price , @Param("startTime") String startTime,  @Param("endTime") String endTime);
 
+    Integer deleteWXShareRecord(@Param("id") String shareId);
 
     /**
      * 客户账单的微信分享
@@ -649,7 +650,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    Integer purchaseGoodsSummaryCount(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+    Integer purchaseGoodsSummaryCount(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName,@Param("suppliersId") Integer suppliersId, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
 
     /**
      * 采购产品汇总
@@ -660,7 +661,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    List<HashMap> purchaseGoodsSummary(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
+    List<HashMap> purchaseGoodsSummary(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName ,@Param("suppliersId") Integer suppliersId, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
 
     /**
      * 采购产品汇总总金额
@@ -671,7 +672,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    HashMap purchaseGoodsSummaryTotalMoney(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+    HashMap purchaseGoodsSummaryTotalMoney(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName,@Param("suppliersId") Integer suppliersId, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
 
 
     /**
@@ -683,7 +684,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    Integer purchaseGoodsDetailsCount(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+    Integer purchaseGoodsDetailsCount(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName,@Param("suppliersId") Integer suppliersId, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
 
     /**
      * 采购产品明细
@@ -694,7 +695,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    List<HashMap> purchaseGoodsDetails(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
+    List<HashMap> purchaseGoodsDetails(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName,@Param("suppliersId") Integer suppliersId, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime ,@Param("startIndex") Integer startIndex ,@Param("pageSize") Integer pageSize);
 
     /**
      * 采购产品明细总金额
@@ -705,7 +706,7 @@ public interface ClerkMapper {
      * @param endTime
      * @return
      */
-    HashMap purchaseGoodsDetailsTotalMoney(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
+    HashMap purchaseGoodsDetailsTotalMoney(@Param("bid") Integer businessId , @Param("suppliersName") String suppliersName,@Param("suppliersId") Integer suppliersId, @Param("goodsName") String goodsName, @Param("startTime") String startTime,@Param("endTime") String endTime);
 
     /**
      *添加计算器

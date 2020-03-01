@@ -298,15 +298,24 @@ public class StaffServiceImpl implements StaffService {
         //修改员工产品提成
         GoodsPercent[] goodsPercent = staff.getGoodsPercent();
         for (GoodsPercent goods: goodsPercent ) {
-            goods.setStaff_id(staff.getId());
-            staffMapper.updateStaffGoodsPercent(goods);
+            if(goods.getId() != null && goods.getId() != 0 ){
+                staffMapper.updateGoodsPercent(goods);
+            }else {
+                goods.setStaff_id(staff.getId());
+                staffMapper.updateStaffGoodsPercent(goods);
+            }
         }
 
         //修改员工的客户提成
         UserPercent[] userPercents = staff.getUserPercents();
         for (UserPercent user: userPercents  ) {
-            user.setStaff_id(staff.getId());
-            staffMapper.updateStaffUserPercent(user);
+            if(user.getId() != null && user.getId() != 0 ){
+                staffMapper.updateUserPercent(user);
+            }else {
+                user.setStaff_id(staff.getId());
+                staffMapper.updateStaffUserPercent(user);
+            }
+
         }
 
       /*  //修改员工的仓库提成

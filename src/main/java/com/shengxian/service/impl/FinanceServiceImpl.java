@@ -1066,4 +1066,18 @@ public class FinanceServiceImpl implements FinanceService {
         HSSFWorkbook workbook = ExcelUtil.getHSSWorkbook(seetName, title, values, null);
         return workbook;
     }
+
+    @Override
+    public HashMap riskCount(String token, Integer role, String startTime, String endTime) {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+        HashMap hashMap = new HashMap();
+        Integer sCount = financeMapper.riskOrderCount(new Paramt(bid, "", startTime, endTime));
+        Integer pCount = financeMapper.purchaseRiskOrderCount(new Paramt(bid, "", startTime, endTime));
+        Integer gCount = financeMapper.goodsWindControlCount(new Paramt(bid, "", startTime, endTime));
+        hashMap.put("sCount" , sCount);
+        hashMap.put("pCount" , pCount);
+        hashMap.put("gCount" , gCount);
+        return hashMap;
+    }
 }

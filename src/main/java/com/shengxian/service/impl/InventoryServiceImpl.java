@@ -10,6 +10,8 @@ import com.shengxian.mapper.InventoryMapper;
 import com.shengxian.mapper.PurchaseMapper;
 import com.shengxian.service.InventoryService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,22 +90,19 @@ public class InventoryServiceImpl implements InventoryService {
     //盘点
     @Override
     @Transactional
-    public Integer check(String token ,Integer role , Integer status) {
+    @CacheEvict(cacheNames = "cleckState" , allEntries = true)
+    public Integer check(Integer id , Integer status) {
 
-        //通过token和role查询店铺ID
-        Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
-
-        return inventoryMapper.check(bid,status);
+        return inventoryMapper.check(id,status);
     }
 
     //查询商家是否盘点中
     @Override
-    public Integer checkGoodsInventory(String token ,Integer role) {
+    @Cacheable(cacheNames = "cleckState" )
+    public Integer checkGoodsInventory(Integer id) {
 
-        //通过token和role查询店铺ID
-        Integer bid = shopMapper.shopipByTokenAndRole(token ,role);
-
-        return inventoryMapper.checkGoodsInventory(bid);
+        Integer cleckState = inventoryMapper.checkGoodsInventory(id);
+        return cleckState;
     }
 
     //查询盘点前的产品信息
@@ -272,8 +271,15 @@ public class InventoryServiceImpl implements InventoryService {
             //通过库存id查询盘点的库存数量
             HashMap hashMap = inventoryMapper.selectInventory(id);
             if (hashMap == null){
-                throw new Exception();
+                throw new Exception("未有盘点产品");
             }
+            //查询盘点的时候，判断盘点的产品是否产生了每日的库存情况记录
+            Integer statisId = shopMapper.selectGoodsInventoryStatisByBidAndDate(Integer.valueOf(hashMap.get("goods_id").toString()));
+            if(statisId != null ){
+                //修改昨日库存
+                shopMapper.updataGoodsInventorySituation(statisId  ,new BigDecimal(hashMap.get("num").toString()));
+            }
+
             //添加盘点结算产品详情
             count= inventoryMapper.addSettlementGoodsDetail(settlement.getId(),Integer.valueOf(hashMap.get("goods_id").toString()),
 

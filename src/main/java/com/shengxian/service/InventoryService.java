@@ -56,17 +56,17 @@ public interface InventoryService {
 
     /**
      * 盘点
-     * @param token
+     * @param id
      * @param status
      * @return
      */
-    Integer check(String token ,Integer role , Integer status);
+    Integer check(Integer id , Integer status);
 
     /**
      * 查询商家是否盘点中
      * @return
      */
-    Integer checkGoodsInventory(String token ,Integer role);
+    Integer checkGoodsInventory(Integer id);
 
     /**
      * 查询盘点前的产品信息

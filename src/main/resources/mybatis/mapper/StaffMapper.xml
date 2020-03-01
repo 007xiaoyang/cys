@@ -286,12 +286,18 @@
     </select>
 
     <!--修改员工的产品提成-->
+    <update id="updateGoodsPercent">
+       update shengxian_user_percentage set proportion = #{proportion} where id = #{id}
+    </update>
     <update id="updateStaffGoodsPercent">
         replace into shengxian_goods_percentage(goods_id ,proportion,staff_id)
         values( #{goods_id}, #{proportion}, #{staff_id})
     </update>
 
     <!--修改员工的用户提成-->
+    <update id="updateUserPercent">
+        update shengxian_user_percentage set proportion = #{proportion}  where id = #{id};
+    </update>
     <update id="updateStaffUserPercent">
         replace into shengxian_user_percentage(binding_id , proportion ,staff_id)
         values( #{binding_id}, #{proportion} , #{staff_id})

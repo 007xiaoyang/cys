@@ -262,7 +262,18 @@ public interface OrderService {
      * @param number
      * @return
      */
-    Page notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number );
+    Page notPrintedOrderSummary(String token ,Integer role, Integer pageNo, String name, String number , String startTime, String endTime);
+
+    /**
+     * 未打印订单明细
+     * @param token
+     * @param role
+     * @param pageNo
+     * @param name
+     * @param number
+     * @return
+     */
+    Page notPrintedOrderDetail(String token ,Integer role, Integer pageNo, String name, String number,String userName,Integer warehouseId , String startTime, String endTime );
 
     /**
      * 待送货订单总数
@@ -287,7 +298,20 @@ public interface OrderService {
      * @param name
      * @return
      */
-    Page stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold)throws NullPointerException ,Exception;
+    Page stayDeliveredSummary(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold, String startTime, String endTime )throws NullPointerException ,Exception;
+
+
+    /**
+     * 待送货订单明细
+     * @param token
+     * @param pageNo
+     * @param name
+     * @return
+     */
+    Page stayDeliveredDetail(String token ,Integer role, Integer pageNo, String name, String number ,Integer mold,String userName ,Integer warehouseId , String startTime, String endTime )throws NullPointerException ,Exception;
+
+
+
 
     /**
      * 确认到货或取消订单状态（4 确认已送达）（6 取消订单）
@@ -643,4 +667,8 @@ public interface OrderService {
      * @return
      */
     List<HashMap> selectOrderMoneyRecords(Integer id);
+
+    HashMap overdueAndStaypurchasedCount(String token ,Integer role);
+
+    HashMap dataCount(String token ,Integer role , String startTime, String endTime)throws RuntimeException;
 }
