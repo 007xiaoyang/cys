@@ -111,7 +111,12 @@
     <!--查询类别下所有员工信息集合-->
     <select id="findStaffInfoListByCategoryId" resultType="HashMap">
         select id,name from shengxian_staff
-        where category_id = #{categoryId} and is_del = 0
+        where is_del = 0 and category_id = #{categoryId}
+    </select>
+    <!--查询所有员工信息集合-->
+    <select id="getAllStaffList" resultType="HashMap">
+        select id,name from shengxian_staff
+        where is_del = 0 and business_id = #{businessId}
     </select>
 
     <!--删除员工类别-->

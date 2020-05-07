@@ -33,7 +33,7 @@ public class AppParameter {
 
     private byte shield  ; // 1屏蔽进价
     private byte inv  ; // 1屏蔽库存
-
+    private String staffName;
 
 
 
@@ -76,49 +76,61 @@ public class AppParameter {
     }
 
     //
-    public AppParameter(Integer business_id, Integer staff_id, String name) {
+    public AppParameter(Integer business_id, Integer staff_id, String name ,String number, String staffName  ) {
         this.business_id = business_id;
         this.staff_id = staff_id;
         this.name = name;
+        this.number = number;
+        this.staffName = staffName;
     }
 
-    public AppParameter(Integer business_id, Integer staff_id, String name, Integer startIndex, Integer pageSize) {
+    public AppParameter(Integer business_id, Integer staff_id, String name,String number , String staffName , Integer startIndex, Integer pageSize) {
         this.business_id = business_id;
         this.staff_id = staff_id;
         this.name = name;
+        this.number = number;
+        this.staffName = staffName;
         this.startIndex = startIndex;
         this.pageSize = pageSize;
     }
 
-    public AppParameter(Integer business_id, Integer staff_id, String name, Integer mold) {
+    public AppParameter(Integer business_id, Integer staff_id, String name,String number , String staffName , Integer mold) {
         this.business_id = business_id;
         this.staff_id = staff_id;
         this.name = name;
+        this.number = number;
+        this.staffName = staffName;
         this.mold = mold;
     }
 
-    public AppParameter(Integer business_id, Integer staff_id, String name, String startTime, String endTime) {
+    public AppParameter(Integer business_id, Integer staff_id, String name,String number  , String staffName, String startTime, String endTime) {
         this.business_id = business_id;
         this.staff_id = staff_id;
         this.name = name;
+        this.number= number;
+        this.staffName = staffName;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public AppParameter(Integer business_id, Integer staff_id, String name, String startTime, String endTime, Integer startIndex, Integer pageSize) {
+    public AppParameter(Integer business_id, Integer staff_id, String name,String number  , String staffName, String startTime, String endTime, Integer startIndex, Integer pageSize) {
         this.business_id = business_id;
         this.staff_id = staff_id;
         this.name = name;
+        this.number = number;
+        this.staffName = staffName;
         this.startTime = startTime;
         this.endTime = endTime;
         this.startIndex = startIndex;
         this.pageSize = pageSize;
     }
     //完成mold
-    public AppParameter(Integer business_id, Integer staff_id, String name, String startTime, String endTime, Integer mold) {
+    public AppParameter(Integer business_id, Integer staff_id, String name,String number  , String staffName, String startTime, String endTime, Integer mold) {
         this.business_id = business_id;
         this.staff_id = staff_id;
         this.name = name;
+        this.number = number;
+        this.staffName = staffName;
         this.startTime = startTime;
         this.endTime = endTime;
         this.mold = mold;
@@ -208,6 +220,31 @@ public class AppParameter {
     }
 
 
+    //专员
+
+    public AppParameter(Integer business_id, Integer staff_id, Integer state, String name,String number  , String staffName) {
+        this.business_id = business_id;
+        this.staff_id = staff_id;
+        this.state = state;
+        this.name = name;
+        this.number= number;
+        this.staffName = staffName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public AppParameter(Integer business_id, Integer staff_id , Integer state, String name,String number  , String staffName,  Integer startIndex, Integer pageSize) {
+        this.business_id = business_id;
+        this.staff_id = staff_id;
+        this.state = state;
+        this.name = name;
+        this.number = number;
+        this.staffName = staffName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startIndex = startIndex;
+        this.pageSize = pageSize;
+    }
 
 
 }

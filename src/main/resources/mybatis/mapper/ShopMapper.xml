@@ -54,7 +54,7 @@
         </if>
         <!--员工登录-->
         <if test="role == 2">
-            select s.id, s.token,  b.is_disable as b_ble , s.is_disable as s_ble, b.if_adopt, DATEDIFF(b.duration,NOW())duration ,0 as power ,s.password
+            select s.id, s.token,  b.is_disable as b_ble , s.is_disable as s_ble, b.if_adopt, DATEDIFF(b.duration,NOW())duration ,s.power ,s.password
             from shengxian_staff s
             inner join shengxian_business b on s.business_id=b.id and b.is_del = 0
             where s.is_del=0 and s.phone = #{phone}
@@ -243,6 +243,12 @@
     <delete id="deleteGoodsCategory">
         delete from shengxian_goods_category where id = #{categoryId}
     </delete>
+
+    <!--删除二级产品类别-->
+    <delete id="deleteTwoGoodsCategory">
+        delete from shengxian_goods_category where level = #{level}
+    </delete>
+
 
     <!--产品大类别置顶-->
     <update id="upateCategoryRP">

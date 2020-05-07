@@ -61,7 +61,7 @@ public interface ClerkService {
      */
     Page sharingOrder(String token ,Integer role , Integer pageNo ,String name , String number)throws NullPointerException, Exception;
 
-
+    Integer getMallsOrderCount(String token ,Integer role );
 
     /**
      * 订单详情
@@ -78,7 +78,7 @@ public interface ClerkService {
      * @return
      * @throws Exception
      */
-    Page noArrivedOrder(String token ,Integer role ,Integer pageNo ,String name)throws Exception;
+    Page noArrivedOrder(String token ,Integer role ,Integer pageNo ,String name,String number )throws Exception;
 
 
 
@@ -89,7 +89,7 @@ public interface ClerkService {
      * @param name 搜索条件，订单编号 ，客户名称，客户编号
      * @throws Exception
      */
-    Page uncollectedOrderList(String token ,Integer role ,Integer pageNo,String name )throws NullPointerException, Exception;
+    Page uncollectedOrderList(String token ,Integer role ,Integer pageNo,String name ,String number , String staffName )throws NullPointerException, Exception;
 
     /**
      * 欠款的订单
@@ -98,7 +98,7 @@ public interface ClerkService {
      * @param name 搜索条件，订单编号 ，客户名称，客户编号
      * @throws Exception
      */
-    Page arrearsOrderList(String token ,Integer role ,Integer pageNo,String name )throws NullPointerException, Exception;
+    Page arrearsOrderList(String token ,Integer role ,Integer pageNo,String name ,String number , String staffName )throws NullPointerException, Exception;
 
     /**
      * 完成的订单
@@ -110,7 +110,29 @@ public interface ClerkService {
      * @return
      * @throws Exception
      */
-    Page completeOrderList(String token ,Integer role ,Integer pageNo,String name,String startTime ,String endTime )throws NullPointerException, Exception;
+    Page completeOrderList(String token ,Integer role ,Integer pageNo,String name ,String number , String staffName ,String startTime ,String endTime )throws NullPointerException, Exception;
+
+    /**
+     * 专员客户未付款/欠款订单接口
+     * @param token
+     * @param pageNo
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    Page getCommissionerOrderList(String token ,Integer role ,Integer pageNo ,Integer state,String name ,String number , String staffName )throws  Exception;
+
+    /**
+     * 程序 专员客户 完成的订单
+     * @param token
+     * @param pageNo
+     * @param name
+     * @param startTime
+     * @param endTime
+     * @return
+     * @throws Exception
+     */
+    Page getCommissionerCompleteOrderList(String token ,Integer role ,Integer pageNo,String name ,String number , String staffName ,String startTime ,String endTime )throws NullPointerException, Exception;
 
 
     /**

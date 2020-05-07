@@ -6,15 +6,21 @@ import com.shengxian.entity.*;
 import com.shengxian.entity.clerkApp.*;
 import com.shengxian.mapper.*;
 import com.shengxian.service.ClerkService;
+import com.shengxian.vo.OrderVO;
 import io.swagger.models.auth.In;
 import org.apache.http.cookie.SM;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.xml.crypto.Data;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -88,11 +94,18 @@ public class ClerkServiceImpl implements ClerkService {
         Integer totalCount = clerkMapper.sharingOrderCount(new Paramt(business_id , name ,number ));
         Page page = new Page(pageNum,totalCount);
         //查询共享订单集合
-        List<HashMap> hashMaps = clerkMapper.sharingOrder(new Paramt(business_id , name ,number ,page.getStartIndex() ,page.getPageSize() ));
+        List<OrderVO> hashMaps = clerkMapper.sharingOrder(new Paramt(business_id , name ,number ,page.getStartIndex() ,page.getPageSize() ));
+
         page.setRecords(hashMaps);
         return page;
     }
 
+    @Override
+    public Integer getMallsOrderCount(String token, Integer role) {
+        //通过员工登录token员工所在的商家ID
+        Integer businessId =  shopMapper.shopipByTokenAndRole(token , role);
+        return clerkMapper.getMallsOrderCount(businessId);
+    }
 
     //订单详情
     @Override
@@ -110,7 +123,7 @@ public class ClerkServiceImpl implements ClerkService {
 
     //未到货的订单
     @Override
-    public Page noArrivedOrder(String token ,Integer role , Integer pageNo ,String name) throws Exception {
+    public Page noArrivedOrder(String token ,Integer role , Integer pageNo ,String name,String number ) throws Exception {
         HashMap hashMap = new HashMap();
         //通过token查询商家ID和员工ID
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
@@ -119,16 +132,16 @@ public class ClerkServiceImpl implements ClerkService {
             pageNum = pageNo;
         }
         //未到货订单总数
-        Integer totalCount = clerkMapper.noArrivedOrderCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId() ,name));
+        Integer totalCount = clerkMapper.noArrivedOrderCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId() ,name ,number , ""));
         Page page = new Page(pageNum,totalCount);
         //未到货订单列表
-        List<HashMap> hashMaps = clerkMapper.noArrivedOrder(new AppParameter( clerk.getBusiness_id() ,clerk.getId() ,name,page.getStartIndex() ,page.getPageSize()));
+        List<HashMap> hashMaps = clerkMapper.noArrivedOrder(new AppParameter( clerk.getBusiness_id() ,clerk.getId() ,name ,number,"",page.getStartIndex() ,page.getPageSize()));
 
         //销售未到货的订单总金额
-        Double price = clerkMapper.noArrivedOrderTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,0));
+        Double price = clerkMapper.noArrivedOrderTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number ,"",0));
 
         //退货未到货的订单总金额
-        Double retreat_price = clerkMapper.noArrivedOrderTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,1));
+        Double retreat_price = clerkMapper.noArrivedOrderTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number,"",1));
 
         hashMap.put("retreat_price" ,new BigDecimal(retreat_price).setScale(2,BigDecimal.ROUND_CEILING));
         hashMap.put("price" ,new BigDecimal(price).setScale(2,BigDecimal.ROUND_CEILING));
@@ -140,7 +153,7 @@ public class ClerkServiceImpl implements ClerkService {
 
     //未收款的订单
     @Override
-    public Page uncollectedOrderList(String token ,Integer role , Integer pageNo, String name) throws NullPointerException, Exception {
+    public Page uncollectedOrderList(String token ,Integer role , Integer pageNo, String name,String number , String staffName ) throws NullPointerException, Exception {
 
         HashMap hashMap = new HashMap();
         int pageNum = 1 ;
@@ -151,14 +164,14 @@ public class ClerkServiceImpl implements ClerkService {
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
 
         //未收款的订单总数
-        Integer totalCount = clerkMapper.uncollectedOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name));
+        Integer totalCount = clerkMapper.uncollectedOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number , staffName));
         Page page = new Page(pageNum,totalCount);
         //未收款的订单
-        List<HashMap> hashMaps = clerkMapper.uncollectedOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,page.getStartIndex(),page.getPageSize()) );
+        List<HashMap> hashMaps = clerkMapper.uncollectedOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number , staffName,page.getStartIndex(),page.getPageSize()) );
         //未付款订单总金额(销售单)
-        Double price = clerkMapper.uncollectedOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name,  0));
+        Double price = clerkMapper.uncollectedOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name, number ,staffName,  0));
         //未付款订单总金额(销售退货单)retreat
-        Double retreat_price = clerkMapper.uncollectedOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name , 1));
+        Double retreat_price = clerkMapper.uncollectedOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name , number,staffName, 1));
         hashMap.put("price" ,new BigDecimal(price).setScale(2,BigDecimal.ROUND_CEILING));
         hashMap.put("retreat_price" ,new BigDecimal(retreat_price).setScale(2,BigDecimal.ROUND_CEILING));
         page.setRecords(hashMaps);
@@ -168,7 +181,7 @@ public class ClerkServiceImpl implements ClerkService {
 
     //欠款的订单
     @Override
-    public Page arrearsOrderList(String token ,Integer role , Integer pageNo, String name) throws NullPointerException, Exception {
+    public Page arrearsOrderList(String token ,Integer role , Integer pageNo, String name,String number, String staffName  ) throws NullPointerException, Exception {
         int pageNum = 1 ;
         if (IntegerUtils.isNotEmpty(pageNo)){
             pageNum = pageNo;
@@ -176,13 +189,13 @@ public class ClerkServiceImpl implements ClerkService {
         HashMap hashMap = new HashMap();
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
 
-        Integer totalCount = clerkMapper.arrearsOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name));
+        Integer totalCount = clerkMapper.arrearsOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number,staffName));
         Page page = new Page(pageNum,totalCount);
-        List<HashMap> hashMaps = clerkMapper.arrearsOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,page.getStartIndex(),page.getPageSize()) );
+        List<HashMap> hashMaps = clerkMapper.arrearsOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number ,staffName,page.getStartIndex(),page.getPageSize()) );
         //欠款订单总金额(销售单)
-        Money money = clerkMapper.arrearsOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name, 0));
+        Money money = clerkMapper.arrearsOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name, number,staffName,0));
         //欠款订单总金额(销售退货单)
-        Money retreat = clerkMapper.arrearsOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name, 1));
+        Money retreat = clerkMapper.arrearsOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name, number ,staffName, 1));
         hashMap.put("price", new BigDecimal(money.getPrice()).setScale(2 ,BigDecimal.ROUND_CEILING)); //欠款金额
         hashMap.put("money", new BigDecimal(money.getMoney2()).setScale(2 ,BigDecimal.ROUND_CEILING)); //已收金额
         hashMap.put("retreat_price", new BigDecimal(retreat.getPrice()).setScale(2 ,BigDecimal.ROUND_CEILING)); //退货欠款金额
@@ -194,25 +207,54 @@ public class ClerkServiceImpl implements ClerkService {
 
     //完成的订单
     @Override
-    public Page completeOrderList(String token ,Integer role , Integer pageNo, String name, String startTime, String endTime) throws NullPointerException, Exception {
+    public Page completeOrderList(String token ,Integer role , Integer pageNo, String name,String number, String staffName  , String startTime, String endTime) throws NullPointerException, Exception {
         HashMap hashMap = new HashMap();
         Clerk clerk = clerkMapper.bidAndSidByToken(token);
         int pageNum = 1 ;
         if (IntegerUtils.isNotEmpty(pageNo) ){
             pageNum = pageNo;
         }
-        Integer totalCount = clerkMapper.completeOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name,startTime ,endTime));
+        Integer totalCount = clerkMapper.completeOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number,staffName,startTime ,endTime));
         Page page = new Page(pageNum,totalCount);
-        List<HashMap> hashMaps = clerkMapper.completeOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,startTime ,endTime ,page.getStartIndex(),page.getPageSize()) );
+        List<HashMap> hashMaps = clerkMapper.completeOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number ,staffName,startTime ,endTime ,page.getStartIndex(),page.getPageSize()) );
         //完成的订单总金额(销售单)
-        Money money = clerkMapper.completeOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name,startTime,endTime, 0));
+        Money money = clerkMapper.completeOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name ,number ,staffName,startTime,endTime, 0));
         //完成的订单总金额(销售退货单)
-        Money retreat = clerkMapper.completeOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name,startTime,endTime, 1));
+        Money retreat = clerkMapper.completeOrderListTotalMoney(new AppParameter(clerk.getBusiness_id() ,clerk.getId() , name ,number,staffName,startTime,endTime, 1));
         hashMap.put("price", new BigDecimal(money.getPrice()).setScale(2 ,BigDecimal.ROUND_CEILING)); //欠款金额
         hashMap.put("money", new BigDecimal(money.getMoney()).setScale(2 ,BigDecimal.ROUND_CEILING)); //已收金额
         hashMap.put("retreat_price", new BigDecimal(retreat.getPrice()).setScale(2 ,BigDecimal.ROUND_CEILING)); //退货欠款金额
         hashMap.put("retreat_money", new BigDecimal(retreat.getMoney()).setScale(2 ,BigDecimal.ROUND_CEILING)); //退货已付金额
         page.setHashMap(hashMap);
+        page.setRecords(hashMaps);
+        return page;
+    }
+
+
+    @Override
+    public Page getCommissionerOrderList(String token, Integer role, Integer pageNo, Integer state, String name, String number, String staffName) throws  Exception {
+        Clerk clerk = clerkMapper.bidAndSidByToken(token);
+        int pageNum = 1 ;
+        if (IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum = pageNo;
+        }
+        Integer totalCount = clerkMapper.getCommissionerOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,state ,name ,number,staffName));
+        Page page = new Page(pageNum,totalCount);
+        List<HashMap> hashMaps = clerkMapper.getCommissionerOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,state ,name ,number ,staffName,page.getStartIndex(),page.getPageSize()) );
+        page.setRecords(hashMaps);
+        return page;
+    }
+
+    @Override
+    public Page getCommissionerCompleteOrderList(String token, Integer role, Integer pageNo, String name, String number, String staffName, String startTime, String endTime) throws NullPointerException, Exception {
+        Clerk clerk = clerkMapper.bidAndSidByToken(token);
+        int pageNum = 1 ;
+        if (IntegerUtils.isNotEmpty(pageNo) ){
+            pageNum = pageNo;
+        }
+        Integer totalCount = clerkMapper.getCommissionerCompleteOrderListCount(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number,staffName,startTime ,endTime));
+        Page page = new Page(pageNum,totalCount);
+        List<HashMap> hashMaps = clerkMapper.getCommissionerCompleteOrderList(new AppParameter(clerk.getBusiness_id() ,clerk.getId()  ,name ,number ,staffName,startTime ,endTime ,page.getStartIndex(),page.getPageSize()) );
         page.setRecords(hashMaps);
         return page;
     }
@@ -596,13 +638,14 @@ public class ClerkServiceImpl implements ClerkService {
         double money = 0 ;
         for (HashMap mall: mallDetail ) {
             //根据type来判断是销售的还是报损的
+            money = Double.valueOf(mall.get("price").toString());
             if (Integer.valueOf(mall.get("type").toString()) == 0){
 
                 //根据产品id查询产品进价
                  costPrice = clerkMapper.findGoodsCostPrice(Integer.valueOf(mall.get("goods_id").toString()));
                 //计算每销售一件产品的纯盈利 //用销售价格减去产品进价乘以数量等于纯盈利润
                 profit = (Double.valueOf(mall.get("price").toString()) - costPrice) * Double.valueOf(mall.get("num").toString());
-                money = Double.valueOf(mall.get("price").toString());
+
             }else if (Integer.valueOf(mall.get("type").toString()) == 1){
                 //报损产品
                 give = new Give(Integer.valueOf(mall.get("goods_id").toString()),SM.getConsume_id(),Double.valueOf(mall.get("num").toString()),new Date(),SM.getOp_id() ,1);
@@ -1158,4 +1201,7 @@ public class ClerkServiceImpl implements ClerkService {
             }
         }
     }
+
+
+
 }

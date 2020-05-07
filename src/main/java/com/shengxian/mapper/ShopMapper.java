@@ -243,6 +243,13 @@ public interface ShopMapper {
     Integer deleteGoodsCategory(@Param("categoryId") Integer categoryId);
 
     /**
+     * 删除二级产品类别
+     * @param level
+     * @return
+     */
+    Integer deleteTwoGoodsCategory(@Param("level") Integer level);
+
+    /**
      * 产品大类别置顶
      * @param category_id
      * @return

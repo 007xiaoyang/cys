@@ -137,6 +137,15 @@ public interface StaffMapper {
     List<HashMap> findStaffInfoListByCategoryId(@Param("categoryId") Integer categoryId);
 
     /**
+     * 查询所有员工信息集合
+     * @param businessId
+     * @return
+     */
+    List<HashMap> getAllStaffList(@Param("businessId") Integer businessId);
+
+
+
+    /**
      * 删除员工类别
      * @param id 员工类别id
      * @return

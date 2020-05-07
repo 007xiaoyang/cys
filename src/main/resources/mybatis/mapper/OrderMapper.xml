@@ -59,7 +59,7 @@
         select g.id ,g.name,g.spec , g.units , gi.minimum ,gi.fictitious,g.minimum_price ,
         IFNULL( IFNULL((select gs.price from shengxian_goods_scheme gs where g.id = gs.goods_id and gs.scheme_id = #{scheme_id}),
         (select od.order_price  from shengxian_order_details od ,shengxian_order o where o.id = od.order_id and o.is_del = 0 and
-        od.goods_id =g.id and o.binding_id = #{binding_id} order by od.id desc limit 1)),'')price,
+        od.goods_id =g.id and o.binding_id = #{binding_id} and o.mold = 0 order by od.id desc limit 1)),'')price,
         ifnull((select id from shengxian_goods_collection gc where g.id = gc.goods_id and gc.binding_id = #{binding_id} order by id desc limit 1 ),0)collection_id
         from shengxian_goods g
 		inner join shengxian_goods_inventory gi on gi.goods_id = g.id
@@ -1562,7 +1562,7 @@
 
     <!--用户取消订单-->
     <select id="userCancelOrder" resultType="HashMap">
-        select o.id,b.user_name,b.number ,o.price,o.no,o.audit_time ,o.deliver,o.mold
+        select o.id,b.user_name,b.number ,o.price,o.no,o.audit_time ,o.deliver,o.mold ,o.order_number
         from shengxian_order o
         inner join shengxian_binding b on b.id = o.binding_id
         where o.status = 6 and b.is_del = 0  and o.business_id = #{business_id} and o.is_del = 0

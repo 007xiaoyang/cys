@@ -2,6 +2,7 @@ package com.shengxian.mapper;
 
 import com.shengxian.entity.*;
 import com.shengxian.entity.clerkApp.*;
+import com.shengxian.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -65,7 +66,9 @@ public interface ClerkMapper {
      * 查询共享订单集合
      * @return
      */
-    List<HashMap> sharingOrder(Paramt paramt);
+    List<OrderVO> sharingOrder(Paramt paramt);
+
+    Integer getMallsOrderCount(@Param("id") Integer businessId);
 
     /**
      * 通过订单ID查询订单信息
@@ -171,6 +174,35 @@ public interface ClerkMapper {
      * @return
      */
     Money completeOrderListTotalMoney(AppParameter appParameter);
+
+    /**
+     * 专员客户未付款/欠款订单接口总数
+     * @param appParameter
+     * @return
+     */
+    Integer getCommissionerOrderListCount(AppParameter appParameter);
+
+    /**
+     * 专员客户未付款/欠款订单接口
+     * @param appParameter
+     * @return
+     */
+    List<HashMap> getCommissionerOrderList(AppParameter appParameter);
+
+    /**
+     * 小程序 专员客户 完成的订单总数
+     * @param appParameter
+     * @return
+     */
+    Integer getCommissionerCompleteOrderListCount(AppParameter appParameter);
+
+    /**
+     * 小程序 专员客户 完成的订单
+     * @param appParameter
+     * @return
+     */
+    List<HashMap> getCommissionerCompleteOrderList(AppParameter appParameter);
+
 
     /**
      * 通过员工ID查询员工APP功能菜单列表

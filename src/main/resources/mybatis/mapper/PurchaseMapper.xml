@@ -931,7 +931,7 @@
     <!--采购取消订单-->
     <select id="cancelOrder" resultType="HashMap">
         select p.id,p.price,p.order_number,s.`name` ,p.create_time,p.freight,p.mold,making,
-        p.auditor ,p.audit_time
+        p.auditor ,p.audit_time , p.no
         from shengxian_purchase p
         inner join shengxian_suppliers s on s.id = p.suppliers_id
         where p.is_del=0 and status=2  and s.is_del=0  and p.business_id=#{business_id}

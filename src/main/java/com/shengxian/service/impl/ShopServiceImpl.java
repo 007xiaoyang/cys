@@ -405,6 +405,8 @@ public class ShopServiceImpl implements ShopService {
                         throw new NullPointerException("必须删除类别下面的产品信息，才能删除该类别");
                     }
                 }
+                //删除二级类别
+                shopMapper.deleteTwoGoodsCategory(categoryId);
 
             } else {
 

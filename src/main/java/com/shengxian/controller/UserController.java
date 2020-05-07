@@ -631,4 +631,64 @@ public class UserController {
         }
     }
 
+    /**
+     * 条件查询类别下属于专员的用户信息集合
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getCommissionerCustomerInfoList")
+    @ApiOperation(value = "条件查询类别下属于专员的用户信息集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "Parameter" ,value = "对象" ,paramType = "query")
+    })
+    public Message getCommissionerCustomerInfoList(String token ,Integer role , Parameter parameter){
+        Message message = Message.non();
+        parameter.setName(  StringUtil.StringFilter(parameter.getName()));
+        try {
+            Page page = userService.getCommissionerCustomerInfoList(token ,role , parameter);
+            return message.code(Message.codeSuccessed).data(page).message("查询成功");
+        }catch (NullPointerException e){
+            return message.code(Message.codeFailured).message(e.getMessage());
+        }catch (Exception e){
+            log.error("员工控制层（/user/getCommissionerCustomerInfoList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+
+    /**
+     * 获取登录的的注册id
+     * @param token
+     * @param role
+     * @return
+     */
+    @RequestMapping("/getLoginId")
+    @ApiOperation(value = "获取登录的的注册id" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message getLoginId(String token ,Integer role ){
+        Message message = Message.non();
+        Integer loginId = userService.getLoginId(token , role);
+        return message.code(Message.codeSuccessed).data(loginId).message("成功");
+
+    }
+
+    /**
+     * 通过员工id查询员工姓名
+     * @return
+     */
+    @RequestMapping("/getStaffNameById")
+    @ApiOperation(value = "通过员工id查询员工姓名" ,httpMethod = "POST")
+    public Message getStaffNameById(Integer id ){
+        Message message = Message.non();
+        String name = userService.getStaffNameById(id);
+        return message.code(Message.codeSuccessed).data(name).message("成功");
+
+    }
+
+
 }

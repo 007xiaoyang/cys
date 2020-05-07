@@ -3,6 +3,7 @@ package com.shengxian.service;
 import com.shengxian.common.util.Page;
 import com.shengxian.entity.Staff;
 import com.shengxian.vo.StaffCategoryVO;
+import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.UnsupportedEncodingException;
@@ -178,6 +179,8 @@ public interface StaffService {
      * @return
      */
     List<HashMap> findStaffInfoListByCategoryId(Integer id);
+
+    List<HashMap> getAllStaffList(String token , Integer role);
 
     /**
      * 导出用户数据

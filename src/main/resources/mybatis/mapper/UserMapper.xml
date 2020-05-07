@@ -298,4 +298,40 @@
         from shengxian_binding where is_del = 0 and  business_id = #{businessId}
     </select>
 
+
+    <!--条件查询类别下专员的客户信息总数（小程序）-->
+    <select id="getCommissionerCustomerInfoListCount" resultType="Integer">
+        select count(b.id)
+        from shengxian_binding b
+        left join user u on b.user_id=u.id
+        where b.business_id=#{business_id} and b.staff_id = #{staff_id} and b.is_del=0
+        <if test="category_id != null ">
+            and b.category_id=#{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%'))
+        </if>
+    </select>
+
+    <!--条件查询类别下专员的客户信息（小程序）-->
+    <select id="getCommissionerCustomerInfoList" resultType="HashMap">
+        select b.id,u.phone,b.number,b.user_name,b.source,
+        ifnull((select bs.scheme_name from shengxian_business_scheme bs where bs.scheme_id =b.scheme_id and business_id =#{business_id}),'默认价格')as scheme_name,
+        b.illustrated1,b.remark1,b.address,(select integar_num from shengxian_binding_integra where binding_id=b.id)integar_num,
+        (select create_time from shengxian_order where binding_id=b.id and is_del=0 order by create_time desc limit 1 )create_time
+        from shengxian_binding b
+        left join user u on b.user_id=u.id
+        where b.business_id=#{business_id} and b.staff_id = #{staff_id} and b.is_del=0
+        <if test="category_id != null ">
+            and b.category_id=#{category_id}
+        </if>
+        <if test="name != null and name != ''">
+            and ( b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') )
+        </if>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getStaffNameById" resultType="String">
+        select name from shengxian_staff where id = #{id}
+    </select>
 </mapper>

@@ -459,7 +459,7 @@ public class UserServiceImpl implements UserService {
 
         Integer userPhone = userMapper.findUidByPhone(phone);
         if (userPhone != null ){
-            throw new NullPointerException("手机号码已经注册过了");
+            throw new NullPointerException("注册成功");
         }
         String pwd = PasswordMD5.EncoderByMd5("123456" + Global.passwordKey);
         return userMapper.addUserPhone(phone ,pwd , UUID.randomUUID().toString() , new Date());
@@ -488,5 +488,39 @@ public class UserServiceImpl implements UserService {
             category.setChildren(userVOS);
         });
         return userCategoryList;
+    }
+
+    @Override
+    public Page getCommissionerCustomerInfoList(String token, Integer role, Parameter parameter) throws Exception {
+        //通过token和role查询店铺ID
+        Integer bid = shopMapper.shopipByTokenAndRole(token, role);
+        Integer staffId = shopMapper.registerIdByTokenAndRole(token, role); //员工id
+        int pageNum = 1;
+        if (parameter.getPageNo() != null && parameter.getPageNo() != 0){
+            pageNum = parameter.getPageNo();
+        }
+        parameter.setBusiness_id(bid);
+        parameter.setStaff_id(staffId);
+
+        //条件查询类别下的客户信息总数
+        Integer totalCount = userMapper.getCommissionerCustomerInfoListCount(parameter);
+        Page page = new Page(pageNum,totalCount);
+        parameter.setStartIndex(page.getStartIndex());
+        parameter.setPageSize(page.getPageSize());
+
+        //条件查询类别下的客户信息
+        List<HashMap> customer = userMapper.getCommissionerCustomerInfoList(parameter);
+        page.setRecords(customer);
+        return page;
+    }
+
+    @Override
+    public Integer getLoginId(String token, Integer role) {
+        return shopMapper.registerIdByTokenAndRole(token, role); //员工id
+    }
+
+    @Override
+    public String getStaffNameById(Integer id) {
+        return userMapper.getStaffNameById(id);
     }
 }

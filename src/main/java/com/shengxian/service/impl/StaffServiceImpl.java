@@ -396,6 +396,12 @@ public class StaffServiceImpl implements StaffService {
         return staffMapper.findStaffInfoListByCategoryId(id);
     }
 
+    @Override
+    public List<HashMap> getAllStaffList(String token, Integer role) {
+        Integer businessId = shopMapper.shopipByTokenAndRole(token, role);
+        return staffMapper.getAllStaffList(businessId);
+    }
+
     //导出用户数据
     @Override
     public HSSFWorkbook excelDownload(String token ,Integer role, Integer id, String phone, String number, String name) {

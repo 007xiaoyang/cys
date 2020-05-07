@@ -167,5 +167,15 @@ public interface UserService {
      */
     List<UserCategoryVO> getUserList(String token ,Integer role);
 
+    Page getCommissionerCustomerInfoList(String token  ,Integer role , Parameter parameter)throws Exception;
 
+    /**
+     * 获取登录的的注册id
+     * @param token
+     * @param role
+     * @return
+     */
+    Integer getLoginId(String token ,Integer role);
+
+    String getStaffNameById(Integer id);
 }

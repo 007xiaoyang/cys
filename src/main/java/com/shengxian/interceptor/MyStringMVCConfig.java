@@ -93,8 +93,8 @@ public class MyStringMVCConfig extends WebMvcConfigurerAdapter {
                 //采购产品汇总 ,采购产品明细 ，查询计算器详情
                 .excludePathPatterns("/clerk/purchaseGoodsSummary" ,"/clerk/purchaseGoodsDetails" ,"/clerk/selectCalculator" ,"/clerk/selectCalculatorDateilById")
                 //计算器打印
-                .excludePathPatterns("/clerk/calculatorPrint" ,"/clerk/deleteCalculator")
-                .excludePathPatterns("/shopApp/getUserLoginInfo");
+                .excludePathPatterns("/clerk/calculatorPrint" ,"/clerk/deleteCalculator" ,"/clerk/getMallsOrderCount")
+                .excludePathPatterns("/shopApp/getUserLoginInfo" , "/user/getLoginId" ,"/user/getStaffNameById" , "/staff/getAllStaffList");
         super.addInterceptors(registry);
     }
 

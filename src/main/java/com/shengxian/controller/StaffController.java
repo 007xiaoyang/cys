@@ -696,6 +696,22 @@ public class StaffController {
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }
+    /**
+     * 查询所有员工信息集合
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getAllStaffList")
+    @ApiOperation(value = "查询所有员工信息集合" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message getAllStaffList(String token ,Integer role){
+        Message message = Message.non();
+        List<HashMap> hashMaps = staffService.getAllStaffList(token , role);
+        return message.code(Message.codeSuccessed).data(hashMaps).message("获取成功");
+    }
 
 
     /**

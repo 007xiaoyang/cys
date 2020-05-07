@@ -155,6 +155,24 @@ public class ClerkController {
         }
     }
 
+    /**
+     * 获取商城订单总数
+     * @param token
+     * @return
+     */
+    @RequestMapping("/getMallsOrderCount")
+    @ApiOperation(value = "共享订单" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query")
+    })
+    public Message getMallsOrderCount(String token ,Integer role ){
+        Message message = Message.non();
+        Integer count  = clerkService.getMallsOrderCount(token ,role);
+        return message.code(Message.codeSuccessed).data(count).message("获取成功");
+    }
+
+
 
 
     /**
@@ -199,11 +217,11 @@ public class ClerkController {
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "订单编号或客户编号或客户名称" ,paramType = "query")
     })
-    public Message noArrivedOrder(String token  ,Integer role ,Integer pageNo,String name){
+    public Message noArrivedOrder(String token  ,Integer role ,Integer pageNo,String name,String number ){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.noArrivedOrder(token ,role ,pageNo ,names);
+            Page page = clerkService.noArrivedOrder(token ,role ,pageNo ,names ,  number);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/noArrivedOrder）接口报错---------"+e.getMessage());
@@ -227,11 +245,11 @@ public class ClerkController {
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "订单编号或客户编号或客户名称" ,paramType = "query")
     })
-    public Message uncollectedOrderList(String token , Integer role ,Integer pageNo,String name ){
+    public Message uncollectedOrderList(String token , Integer role ,Integer pageNo,String name ,String number ,String staffName){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.uncollectedOrderList(token ,role , pageNo ,names);
+            Page page = clerkService.uncollectedOrderList(token ,role , pageNo ,names , number ,staffName);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/uncollectedOrderList）接口报错---------"+e.getMessage());
@@ -254,11 +272,11 @@ public class ClerkController {
             @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
             @ApiImplicitParam(name = "name" ,value = "订单编号或客户编号或客户名称" ,paramType = "query")
     })
-    public Message arrearsOrderList(String token , Integer role ,Integer pageNo,String name ){
+    public Message arrearsOrderList(String token , Integer role ,Integer pageNo,String name ,String number ,String staffName){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
-            Page page = clerkService.arrearsOrderList(token ,role , pageNo , names);
+            Page page = clerkService.arrearsOrderList(token ,role , pageNo , names ,number ,staffName);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/arrearsOrderList）接口报错---------"+e.getMessage());
@@ -285,7 +303,7 @@ public class ClerkController {
             @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
             @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
     })
-    public Message completeOrderList(String token ,Integer role ,Integer pageNo,String name,String startTime ,String endTime ){
+    public Message completeOrderList(String token ,Integer role ,Integer pageNo,String name,String number ,String staffName ,String startTime ,String endTime ){
         Message message = Message.non();
         String names = StringUtil.StringFilter(name);
         try {
@@ -293,10 +311,73 @@ public class ClerkController {
             if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")){
                 start = startTime ; end = endTime;
             }
-            Page page = clerkService.completeOrderList(token ,role , pageNo ,names  ,start , end);
+            Page page = clerkService.completeOrderList(token ,role , pageNo ,names ,number ,staffName ,start , end);
             return message.code(Message.codeSuccessed).data(page).message("获取成功");
         }catch (Exception e){
             log.error("员工APP控制层（/clerk/completeOrderList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 小程序 专员客户未付款/欠款订单接口
+     * @param token
+     * @param pageNo
+     * @param name 搜索条件，订单编号 ，客户名称，客户编号
+     * @return
+     */
+    @RequestMapping("/getCommissionerOrderList")
+    @ApiOperation(value = "专员客户未付款/欠款订单接口" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "订单编号或客户编号或客户名称" ,paramType = "query")
+    })
+    public Message getCommissionerOrderList(String token , Integer role ,Integer pageNo  ,Integer state,String name ,String number ,String staffName){
+        Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
+        try {
+            Page page = clerkService.getCommissionerOrderList(token ,role , pageNo ,state , names ,number ,staffName);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (Exception e){
+            log.error("员工APP控制层（/clerk/getCommissionerOrderList）接口报错---------"+e.getMessage());
+            return message.code(Message.codeFailured).message(Global.ERROR);
+        }
+    }
+
+    /**
+     * 小程序 专员客户 完成的订单
+     * @param token
+     * @param pageNo
+     * @param name 搜索条件，订单编号 ，客户名称，客户编号
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    @RequestMapping("/getCommissionerCompleteOrderList")
+    @ApiOperation(value = "程序 专员客户 完成的订单" ,httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token" ,value = "token" ,paramType = "query"),
+            @ApiImplicitParam(name = "role" ,value = "1店铺，2员工" ,paramType = "query"),
+            @ApiImplicitParam(name = "pageNo" ,value = "页数" ,paramType = "query"),
+            @ApiImplicitParam(name = "name" ,value = "订单编号或客户编号或客户名称" ,paramType = "query"),
+            @ApiImplicitParam(name = "number" ,value = "订单编号" ,paramType = "query"),
+            @ApiImplicitParam(name = "startTime" ,value = "开始时间" ,paramType = "query"),
+            @ApiImplicitParam(name = "endTime" ,value = "结束时间" ,paramType = "query"),
+    })
+    public Message getCommissionerCompleteOrderList(String token ,Integer role ,Integer pageNo,String name,String number ,String staffName ,String startTime ,String endTime ){
+        Message message = Message.non();
+        String names = StringUtil.StringFilter(name);
+        try {
+            String start = DateUtil.getDay() , end = DateUtil.getDay();
+            if (startTime != null && !startTime.equals("") && endTime != null && !endTime.equals("")){
+                start = startTime ; end = endTime;
+            }
+            Page page = clerkService.getCommissionerCompleteOrderList(token ,role , pageNo ,names ,number ,staffName ,start , end);
+            return message.code(Message.codeSuccessed).data(page).message("获取成功");
+        }catch (Exception e){
+            log.error("员工APP控制层（/clerk/getCommissionerCompleteOrderList）接口报错---------"+e.getMessage());
             return message.code(Message.codeFailured).message(Global.ERROR);
         }
     }

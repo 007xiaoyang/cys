@@ -25,8 +25,8 @@
     <select id="sharingOrderCount" resultType="Integer">
         select count(o.id)
         from shengxian_binding bd
-        inner join shengxian_order o on bd.id = o.binding_id
-        where o.is_del = 0 and bd.is_del =0 and o.status in (1,2) and o.business_id = #{business_id}
+        inner join shengxian_order o on bd.id = o.binding_id and o.business_id = #{business_id}
+        where bd.business_id = #{business_id} and o.status in (1,2)  and  o.is_del = 0 and bd.is_del =0
         <if test="name != null and name != ''">
             and ( bd.user_name like CONCAT('%',#{name},'%') or o.no like CONCAT('%',#{name},'%') )
         </if>
@@ -36,12 +36,12 @@
     </select>
 
     <!--查询共享订单集合-->
-    <select id="sharingOrder" resultType="HashMap">
+    <select id="sharingOrder" resultType="com.shengxian.vo.OrderVO">
         select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.making,o.order_number ,o.create_time,
-        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.mold
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.mold , o.making
         from shengxian_binding bd
-        inner join shengxian_order o on bd.id = o.binding_id
-        where o.is_del = 0 and bd.is_del =0 and o.status in (1,2)  and o.business_id = #{business_id}
+        inner join shengxian_order o on bd.id = o.binding_id and o.business_id = #{business_id}
+        where bd.business_id = #{business_id} and o.status in (1,2)  and  o.is_del = 0 and bd.is_del =0
         <if test="name != null and name != ''">
             and ( bd.user_name like CONCAT('%',#{name},'%') or o.no like CONCAT('%',#{name},'%') )
         </if>
@@ -49,6 +49,13 @@
             and o.order_number = #{number}
         </if>
         order by o.create_time desc limit #{startIndex} ,#{pageSize}
+    </select>
+
+    <select id="getMallsOrderCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_binding bd
+        inner join shengxian_order o on bd.id = o.binding_id
+        where o.business_id = #{id} and o.status in (1,2) and part = 1 and  o.is_del = 0 and bd.is_del =0
     </select>
 
 
@@ -79,22 +86,28 @@
     <select id="noArrivedOrderCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =3  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
         </if>
     </select>
 
     <!--未到货的订单-->
     <select id="noArrivedOrder" resultType="HashMap">
         select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.making,o.mold ,o.order_number,
-        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone  , o.create_time
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone  , o.create_time , bd.address, o.making
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status = 3  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
         </if>
         order by o.create_time desc limit #{startIndex} ,#{pageSize}
     </select>
@@ -103,13 +116,16 @@
     <select id="noArrivedOrderTotalMoney" resultType="Double">
         select ifnull(sum(o.price),0)
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status = 3  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="mold != null">
             and o.mold = #{mold}
         </if>
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
         </if>
     </select>
 
@@ -118,22 +134,34 @@
     <select id="uncollectedOrderListCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 0  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.deliver = #{staffName}
         </if>
     </select>
 
     <!--未收款的订单-->
     <select id="uncollectedOrderList" resultType="HashMap">
-        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.mold,o.order_number,
-        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.audit_time
+        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.mold,o.order_number, o.create_time, o.deliver ,
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.audit_time , bd.address, o.making
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 0  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.deliver = #{staffName}
         </if>
         order by o.audit_time desc limit #{startIndex} ,#{pageSize}
     </select>
@@ -142,7 +170,7 @@
     <select id="uncollectedOrderListTotalMoney" resultType="Double">
         select ifnull(sum(o.price) , 0 )
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 0  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="mold != null">
             and o.mold = #{mold}
@@ -150,28 +178,47 @@
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
         </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.deliver = #{staffName}
+        </if>
     </select>
 
     <!--欠款的订单总数-->
     <select id="arrearsOrderListCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 2  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
         </if>
     </select>
 
     <!--欠款的订单-->
     <select id="arrearsOrderList" resultType="HashMap">
-        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price ,o.part,o.mold ,o.order_number,o.money2 ,
+        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price ,o.part,o.mold ,o.order_number,o.money2 ,o.audit_time ,o.create_time,
         ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.receivable_time
+        , bd.address ,o.money ,o.deliver , o.making ,o.payee
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 2  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
         </if>
         order by o.receivable_time desc limit #{startIndex} ,#{pageSize}
     </select>
@@ -180,13 +227,19 @@
     <select id="arrearsOrderListTotalMoney" resultType="com.shengxian.entity.Money">
         select ifnull(sum(o.price),0)price ,ifnull(sum(o.money2),0)money2
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 2  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="mold != null">
             and o.mold = #{mold}
         </if>
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
         </if>
     </select>
 
@@ -196,28 +249,41 @@
     <select id="completeOrderListCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 3  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
         </if>
     </select>
 
     <!--完成的订单-->
     <select id="completeOrderList" resultType="HashMap">
-        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.mold,o.order_number,o.money ,
-        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.receivable_time
+        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.mold,o.order_number,o.money ,o.audit_time ,o.create_time,
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.receivable_time , bd.address
+        ,o.deliver , o.making ,o.payee
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 3  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="name != null and name != ''">
             and (o.order_number like CONCAT('%',#{name},'%') or bd.user_name like CONCAT('%',#{name},'%')  )
         </if>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
         </if>
         order by o.receivable_time desc limit #{startIndex} ,#{pageSize}
     </select>
@@ -226,7 +292,7 @@
     <select id="completeOrderListTotalMoney" resultType="com.shengxian.entity.Money">
         select ifnull(sum(o.price),0)price,ifnull(sum(o.money),0)money
         from shengxian_order o
-        inner join shengxian_binding bd on bd.id = o.binding_id
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}
         where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 3  and o.business_id = #{business_id} and o.staff_id = #{staff_id}
         <if test="mold != null">
             and o.mold = #{mold}
@@ -237,6 +303,99 @@
         <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
             and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
         </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
+        </if>
+    </select>
+
+
+    <!--专员客户未付款/欠款订单接口总数-->
+    <select id="getCommissionerOrderListCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id} and bd.staff_id = #{staff_id}
+        where  o.business_id = #{business_id} and o.status =4 and o.state = #{state} and o.is_del = 0 and bd.is_del =0
+        <if test="name != null and name != ''">
+            and  bd.user_name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="state == 2 and staffName != null and staffName != ''">
+            and o.payee = #{staffName}
+        </if>
+        <if test="state == 0 and staffName != null and staffName != ''">
+            and o.deliver = #{staffName}
+        </if>
+    </select>
+
+    <!--专员客户未付款/欠款订单接口-->
+    <select id="getCommissionerOrderList" resultType="HashMap">
+        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price ,o.part,o.mold ,o.order_number,o.money2 ,o.audit_time ,o.create_time,
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.receivable_time
+        , bd.address ,o.money ,o.deliver , o.making ,o.payee
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id} and bd.staff_id = #{staff_id}
+        where  o.business_id = #{business_id} and o.status =4 and o.state = #{state} and o.is_del = 0 and bd.is_del =0
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="state == 2 and staffName != null and staffName != ''">
+            and o.payee = #{staffName}
+        </if>
+        <if test="state == 0 and staffName != null and staffName != ''">
+            and o.deliver = #{staffName}
+        </if>
+        order by o.receivable_time desc limit #{startIndex} ,#{pageSize}
+    </select>
+
+    <!--小程序 专员客户 完成的订单总数-->
+    <select id="getCommissionerCompleteOrderListCount" resultType="Integer">
+        select count(o.id)
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}  and bd.staff_id = #{staff_id}
+        where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 3  and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
+        </if>
+    </select>
+
+    <!--小程序 专员客户 完成的订单-->
+    <select id="getCommissionerCompleteOrderList" resultType="HashMap">
+        select o.id ,o.binding_id,o.business_id, bd.user_name,o.price,o.part,o.mold,o.order_number,o.money ,o.audit_time ,o.create_time,
+        ifnull( (select phone from user where is_del =0 and id = bd.user_id),bd.telephone)phone ,o.receivable_time , bd.address
+        ,o.deliver , o.making ,o.payee
+        from shengxian_order o
+        inner join shengxian_binding bd on bd.id = o.binding_id and bd.business_id = #{business_id}  and bd.staff_id = #{staff_id}
+        where o.is_del = 0 and bd.is_del =0 and o.status =4 and o.state = 3  and o.business_id = #{business_id}
+        <if test="name != null and name != ''">
+            and bd.user_name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &lt;= #{endTime} and DATE_FORMAT(o.receivable_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="number != null and number != ''">
+            and o.order_number = #{number}
+        </if>
+        <if test="staffName != null and staffName != ''">
+            and o.payee = #{staffName}
+        </if>
+        order by o.receivable_time desc limit #{startIndex} ,#{pageSize}
     </select>
 
     <!--通过员工ID查询APP功能菜单列表-->
@@ -357,7 +516,7 @@
         inner join shengxian_goods_category gc on gc.id=g.category_id
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
         left join shengxian_goods_collection c on c.goods_id = g.id and c.binding_id = #{binding_id}
-        left join (select price , goods_id , scheme_id from shengxian_goods_scheme  ) gs on gs.goods_id = g.id  and  gs.scheme_id = #{scheme_id}
+        left join shengxian_goods_scheme gs on gs.goods_id = g.id  and  gs.scheme_id = #{scheme_id}
         where g.is_del=0  and g.business_id = #{business_id}
         <if test="category_id != null">
             and g.category_id = #{category_id}
@@ -373,14 +532,15 @@
     <!--店铺类别下的产品（客户）-->
     <select id="businessGoodsList" resultType="HashMap">
         select  g.id as goods_id,g.`name`,g.units,g.minimum_price, if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,gi.actual,g.number,
-        ifnull(gs.price ,(select od.order_price  from shengxian_order_details od,shengxian_order o where o.id = od.order_id and o.is_del=0 and
+        ifnull(gs.price ,(select od.order_price  from shengxian_order_details od,shengxian_order o
+        where o.id = od.order_id and o.business_id =#{business_id} and o.binding_id = #{binding_id} and  o.is_del=0 and
         od.goods_id =g.id and od.type = 0 and o.binding_id = #{binding_id} order by od.id desc limit 1) )price ,
         ifnull(c.id , 0)c_id
         from shengxian_goods g
         inner join shengxian_goods_category gc on gc.id=g.category_id
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id
         left join shengxian_goods_collection c on c.goods_id = g.id and c.binding_id = #{binding_id}
-        left join (select price , goods_id , scheme_id from shengxian_goods_scheme  ) gs on gs.goods_id = g.id  and  gs.scheme_id = #{scheme_id}
+        left join shengxian_goods_scheme gs on gs.goods_id = g.id  and  gs.scheme_id = #{scheme_id}
         where g.is_del=0  and g.business_id = #{business_id}
         <if test="category_id != null">
             and g.category_id = #{category_id}
@@ -418,7 +578,7 @@
         select  g.id as goods_id,g.`name`,g.units,
         if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,if( 0 = #{shield} , g.cost_price ,'进价不可见')cost_price ,
         IFNULL((select purchase_price from shengxian_purchase_detail pd,shengxian_purchase p
-        where pd.goods_id = g.id and p.id = pd.purchase_id and p.suppliers_id = #{binding_id} order by pd.id desc limit 1),g.cost_price)price ,
+        where pd.goods_id = g.id and p.business_id =#{business_id} and p.id = pd.purchase_id and p.suppliers_id = #{binding_id} order by pd.id desc limit 1),g.cost_price)price ,
         ifnull(c.id , 0)c_id ,gi.actual ,g.number
         from shengxian_goods g
         inner join shengxian_goods_category gc on gc.id = g.category_id
@@ -569,8 +729,8 @@
     <select id="bindingCollectionBindingGoodsListCount" resultType="Integer">
         select count(gc.id)
         from shengxian_goods_collection gc
-        inner join (select id,name ,number,units,minimum_price,business_id,is_del  from shengxian_goods ) g on g.id = gc.goods_id and g.is_del=0
-        left join (select price , goods_id , scheme_id from shengxian_goods_scheme  ) gs on gs.goods_id = g.id  and  gs.scheme_id = #{schemeId}
+        inner join shengxian_goods g on g.id = gc.goods_id and g.is_del=0
+        left join shengxian_goods_scheme gs on gs.goods_id = g.id  and  gs.scheme_id = #{schemeId}
         where  gc.binding_id = #{bindingId} and g.business_id = #{businessId}
         <if test="name != null and name != ''">
             and g.name LIKE CONCAT("%",#{name},'%')
@@ -580,12 +740,13 @@
     <!--客户收藏的产品-->
     <select id="bindingCollectionBindingGoodsList" resultType="HashMap">
         select gc.id, g.id as goods_id ,g.`name`,g.units,g.minimum_price,if( 0 = #{inv} ,gi.fictitious , '库存不可见' )fictitious ,
-        ifnull(gs.price ,(select od.order_price  from shengxian_order_details od,shengxian_order o where o.id = od.order_id and o.is_del=0 and
-        od.goods_id =g.id and od.type = 0 and o.binding_id = #{bindingId} order by od.id desc limit 1) )price
+        ifnull(gs.price ,(select od.order_price  from shengxian_order_details od,shengxian_order o
+        where  o.business_id  =#{businessId} and o.binding_id = #{bindingId} and  o.id = od.order_id
+        and od.goods_id =g.id and gc.goods_id = g.id and o.is_del=0  and od.type = 0   order by od.id desc limit 1) )price
         from shengxian_goods_collection gc
-        inner join (select id,name ,number,units,minimum_price,business_id,is_del  from shengxian_goods ) g on g.id = gc.goods_id and g.is_del = 0
+        inner join shengxian_goods g on g.id = gc.goods_id and g.is_del = 0
         inner join shengxian_goods_inventory gi on gi.goods_id = g.id and gi.goods_id = gc.goods_id
-        left join (select price , goods_id , scheme_id from shengxian_goods_scheme  ) gs on gs.goods_id = g.id  and  gs.scheme_id = #{schemeId}
+        left join shengxian_goods_scheme gs on gs.goods_id = g.id  and  gs.scheme_id = #{schemeId}
         where  gc.binding_id = #{bindingId} and g.business_id  =#{businessId}
         <if test="name != null and name != ''">
             and g.name LIKE CONCAT("%",#{name},'%')
@@ -639,7 +800,8 @@
 
     <!--销售收款(默认进来数据不加载，通过扫一扫或搜索)-->
     <select id="saleReceivables" resultType="HashMap">
-        select o.id ,o.no , bd.user_name,o.price ,o.mold,o.money2 ,o.money,o.state ,o.audit_time , o.receivable_time , o.order_number
+        select o.id ,o.no , bd.user_name,o.price ,o.mold,o.money2 ,o.money,o.state ,o.audit_time
+        , o.receivable_time , o.order_number , bd.address
         from shengxian_order o
         inner join shengxian_binding bd on bd.id = o.binding_id
         where o.is_del = 0 and bd.is_del =0 and o.status =4   and o.business_id = #{business_id}
@@ -1034,7 +1196,7 @@
 
     <!--订单的微信分享-->
     <select id="orderWXShareRecord" resultType="HashMap">
-        select o.id , o.order_number ,o.no ,bd.user_name , o.price ,o.create_time  , o.audit_time , o.mold ,
+        select o.id , o.order_number ,o.no ,bd.user_name , o.price ,o.create_time  , o.audit_time , o.mold
         , o.receivable_time , o.state , o.status ,o.money , o.money2 ,o.beizhu , o.difference_price ,o.freight
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id)  ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce

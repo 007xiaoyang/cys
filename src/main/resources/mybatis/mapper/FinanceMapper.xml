@@ -6,7 +6,7 @@
     <select id="mallMoneyCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -27,7 +27,7 @@
         o.payee,o.difference_price,o.state,o.type,o.money2 ,o.create_time  ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
-        inner join shengxian_binding b on b.id=o.binding_id
+        inner join shengxian_binding b on b.id=o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -47,7 +47,7 @@
     <select id="tatolMallMoney" resultType="HashMap">
         select ifnull(sum(o.price)-(sum(o.money)-sum(o.money2)),0)receivable, ifnull(sum(o.money2),0)pay
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4 and (o.state in (#{state}) ) and o.mold = 0 and o.part = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -67,7 +67,7 @@
     <select id="underLineMoneyCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 0 and o.part = 0 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -88,7 +88,7 @@
         o.type,o.state,o.money2 ,o.create_time ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold =0 and o.part=0 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -107,7 +107,7 @@
     <select id="tatolUnderLineMoney" resultType="HashMap">
         select ifnull(sum(o.price)- (sum(o.money) - sum(o.money2)),0)receivable, ifnull(sum(o.money2),0)pay
         from shengxian_order o
-        inner join shengxian_binding b on b.id=o.binding_id
+        inner join shengxian_binding b on b.id=o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and (o.state in (#{state}) ) and o.mold = 0 and o.part = 0 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -127,7 +127,7 @@
     <select id="returnMoneyCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 1 and o.part = 0 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -148,7 +148,7 @@
         o.type,o.state ,o.money2,o.create_time   ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in(1) and o.mold = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -167,7 +167,7 @@
     <select id="tatolreturnMoney" resultType="HashMap">
         select ifnull(sum(o.price) -(sum(o.money)-sum(o.money2)),0)receivable, ifnull(sum(o.money),0)pay
         from shengxian_order o
-        inner join shengxian_binding b on b.id=o.binding_id
+        inner join shengxian_binding b on b.id=o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and (o.state in (#{state}) ) and o.mold = 1 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -202,7 +202,7 @@
     <select id="tatolSaleMoneyCount" resultType="Integer">
         select count(o.id)
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4 and o.state not in(1)   and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -224,7 +224,7 @@
         ,ifnull(if(o.coupon_id = 0 ,(select reduce from shengxian_full_reduction where o.activity = id) ,
         (select  reduce from shengxian_binding_coupon where id = o.coupon_id) ),0)reduce
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4 and o.state not in(1) and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -243,7 +243,7 @@
     <select id="tatolSalePrice" resultType="HashMap">
         select ifnull(sum(o.price) -(sum(o.money)-sum(o.money2)),0)receivable, ifnull(sum(o.money2),0)pay
         from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state in (#{state})  and o.mold =0 and o.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (b.user_name LIKE CONCAT('%',#{name},'%') or b.number LIKE CONCAT('%',#{name},'%') or o.no  LIKE CONCAT('%',#{name},'%'))
@@ -262,7 +262,7 @@
     <!--总销售产品金额总金额 (当天销售的订单)-->
     <select id="notTatolSalePrice" resultType="HashMap">
         select ifnull(sum(o.price),0)receivable, ifnull(sum(o.money),0)pay  from shengxian_order o
-        inner join shengxian_binding b on b.id = o.binding_id
+        inner join shengxian_binding b on b.id = o.binding_id and b.business_id = #{business_id}
         where o.is_del = 0  and o.status = 4  and o.state not in (#{state})  and o.mold = #{mold} and o.business_id = #{business_id}
         <if test="part != null">
             and o.part = #{part}
@@ -342,7 +342,7 @@
     <select id="purchaseMoneyCount" resultType="Integer">
         select count(p.id)
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id=p.suppliers_id
+        inner join shengxian_suppliers s  on s.id=p.suppliers_id  and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status`= 1  and p.mold = 0 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -363,7 +363,7 @@
         (select name from shengxian_staff where id = p.staff_id )staffName,
         p.receivable_time,p.audit_time,p.state,p.create_time
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id  and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status` = 1  and p.mold = 0 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -383,7 +383,7 @@
     <select id="tatolPurchaseMoney" resultType="HashMap">
         select ifnull(sum(p.price) - (sum(p.money) -sum(p.money2)),0)price ,ifnull(sum(p.money2),0)pay
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id  and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status`= 1  and p.state in (#{state})  and p.mold = 0 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -405,7 +405,7 @@
     <select id="notTatolPurchaseMoney" resultType="HashMap">
         select ifnull(sum(p.price),0)price ,ifnull(sum(p.money),0)pay
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id  and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status` = 1   and p.mold = #{mold} and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -479,7 +479,7 @@
     <select id="purchaseReturnMoneyCount" resultType="Integer">
         select count(p.id)
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status` = 1  and p.mold = 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -500,7 +500,7 @@
         (select name from shengxian_staff where id = p.staff_id )staffName,
         p.money,p.audit_time,p.create_time
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id and s.business_id = #{business_id}
         where p.is_del = 0 and p.`status` = 1  and p.mold = 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -520,7 +520,7 @@
     <select id="tatolPurchaseReturnMoney" resultType="HashMap">
         select ifnull(sum(p.price)  - (sum(p.money) -sum(p.money2)),0)price ,ifnull(sum(p.money2),0)pay
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id=p.suppliers_id
+        inner join shengxian_suppliers s  on s.id=p.suppliers_id     and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status` = 1  and (p.state in (#{state}) ) and p.mold = 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -541,7 +541,7 @@
     <select id="tatolPurchaseOrderCount" resultType="Integer">
         select count(p.id)
         from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id  and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status`= 1  and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')
@@ -561,7 +561,7 @@
         select p.id,p.no,p.order_number,s.`name`,p.price,p.type,p.freight,p.difference_price,p.payee, p.receivable_time,p.mold, p.state,
         (select name from shengxian_staff where id = p.staff_id )staffName,
         p.money,p.audit_time ,p.money2 ,p.create_time  from shengxian_purchase p
-        inner join shengxian_suppliers s  on s.id = p.suppliers_id
+        inner join shengxian_suppliers s  on s.id = p.suppliers_id and s.business_id = #{business_id}
         where p.is_del = 0  and p.`status`= 1 and p.business_id = #{business_id}
         <if test="name != null and name != ''">
             and (s.name LIKE CONCAT('%',#{name},'%') or s.number LIKE CONCAT('%',#{name},'%')

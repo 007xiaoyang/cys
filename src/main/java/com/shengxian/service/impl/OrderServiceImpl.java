@@ -899,7 +899,7 @@ public class OrderServiceImpl implements OrderService {
             throw new NullPointerException("订单不存在");
         }
         Integer oStatus = Integer.valueOf(SAP.get("status").toString());
-        if (oStatus == status ||  ( oStatus == 4 && status == 6  ) || (oStatus == 6 && status == 4 ) ||
+        if ((oStatus != 1 && oStatus != 2 && oStatus != 3 ) || oStatus == status ||  ( oStatus == 4 && status == 6  ) || (oStatus == 6 && status == 4 ) ||
                 (oStatus == 4 && status == 2 ) || (oStatus == 6 && status == 2) || (oStatus == 5 && status == 3 )){
             throw new NullPointerException("订单已被操作过");
         }

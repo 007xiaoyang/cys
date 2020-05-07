@@ -328,5 +328,19 @@ public interface UserMapper {
 
     List<UserVO> getUserList(@Param("businessId") Long businessId);
 
+    /**
+     *条件查询类别下专员的客户信息总数
+     * @return
+     */
+    Integer getCommissionerCustomerInfoListCount(Parameter parameter);
+
+    /**
+     * 条件查询类别下专员的客户信息
+     * @return
+     */
+    List<HashMap> getCommissionerCustomerInfoList(Parameter parameter);
+
+    String getStaffNameById(@Param("id") Integer id);
+
 }
 
